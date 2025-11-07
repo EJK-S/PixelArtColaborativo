@@ -99,3 +99,71 @@ Cuando tu funcionalidad esté terminada y probada, es hora de combinarla con mai
  * No le des a "Merge" tú mismo. El equipo debe revisar el código (¡esto es parte de la rúbrica!).
  * Una vez que el equipo dé el visto bueno, uno de ustedes puede hacer clic en "Merge pull request".
 ¡Y listo! Tu código ahora es parte de main y los demás pueden descargar tus cambios repitiendo el Paso 1.
+
+# REPARTO
+
+Persona 1: El Arquitecto del Servidor (Backend)
+
+Misión: Construir el "cerebro" central. Esta persona se encarga de toda la lógica del servidor (la aplicación de consola).
+
+Tareas Clave:
+
+Crear el ServerApp.java (el main del servidor).
+
+Programar el ClientHandler.java (la lógica multi-hilo para manejar a cada cliente).
+
+Implementar el AuthService.java (usando FileManager y Usuario reutilizados).
+
+Escribir el CanvasService.java (la lógica que recibe un píxel de un cliente y se lo retransmite a todos los demás).
+
+Enfoque de Rúbrica: Arquitectura Cliente-Servidor, Persistencia.
+
+Persona 2: El Ingeniero de GUI (Frontend - Vista Principal)
+
+Misión: Construir la "ventana" y la interacción del usuario. Se enfoca en la apariencia y los componentes.
+
+Tareas Clave:
+
+Configurar el Look & Feel moderno (FlatLaf) en ClientApp.java.
+
+Diseñar el MainFrame.java (la ventana principal con BorderLayout).
+
+Crear el JMenuBar (para el menú "Archivo").
+
+Crear el ToolboxPanel.java (paleta de colores, botones de lápiz, borrador).
+
+Crear el ChatPanel.java y el UserListPanel.java (¡para usar la JTable de la rúbrica!).
+
+Enfoque de Rúbrica: Manejo de menúes, Uso de tablas, Layout Manager, Facilidad de uso.
+
+Persona 3: El Artista Digital (Frontend - Lienzo)
+
+Misión: Programar la parte más compleja y "mágica" de la GUI: el lienzo de dibujo.
+
+Tareas Clave:
+
+Crear la clase PixelCanvasPanel.java (que extiende JPanel).
+
+Sobrescribir el método paintComponent(Graphics g) para dibujar la cuadrícula de píxeles.
+
+Programar la lógica de Zoom (acercar/alejar).
+
+Crear el CanvasModel.java (la clase que guarda el Color[][] grid en el cliente).
+
+Implementar el CanvasController.java (que usa MouseListener y MouseMotionListener para detectar dónde se hizo clic).
+
+Enfoque de Rúbrica: Funcionalidad implementada, Clean Code.
+
+Persona 4: El Ingeniero de Conexión y Calidad (Lógica + Pruebas)
+
+Misión: Ser el "pegamento" que conecta todo y asegura que funcione sin errores.
+
+Tareas Clave:
+
+Programar el NetworkController.java (la clase que usa SwingWorker para enviar y recibir datos del servidor sin congelar la GUI).
+
+Implementar el Patrón Command (para el "Deshacer/Rehacer" y para enviar los píxeles como objetos).
+
+Escribir las Pruebas Unitarias (JUnit) para el proyecto (ej. AuthServiceTest.java, CanvasModelTest.java).
+
+Enfoque de Rúbrica: Test automatizada, Aplicar patrones de diseño, Carencia de errores.
