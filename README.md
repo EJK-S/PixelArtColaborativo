@@ -102,7 +102,7 @@ Cuando tu funcionalidad esté terminada y probada, es hora de combinarla con mai
 
 # REPARTO
 
-Persona 1: El Arquitecto del Servidor (Backend)
+# Persona 1: El Arquitecto del Servidor (Backend)
 
 Misión: Construir el "cerebro" central. Esta persona se encarga de toda la lógica del servidor (la aplicación de consola).
 
@@ -118,7 +118,7 @@ Escribir el CanvasService.java (la lógica que recibe un píxel de un cliente y 
 
 Enfoque de Rúbrica: Arquitectura Cliente-Servidor, Persistencia.
 
-Persona 2: El Ingeniero de GUI (Frontend - Vista Principal)
+# Persona 2: El Ingeniero de GUI (Frontend - Vista Principal)
 
 Misión: Construir la "ventana" y la interacción del usuario. Se enfoca en la apariencia y los componentes.
 
@@ -136,7 +136,7 @@ Crear el ChatPanel.java y el UserListPanel.java (¡para usar la JTable de la rú
 
 Enfoque de Rúbrica: Manejo de menúes, Uso de tablas, Layout Manager, Facilidad de uso.
 
-Persona 3: El Artista Digital (Frontend - Lienzo)
+# Persona 3: El Artista Digital (Frontend - Lienzo)
 
 Misión: Programar la parte más compleja y "mágica" de la GUI: el lienzo de dibujo.
 
@@ -154,7 +154,7 @@ Implementar el CanvasController.java (que usa MouseListener y MouseMotionListene
 
 Enfoque de Rúbrica: Funcionalidad implementada, Clean Code.
 
-Persona 4: El Ingeniero de Conexión y Calidad (Lógica + Pruebas)
+# Persona 4: El Ingeniero de Conexión y Calidad (Lógica + Pruebas)
 
 Misión: Ser el "pegamento" que conecta todo y asegura que funcione sin errores.
 
