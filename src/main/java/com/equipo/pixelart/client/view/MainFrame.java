@@ -291,80 +291,351 @@ public class MainFrame extends JFrame {
     public JMenuItem getAboutItem() { return aboutItem; }
 
     /**
-     * Diálogo de Conexión
+     * Diálogo de Conexión Mejorado con dos pantallas separadas
      */
     public static class ConnectionDialog extends JDialog {
         private JTextField serverField;
         private JTextField portField;
-        private JTextField usernameField;
-        private JPasswordField passwordField;
+
+        // Panel de Login
+        private JPanel loginPanel;
+        private JTextField loginUsernameField;
+        private JPasswordField loginPasswordField;
+
+        // Panel de Registro
+        private JPanel registerPanel;
+        private JTextField registerUsernameField;
+        private JPasswordField registerPasswordField;
+        private JPasswordField registerConfirmPasswordField;
+
         private JButton loginButton;
+        private JButton goToRegisterButton;
         private JButton registerButton;
+        private JButton backToLoginButton;
         private JButton cancelButton;
+        private JLabel statusLabel;
 
         private boolean accepted = false;
+        private boolean isRegister = false;
 
         public ConnectionDialog(Frame parent) {
-            super(parent, "Conectar al Servidor", true);
+            super(parent, "Pixel Art Colaborativo", true);
             setupDialog();
         }
 
         private void setupDialog() {
-            setSize(350, 250);
+            setSize(450, 450);
             setLocationRelativeTo(getParent());
-            setLayout(new BorderLayout(10, 10));
+            setResizable(false);
 
-            // Panel de campos
-            JPanel fieldsPanel = new JPanel(new GridLayout(4, 2, 5, 5));
-            fieldsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            // Panel principal
+            JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+            mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-            fieldsPanel.add(new JLabel("Servidor:"));
+            // Título
+            JLabel titleLabel = new JLabel("🎨 Pixel Art Colaborativo", SwingConstants.CENTER);
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+            titleLabel.setForeground(new Color(100, 149, 237));
+            titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+            mainPanel.add(titleLabel, BorderLayout.NORTH);
+
+            // Panel central que contendrá ambas vistas (CardLayout para cambiar entre ellas)
+            final JPanel centerContainer = new JPanel(new CardLayout());
+
+            // Crear ambos paneles
+            createLoginPanel();
+            createRegisterPanel();
+
+            // Agregar ambos paneles al contenedor con nombres
+            centerContainer.add(loginPanel, "LOGIN");
+            centerContainer.add(registerPanel, "REGISTER");
+
+            mainPanel.add(centerContainer, BorderLayout.CENTER);
+
+            // Status label
+            statusLabel = new JLabel(" ", SwingConstants.CENTER);
+            statusLabel.setFont(new Font("Arial", Font.ITALIC, 11));
+            statusLabel.setForeground(Color.BLUE);
+            statusLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+            mainPanel.add(statusLabel, BorderLayout.SOUTH);
+
+            add(mainPanel);
+
+            // Actualizar los botones para usar CardLayout
+            goToRegisterButton.addActionListener(e -> {
+                CardLayout cl = (CardLayout) centerContainer.getLayout();
+                cl.show(centerContainer, "REGISTER");
+                statusLabel.setText("💡 Crea tu cuenta para empezar a dibujar");
+                statusLabel.setForeground(new Color(60, 179, 113));
+                registerUsernameField.requestFocus();
+            });
+
+            backToLoginButton.addActionListener(e -> {
+                CardLayout cl = (CardLayout) centerContainer.getLayout();
+                cl.show(centerContainer, "LOGIN");
+                statusLabel.setText(" ");
+                statusLabel.setForeground(Color.BLUE);
+                loginUsernameField.requestFocus();
+            });
+        }
+
+        private void createLoginPanel() {
+            loginPanel = new JPanel();
+            loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.Y_AXIS));
+
+            // Sección de servidor
+            JPanel serverSection = new JPanel(new BorderLayout(5, 5));
+            serverSection.setBorder(BorderFactory.createTitledBorder(
+                    BorderFactory.createLineBorder(new Color(100, 149, 237), 2),
+                    "🖥️ Servidor",
+                    0, 0,
+                    new Font("Arial", Font.BOLD, 12)
+            ));
+
+            JPanel serverFields = new JPanel(new GridLayout(2, 2, 10, 10));
+            serverFields.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+            serverFields.add(new JLabel("Dirección:"));
             serverField = new JTextField("localhost");
-            fieldsPanel.add(serverField);
+            serverField.setFont(new Font("Arial", Font.PLAIN, 12));
+            serverFields.add(serverField);
 
-            fieldsPanel.add(new JLabel("Puerto:"));
+            serverFields.add(new JLabel("Puerto:"));
             portField = new JTextField("12345");
-            fieldsPanel.add(portField);
+            portField.setFont(new Font("Arial", Font.PLAIN, 12));
+            serverFields.add(portField);
 
-            fieldsPanel.add(new JLabel("Usuario:"));
-            usernameField = new JTextField();
-            fieldsPanel.add(usernameField);
+            serverSection.add(serverFields, BorderLayout.CENTER);
+            loginPanel.add(serverSection);
+            loginPanel.add(Box.createVerticalStrut(15));
 
-            fieldsPanel.add(new JLabel("Contraseña:"));
-            passwordField = new JPasswordField();
-            fieldsPanel.add(passwordField);
+            // Sección de login
+            JPanel loginSection = new JPanel(new BorderLayout(5, 5));
+            loginSection.setBorder(BorderFactory.createTitledBorder(
+                    BorderFactory.createLineBorder(new Color(100, 149, 237), 2),
+                    "🔐 Iniciar Sesión",
+                    0, 0,
+                    new Font("Arial", Font.BOLD, 12)
+            ));
 
-            add(fieldsPanel, BorderLayout.CENTER);
+            JPanel loginFields = new JPanel(new GridLayout(2, 2, 10, 10));
+            loginFields.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            // Panel de botones
-            JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            loginFields.add(new JLabel("Usuario:"));
+            loginUsernameField = new JTextField();
+            loginUsernameField.setFont(new Font("Arial", Font.PLAIN, 14));
+            loginFields.add(loginUsernameField);
 
-            loginButton = new JButton("Login");
-            loginButton.addActionListener(e -> {
-                accepted = true;
-                setVisible(false);
-            });
+            loginFields.add(new JLabel("Contraseña:"));
+            loginPasswordField = new JPasswordField();
+            loginPasswordField.setFont(new Font("Arial", Font.PLAIN, 14));
+            loginPasswordField.addActionListener(e -> handleLogin());
+            loginFields.add(loginPasswordField);
 
-            registerButton = new JButton("Registrar");
-            registerButton.addActionListener(e -> {
-                accepted = true;
-                setVisible(false);
-            });
+            loginSection.add(loginFields, BorderLayout.CENTER);
+            loginPanel.add(loginSection);
+            loginPanel.add(Box.createVerticalStrut(15));
 
-            cancelButton = new JButton("Cancelar");
-            cancelButton.addActionListener(e -> setVisible(false));
+            // Botones
+            JPanel loginButtons = new JPanel(new GridLayout(3, 1, 0, 10));
 
-            buttonsPanel.add(loginButton);
-            buttonsPanel.add(registerButton);
-            buttonsPanel.add(cancelButton);
+            loginButton = new JButton("🔑 Iniciar Sesión");
+            loginButton.setFont(new Font("Arial", Font.BOLD, 14));
+            loginButton.setBackground(new Color(100, 149, 237));
+            loginButton.setForeground(Color.WHITE);
+            loginButton.setFocusPainted(false);
+            loginButton.addActionListener(e -> handleLogin());
 
-            add(buttonsPanel, BorderLayout.SOUTH);
+            goToRegisterButton = new JButton("📝 Crear Nueva Cuenta");
+            goToRegisterButton.setFont(new Font("Arial", Font.PLAIN, 13));
+            goToRegisterButton.setBackground(new Color(60, 179, 113));
+            goToRegisterButton.setForeground(Color.WHITE);
+            goToRegisterButton.setFocusPainted(false);
+            // El listener se agrega en setupDialog()
+
+            cancelButton = new JButton("❌ Cancelar");
+            cancelButton.setFont(new Font("Arial", Font.PLAIN, 12));
+            cancelButton.setFocusPainted(false);
+            cancelButton.addActionListener(e -> dispose());
+
+            loginButtons.add(loginButton);
+            loginButtons.add(goToRegisterButton);
+            loginButtons.add(cancelButton);
+
+            loginPanel.add(loginButtons);
+        }
+
+        private void createRegisterPanel() {
+            registerPanel = new JPanel();
+            registerPanel.setLayout(new BoxLayout(registerPanel, BoxLayout.Y_AXIS));
+
+            // Sección de registro
+            JPanel registerSection = new JPanel(new BorderLayout(5, 5));
+            registerSection.setBorder(BorderFactory.createTitledBorder(
+                    BorderFactory.createLineBorder(new Color(60, 179, 113), 2),
+                    "📝 Registro de Nuevo Usuario",
+                    0, 0,
+                    new Font("Arial", Font.BOLD, 12)
+            ));
+
+            JPanel registerFields = new JPanel(new GridLayout(3, 2, 10, 15));
+            registerFields.setBorder(BorderFactory.createEmptyBorder(15, 10, 15, 10));
+
+            JLabel regUserLabel = new JLabel("Usuario:");
+            regUserLabel.setFont(new Font("Arial", Font.BOLD, 12));
+            registerFields.add(regUserLabel);
+            registerUsernameField = new JTextField();
+            registerUsernameField.setFont(new Font("Arial", Font.PLAIN, 14));
+            registerFields.add(registerUsernameField);
+
+            JLabel regPassLabel = new JLabel("Contraseña:");
+            regPassLabel.setFont(new Font("Arial", Font.BOLD, 12));
+            registerFields.add(regPassLabel);
+            registerPasswordField = new JPasswordField();
+            registerPasswordField.setFont(new Font("Arial", Font.PLAIN, 14));
+            registerFields.add(registerPasswordField);
+
+            JLabel regConfirmLabel = new JLabel("Confirmar:");
+            regConfirmLabel.setFont(new Font("Arial", Font.BOLD, 12));
+            registerFields.add(regConfirmLabel);
+            registerConfirmPasswordField = new JPasswordField();
+            registerConfirmPasswordField.setFont(new Font("Arial", Font.PLAIN, 14));
+            registerConfirmPasswordField.addActionListener(e -> handleRegister());
+            registerFields.add(registerConfirmPasswordField);
+
+            registerSection.add(registerFields, BorderLayout.CENTER);
+
+            // Info panel
+            JPanel infoPanel = new JPanel(new BorderLayout());
+            infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            JLabel infoLabel = new JLabel("<html><center>💡 <b>Requisitos:</b><br>" +
+                    "• Mínimo 3 caracteres<br>" +
+                    "• Las contraseñas deben coincidir</center></html>");
+            infoLabel.setFont(new Font("Arial", Font.PLAIN, 11));
+            infoLabel.setForeground(new Color(100, 100, 100));
+            infoPanel.add(infoLabel, BorderLayout.CENTER);
+            registerSection.add(infoPanel, BorderLayout.SOUTH);
+
+            registerPanel.add(registerSection);
+            registerPanel.add(Box.createVerticalStrut(20));
+
+            // Botones de registro
+            JPanel registerButtons = new JPanel(new GridLayout(2, 1, 0, 10));
+
+            registerButton = new JButton("✅ Registrar y Conectar");
+            registerButton.setFont(new Font("Arial", Font.BOLD, 14));
+            registerButton.setBackground(new Color(60, 179, 113));
+            registerButton.setForeground(Color.WHITE);
+            registerButton.setFocusPainted(false);
+            registerButton.addActionListener(e -> handleRegister());
+
+            backToLoginButton = new JButton("← Volver a Iniciar Sesión");
+            backToLoginButton.setFont(new Font("Arial", Font.PLAIN, 12));
+            backToLoginButton.setFocusPainted(false);
+            // El listener se agrega en setupDialog()
+
+            registerButtons.add(registerButton);
+            registerButtons.add(backToLoginButton);
+
+            registerPanel.add(registerButtons);
+        }
+
+        private void showLoginPanel() {
+            loginPanel.setVisible(true);
+            registerPanel.setVisible(false);
+            statusLabel.setText(" ");
+            statusLabel.setForeground(Color.BLUE);
+            loginUsernameField.requestFocus();
+        }
+
+        private void showRegisterPanel() {
+            loginPanel.setVisible(false);
+            registerPanel.setVisible(true);
+            statusLabel.setText("💡 Crea tu cuenta para empezar a dibujar");
+            statusLabel.setForeground(new Color(60, 179, 113));
+            registerUsernameField.requestFocus();
+        }
+
+        private void handleLogin() {
+            String user = loginUsernameField.getText().trim();
+            String pass = new String(loginPasswordField.getPassword());
+
+            if (user.isEmpty() || pass.isEmpty()) {
+                statusLabel.setText("⚠️ Por favor completa usuario y contraseña");
+                statusLabel.setForeground(Color.RED);
+                return;
+            }
+
+            isRegister = false;
+            accepted = true;
+            statusLabel.setText("✓ Conectando...");
+            statusLabel.setForeground(new Color(0, 128, 0));
+            setVisible(false);
+        }
+
+        private void handleRegister() {
+            String user = registerUsernameField.getText().trim();
+            String pass = new String(registerPasswordField.getPassword());
+            String confirm = new String(registerConfirmPasswordField.getPassword());
+
+            if (user.isEmpty()) {
+                statusLabel.setText("⚠️ El campo usuario está vacío");
+                statusLabel.setForeground(Color.RED);
+                registerUsernameField.requestFocus();
+                return;
+            }
+
+            if (pass.isEmpty()) {
+                statusLabel.setText("⚠️ El campo contraseña está vacío");
+                statusLabel.setForeground(Color.RED);
+                registerPasswordField.requestFocus();
+                return;
+            }
+
+            if (confirm.isEmpty()) {
+                statusLabel.setText("⚠️ Debes confirmar tu contraseña");
+                statusLabel.setForeground(Color.RED);
+                registerConfirmPasswordField.requestFocus();
+                return;
+            }
+
+            if (pass.length() < 3) {
+                statusLabel.setText("⚠️ La contraseña debe tener al menos 3 caracteres");
+                statusLabel.setForeground(Color.RED);
+                registerPasswordField.requestFocus();
+                return;
+            }
+
+            if (!pass.equals(confirm)) {
+                statusLabel.setText("⚠️ Las contraseñas no coinciden");
+                statusLabel.setForeground(Color.RED);
+                registerConfirmPasswordField.setText("");
+                registerConfirmPasswordField.requestFocus();
+                return;
+            }
+
+            isRegister = true;
+            accepted = true;
+            statusLabel.setText("✓ Registrando usuario...");
+            statusLabel.setForeground(new Color(0, 128, 0));
+            setVisible(false);
         }
 
         public boolean isAccepted() { return accepted; }
-        public String getServer() { return serverField.getText(); }
-        public int getPort() { return Integer.parseInt(portField.getText()); }
-        public String getUsername() { return usernameField.getText(); }
-        public String getPassword() { return new String(passwordField.getPassword()); }
+        public boolean isRegister() { return isRegister; }
+        public String getServer() { return serverField.getText().trim(); }
+        public int getPort() {
+            try {
+                return Integer.parseInt(portField.getText().trim());
+            } catch (NumberFormatException e) {
+                return 12345;
+            }
+        }
+        public String getUsername() {
+            return isRegister ? registerUsernameField.getText().trim() : loginUsernameField.getText().trim();
+        }
+        public String getPassword() {
+            return isRegister ? new String(registerPasswordField.getPassword()) : new String(loginPasswordField.getPassword());
+        }
     }
 }

@@ -81,6 +81,12 @@ public class ServerApp {
             System.out.println("===========================================");
             System.out.println("Servidor iniciado en el puerto: " + port);
             System.out.println("Canvas: " + CANVAS_WIDTH + "x" + CANVAS_HEIGHT);
+            System.out.println();
+            System.out.println("💡 IMPORTANTE:");
+            System.out.println("   Los clientes deben conectarse a:");
+            System.out.println("   - Servidor: localhost (o tu IP local)");
+            System.out.println("   - Puerto: " + port);
+            System.out.println();
             System.out.println("Esperando conexiones de clientes...");
             System.out.println("===========================================");
             System.out.println();

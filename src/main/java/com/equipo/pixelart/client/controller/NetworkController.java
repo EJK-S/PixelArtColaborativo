@@ -189,13 +189,16 @@ public class NetworkController {
     public void login(String username, String password) {
         this.username = username;
         sendMessage("LOGIN|" + username + "|" + password);
+        System.out.println("Enviando LOGIN para: " + username);
     }
 
     /**
      * Intenta registrar un nuevo usuario
      */
     public void register(String username, String password) {
+        this.username = username;
         sendMessage("REGISTER|" + username + "|" + password);
+        System.out.println("Enviando REGISTER para: " + username);
     }
 
     /**

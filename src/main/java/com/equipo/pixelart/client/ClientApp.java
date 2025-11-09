@@ -153,18 +153,46 @@ public class ClientApp {
                 if (success) {
                     String username = networkController.getUsername();
                     mainFrame.updateUsername(username);
-                    chatPanel.addSystemMessage("Autenticación exitosa. Bienvenido " + username);
+                    chatPanel.addSystemMessage("✓ Autenticación exitosa! Bienvenido " + username);
                     JOptionPane.showMessageDialog(mainFrame,
-                            "Bienvenido " + username,
+                            "¡Bienvenido " + username + "!\n\n" +
+                                    "Ahora puedes empezar a dibujar en el lienzo colaborativo.",
                             "Login Exitoso",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    chatPanel.addSystemMessage("Error de autenticación: " + message);
+                    chatPanel.addSystemMessage("✗ Error de autenticación: " + message);
+
+                    String errorMsg = message;
+                    if (message.contains("incorrectos") || message.contains("no existe")) {
+                        errorMsg = "Usuario o contraseña incorrectos.\n\n" +
+                                "Si no tienes cuenta, haz clic en 'Registrarse'.";
+                    } else if (message.contains("ya existe")) {
+                        errorMsg = "Este usuario ya existe.\n\n" +
+                                "Por favor usa otro nombre de usuario o inicia sesión.";
+                    } else if (message.contains("ya conectado")) {
+                        errorMsg = "Este usuario ya está conectado.\n\n" +
+                                "Por favor cierra la otra sesión primero.";
+                    }
+
                     JOptionPane.showMessageDialog(mainFrame,
-                            "Error: " + message,
+                            errorMsg,
                             "Autenticación Fallida",
                             JOptionPane.ERROR_MESSAGE);
-                    handleDisconnect();
+
+                    // Desconectar y permitir reintentar
+                    networkController.disconnect();
+
+                    // Ofrecer reconectar
+                    SwingUtilities.invokeLater(() -> {
+                        int retry = JOptionPane.showConfirmDialog(mainFrame,
+                                "¿Quieres intentar nuevamente?",
+                                "Reintentar Conexión",
+                                JOptionPane.YES_NO_OPTION);
+
+                        if (retry == JOptionPane.YES_OPTION) {
+                            handleConnect();
+                        }
+                    });
                 }
             }
 
@@ -217,9 +245,10 @@ public class ClientApp {
         int port = dialog.getPort();
         String username = dialog.getUsername();
         String password = dialog.getPassword();
+        boolean isRegister = dialog.isRegister();
 
         // Validar campos
-        if (username.trim().isEmpty() || password.trim().isEmpty()) {
+        if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(mainFrame,
                     "Por favor ingresa usuario y contraseña",
                     "Campos Vacíos",
@@ -227,17 +256,41 @@ public class ClientApp {
             return;
         }
 
-        // Intentar conectar
+        // Mostrar mensaje de conexión
+        chatPanel.addSystemMessage("Conectando al servidor " + server + ":" + port + "...");
+
+        // Intentar conectar primero
         boolean connected = networkController.connect(server, port);
 
-        if (connected) {
-            // Intentar autenticar
-            networkController.login(username, password);
-        } else {
+        if (!connected) {
             JOptionPane.showMessageDialog(mainFrame,
-                    "No se pudo conectar al servidor.\nVerifica que el servidor esté ejecutándose.",
+                    "No se pudo conectar al servidor.\n\n" +
+                            "Asegúrate de que:\n" +
+                            "1. El servidor esté ejecutándose (ServerApp)\n" +
+                            "2. La dirección y puerto sean correctos\n" +
+                            "3. No haya un firewall bloqueando la conexión",
                     "Error de Conexión",
                     JOptionPane.ERROR_MESSAGE);
+            chatPanel.addSystemMessage("✗ Error: No se pudo conectar al servidor");
+            return;
+        }
+
+        // Esperar un momento para que la conexión se establezca
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            // Ignorar
+        }
+
+        // Intentar autenticar
+        chatPanel.addSystemMessage("Conectado! Autenticando como '" + username + "'...");
+
+        if (isRegister) {
+            networkController.register(username, password);
+            chatPanel.addSystemMessage("Intentando registrar nuevo usuario...");
+        } else {
+            networkController.login(username, password);
+            chatPanel.addSystemMessage("Intentando iniciar sesión...");
         }
     }
 
