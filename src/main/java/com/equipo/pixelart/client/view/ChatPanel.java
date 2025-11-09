@@ -10,7 +10,7 @@ import java.util.Date;
  * Panel de Chat - Permite la comunicación entre usuarios
  */
 public class ChatPanel extends JPanel {
-
+	private static final long serialVersionUID = 1L;
     private JTextArea chatArea;
     private JTextField messageField;
     private JButton sendButton;

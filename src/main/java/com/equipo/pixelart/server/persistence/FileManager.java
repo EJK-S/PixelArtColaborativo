@@ -99,7 +99,7 @@ public class FileManager {
     public void guardarCanvas(Color[][] canvas) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(CANVAS_FILE))) {
             oos.writeObject(canvas);
-            System.out.println("Canvas guardado: " + canvas.length + "x" + canvas[0].length);
+            System.out.println("Canvas guardado: " + canvas.length + "x" + canvas[0].length);        
         } catch (IOException e) {
             System.err.println("Error guardando canvas: " + e.getMessage());
         }

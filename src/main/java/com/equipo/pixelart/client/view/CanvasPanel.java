@@ -8,7 +8,7 @@ import java.awt.*;
  * Panel del Canvas - Vista principal donde se dibuja el pixel art
  */
 public class CanvasPanel extends JPanel {
-
+	private static final long serialVersionUID = 1L;
     private final CanvasModel model;
     private final int pixelSize; // Tamaño de cada píxel en pantalla
     private final int gridWidth;

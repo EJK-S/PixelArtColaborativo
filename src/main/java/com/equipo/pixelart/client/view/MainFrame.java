@@ -9,7 +9,7 @@ import java.awt.event.WindowEvent;
  * Ventana Principal - Contiene toda la interfaz de usuario del cliente
  */
 public class MainFrame extends JFrame {
-
+	private static final long serialVersionUID = 1L;
     // Paneles principales
     private ToolboxPanel toolboxPanel;
     private CanvasPanel canvasPanel;
@@ -294,6 +294,7 @@ public class MainFrame extends JFrame {
      * Diálogo de Conexión Mejorado con dos pantallas separadas
      */
     public static class ConnectionDialog extends JDialog {
+    	private static final long serialVersionUID = 1L;
         private JTextField serverField;
         private JTextField portField;
 
@@ -362,21 +363,11 @@ public class MainFrame extends JFrame {
             add(mainPanel);
 
             // Actualizar los botones para usar CardLayout
-            goToRegisterButton.addActionListener(e -> {
-                CardLayout cl = (CardLayout) centerContainer.getLayout();
-                cl.show(centerContainer, "REGISTER");
-                statusLabel.setText("💡 Crea tu cuenta para empezar a dibujar");
-                statusLabel.setForeground(new Color(60, 179, 113));
-                registerUsernameField.requestFocus();
-            });
+          
 
-            backToLoginButton.addActionListener(e -> {
-                CardLayout cl = (CardLayout) centerContainer.getLayout();
-                cl.show(centerContainer, "LOGIN");
-                statusLabel.setText(" ");
-                statusLabel.setForeground(Color.BLUE);
-                loginUsernameField.requestFocus();
-            });
+            goToRegisterButton.addActionListener(e -> showRegisterPanel());
+            backToLoginButton.addActionListener(e -> showLoginPanel());
+
         }
 
         private void createLoginPanel() {
@@ -540,7 +531,7 @@ public class MainFrame extends JFrame {
             registerPanel.add(registerButtons);
         }
 
-        private void showLoginPanel() {
+        private void showLoginPanel() {   	
             loginPanel.setVisible(true);
             registerPanel.setVisible(false);
             statusLabel.setText(" ");

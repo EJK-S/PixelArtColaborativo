@@ -7,7 +7,7 @@ import java.awt.*;
  * Panel de Herramientas - Contiene todas las herramientas de dibujo
  */
 public class ToolboxPanel extends JPanel {
-
+	private static final long serialVersionUID = 1L;
     // Botones de herramientas
     private JButton pencilButton;
     private JButton eraserButton;

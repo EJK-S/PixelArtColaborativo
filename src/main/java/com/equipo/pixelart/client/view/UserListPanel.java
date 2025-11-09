@@ -7,7 +7,7 @@ import java.awt.*;
  * Panel de Lista de Usuarios - Muestra los usuarios conectados
  */
 public class UserListPanel extends JPanel {
-
+	private static final long serialVersionUID = 1L;
     private DefaultListModel<String> listModel;
     private JList<String> userList;
     private JScrollPane scrollPane;
@@ -142,7 +142,7 @@ public class UserListPanel extends JPanel {
      * Renderizador personalizado para las celdas de la lista
      */
     private static class UserListCellRenderer extends DefaultListCellRenderer {
-
+    	private static final long serialVersionUID = 1L;
         @Override
         public Component getListCellRendererComponent(
                 JList<?> list, Object value, int index,

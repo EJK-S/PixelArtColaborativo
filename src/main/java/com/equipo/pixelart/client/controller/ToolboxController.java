@@ -1,11 +1,14 @@
 package com.equipo.pixelart.client.controller;
 
 import com.equipo.pixelart.client.view.ToolboxPanel;
+import com.equipo.pixelart.server.persistence.FileManager;
+
 import java.awt.Color;
-import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JSlider;
+
+
 
 /**
  * Controlador de la Caja de Herramientas
@@ -219,13 +222,15 @@ public class ToolboxController {
     private void saveCanvas() {
         try {
             String filename = view.showSaveDialog();
+            FileManager fileManager = new FileManager();
+
 
             if (filename != null) {
                 // Obtener el modelo del canvas
                 Color[][] pixels = canvasController.getModel().getPixels();
 
                 // Guardar en archivo (implementar FileManager)
-                // fileManager.saveCanvas(filename, pixels);
+                 fileManager.guardarCanvas(pixels);
 
                 view.showMessage("Canvas guardado exitosamente", "Éxito");
                 System.out.println("Canvas guardado: " + filename);

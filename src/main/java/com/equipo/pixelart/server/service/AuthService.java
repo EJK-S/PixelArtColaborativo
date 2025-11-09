@@ -3,7 +3,6 @@ package com.equipo.pixelart.server.service;
 import com.equipo.pixelart.server.model.Usuario;
 import com.equipo.pixelart.server.persistence.FileManager;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;

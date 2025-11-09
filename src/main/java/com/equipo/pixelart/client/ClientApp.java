@@ -73,7 +73,7 @@ public class ClientApp {
 
         // Crear ToolboxController
         toolboxController = new ToolboxController(toolboxPanel, canvasController);
-
+        toolboxController.getCurrentTool();
         // Conectar NetworkController con CanvasController
         networkController.setCanvasController(canvasController);
 
@@ -100,7 +100,8 @@ public class ClientApp {
      */
     private void setupEventHandlers() {
         System.out.println("Configurando manejadores de eventos...");
-
+    
+       
         // ========== EVENTOS DE MENÚ ==========
 
         // Menú: Conectar
