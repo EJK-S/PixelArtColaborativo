@@ -1,125 +1,141 @@
 package com.equipo.pixelart.server.persistence;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-// Importa el "plano" Usuario desde su ubicación correcta
 import com.equipo.pixelart.server.model.Usuario;
+import java.awt.Color;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Esta clase es el "obrero". Su único trabajo es leer y escribir
- * en el archivo usuarios.txt, convirtiendo texto a Objetos Usuario y viceversa.
+ * Gestor de Archivos - Maneja la persistencia de datos
+ * Guarda usuarios y estado del canvas en archivos
  */
 public class FileManager {
-    private static final String ARCHIVO_USUARIOS = "usuarios.txt";
-    
-    public static List<Usuario> cargarUsuariosDesdeArchivo() {
-        List<Usuario> usuarios = new ArrayList<>();
-        
-        try (BufferedReader reader = new BufferedReader(new FileReader(ARCHIVO_USUARIOS))) {
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                Usuario usuario = parsearLineaUsuario(linea);
-                if (usuario != null) {
-                    usuarios.add(usuario);
-                }
-            }
-            // Mensaje para la consola del SERVIDOR
-            System.out.println("Usuarios cargados exitosamente: " + usuarios.size() + " usuarios.");
-        } catch (IOException e) {
-            // Mensaje para la consola del SERVIDOR
-            System.out.println("No se encontró archivo de usuarios. Se creará uno nuevo.");
-        }
-        
-        return usuarios;
-    }
-    
-    public static void guardarUsuariosEnArchivo(List<Usuario> usuarios) {
-        try (FileWriter writer = new FileWriter(ARCHIVO_USUARIOS)) {
-            for (Usuario user : usuarios) {
-                writer.write(convertirUsuarioATexto(user) + "\n");
-            }
-            System.out.println("Datos guardados exitosamente.");
-        } catch (IOException e) {
-            System.err.println("Error al guardar usuarios: " + e.getMessage());
-        }
-    }
-    
+
+    private static final String DATA_DIR = "data";
+    private static final String USERS_FILE = DATA_DIR + "/users.dat";
+    private static final String CANVAS_FILE = DATA_DIR + "/canvas.dat";
+
     /**
-     * Convierte una línea de texto (ej: "EJK;123;pepe,juan") en un Objeto Usuario.
+     * Constructor - Crea el directorio de datos si no existe
      */
-    private static Usuario parsearLineaUsuario(String linea) {
-        try {
-            String[] tokens = linea.split(";", -1); // -1 para incluir campos vacíos
-            
-            // Formato: Username;Password;Amigos
-            if (tokens.length < 3) {
-                System.err.println("Error: Formato de archivo incorrecto.");
-                return null;
-            }
-            
-            Usuario user = new Usuario();
-            user.setUsername(tokens[0]);
-            user.setPassword(tokens[1]);
-            
-            // Cargar amigos (Token 2)
-            if (tokens.length > 2 && !tokens[2].isEmpty()) {
-                String[] amigos = tokens[2].split(",");
-                for (String amigo : amigos) {
-                    if (!amigo.isEmpty()) {
-                        user.getAmigos().add(amigo);
-                    }
-                }
-            }
-            
-            return user;
-            
-        } catch (Exception e) {
-            System.err.println("Error al parsear línea de usuario: " + e.getMessage());
-            return null;
+    public FileManager() {
+        File dataDir = new File(DATA_DIR);
+        if (!dataDir.exists()) {
+            dataDir.mkdirs();
+            System.out.println("Directorio de datos creado: " + DATA_DIR);
         }
     }
-    
+
+    // ==================== GESTIÓN DE USUARIOS ====================
+
     /**
-     * Convierte un Objeto Usuario en una línea de texto (ej: "EJK;123;pepe,juan").
+     * Carga todos los usuarios desde el archivo
      */
-    private static String convertirUsuarioATexto(Usuario user) {
-        StringBuilder sb = new StringBuilder();
-        
-        // Datos básicos
-        sb.append(user.getUsername()).append(";");
-        sb.append(user.getPassword()).append(";");
-        
-        // Amigos
-        // Esto une la lista de amigos con comas (ej: "pepe,juan,ana")
-        String amigosCSV = String.join(",", user.getAmigos());
-        sb.append(amigosCSV);
-        
-        return sb.toString();
-    }
-    
-    public static void limpiarArchivoCorrupto() {
-        try {
-            java.io.File archivo = new java.io.File(ARCHIVO_USUARIOS);
-            if (archivo.exists()) {
-                if (archivo.delete()) {
-                    System.out.println("Archivo corrupto eliminado.");
-                }
-            }
-            
-            // Crear archivo nuevo vacío
-            try (FileWriter writer = new FileWriter(ARCHIVO_USUARIOS)) {
-                writer.write("");
-            }
-            
-            System.out.println("Archivo limpio creado exitosamente.");
-            
-        } catch (IOException e) {
-            System.err.println("Error al limpiar archivo: " + e.getMessage());
+    @SuppressWarnings("unchecked")
+    public Map<String, Usuario> cargarUsuarios() {
+        File file = new File(USERS_FILE);
+
+        if (!file.exists()) {
+            System.out.println("Archivo de usuarios no existe, creando nuevo mapa");
+            return new HashMap<>();
         }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            Map<String, Usuario> usuarios = (Map<String, Usuario>) ois.readObject();
+            System.out.println("Usuarios cargados: " + usuarios.size());
+            return usuarios;
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error cargando usuarios: " + e.getMessage());
+            return new HashMap<>();
+        }
+    }
+
+    /**
+     * Guarda todos los usuarios en el archivo
+     */
+    public void guardarUsuarios(Map<String, Usuario> usuarios) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(USERS_FILE))) {
+            oos.writeObject(usuarios);
+            System.out.println("Usuarios guardados: " + usuarios.size());
+        } catch (IOException e) {
+            System.err.println("Error guardando usuarios: " + e.getMessage());
+        }
+    }
+
+    // ==================== GESTIÓN DEL CANVAS ====================
+
+    /**
+     * Carga el estado del canvas desde el archivo
+     */
+    public Color[][] cargarCanvas(int width, int height) {
+        File file = new File(CANVAS_FILE);
+
+        if (!file.exists()) {
+            System.out.println("Archivo de canvas no existe, creando canvas vacío");
+            return crearCanvasVacio(width, height);
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            Color[][] canvas = (Color[][]) ois.readObject();
+            System.out.println("Canvas cargado: " + canvas.length + "x" + canvas[0].length);
+
+            // Verificar dimensiones
+            if (canvas.length != width || canvas[0].length != height) {
+                System.out.println("Dimensiones no coinciden, creando nuevo canvas");
+                return crearCanvasVacio(width, height);
+            }
+
+            return canvas;
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error cargando canvas: " + e.getMessage());
+            return crearCanvasVacio(width, height);
+        }
+    }
+
+    /**
+     * Guarda el estado del canvas en el archivo
+     */
+    public void guardarCanvas(Color[][] canvas) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(CANVAS_FILE))) {
+            oos.writeObject(canvas);
+            System.out.println("Canvas guardado: " + canvas.length + "x" + canvas[0].length);
+        } catch (IOException e) {
+            System.err.println("Error guardando canvas: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Crea un canvas vacío (blanco)
+     */
+    private Color[][] crearCanvasVacio(int width, int height) {
+        Color[][] canvas = new Color[width][height];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                canvas[x][y] = Color.WHITE;
+            }
+        }
+        return canvas;
+    }
+
+    /**
+     * Exporta el canvas como imagen PNG
+     */
+    public void exportarCanvasPNG(Color[][] canvas, String filename) {
+        // Implementación para exportar a PNG (opcional)
+        System.out.println("Exportar a PNG no implementado aún");
+    }
+
+    /**
+     * Limpia todos los datos persistidos
+     */
+    public void limpiarDatos() {
+        File usersFile = new File(USERS_FILE);
+        File canvasFile = new File(CANVAS_FILE);
+
+        if (usersFile.exists()) usersFile.delete();
+        if (canvasFile.exists()) canvasFile.delete();
+
+        System.out.println("Datos limpiados");
     }
 }
