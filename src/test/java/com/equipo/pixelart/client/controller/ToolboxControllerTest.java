@@ -1,19 +1,21 @@
 package com.equipo.pixelart.client.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.awt.Color;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.equipo.pixelart.client.view.ToolboxPanel;
 
-import java.awt.Color;
-
 public class ToolboxControllerTest {
 	
 	private ToolboxController controller;
     private ToolboxPanel mockView;
     private CanvasController mockCanvasController;
+
+        @SuppressWarnings("unused")
 
     @BeforeEach
     void setUp() {

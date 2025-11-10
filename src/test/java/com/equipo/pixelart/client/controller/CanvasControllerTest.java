@@ -1,11 +1,17 @@
 package com.equipo.pixelart.client.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import java.awt.Color;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.equipo.pixelart.client.model.CanvasModel;
 import com.equipo.pixelart.client.view.CanvasPanel;
@@ -16,6 +22,8 @@ public class CanvasControllerTest {
     private CanvasPanel view;
     private NetworkController network;
     private CanvasController controller;
+
+        @SuppressWarnings("unused")
 
     @BeforeEach
     void setUp() {

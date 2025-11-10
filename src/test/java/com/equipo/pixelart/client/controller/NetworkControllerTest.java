@@ -1,18 +1,21 @@
 package com.equipo.pixelart.client.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import java.awt.Color;
 import java.io.PrintWriter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class NetworkControllerTest {
 
     private NetworkController networkController;
     private NetworkController.NetworkListener listenerMock;
+
+        @SuppressWarnings("unused")
 
     @BeforeEach
     void setUp() {
