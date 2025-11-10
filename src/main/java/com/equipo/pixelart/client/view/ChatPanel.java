@@ -3,6 +3,7 @@ package com.equipo.pixelart.client.view;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -10,13 +11,13 @@ import java.util.Date;
  * Panel de Chat - Permite la comunicación entre usuarios
  */
 public class ChatPanel extends JPanel {
+    @Serial
 	private static final long serialVersionUID = 1L;
     private JTextArea chatArea;
     private JTextField messageField;
     private JButton sendButton;
-    private JScrollPane scrollPane;
 
-    private SimpleDateFormat timeFormat;
+    private final SimpleDateFormat timeFormat;
 
     /**
      * Constructor
@@ -47,7 +48,7 @@ public class ChatPanel extends JPanel {
         chatArea.setFont(new Font("Monospaced", Font.PLAIN, 11));
         chatArea.setBackground(new Color(245, 245, 245));
 
-        scrollPane = new JScrollPane(chatArea);
+        JScrollPane scrollPane = new JScrollPane(chatArea);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setPreferredSize(new Dimension(280, 200));
 

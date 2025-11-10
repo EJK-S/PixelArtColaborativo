@@ -4,24 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.Serial;
 
 /**
  * Ventana Principal - Contiene toda la interfaz de usuario del cliente
  */
 public class MainFrame extends JFrame {
-	private static final long serialVersionUID = 1L;
-    // Paneles principales
-    private ToolboxPanel toolboxPanel;
-    private CanvasPanel canvasPanel;
-    private ChatPanel chatPanel;
-    private UserListPanel userListPanel;
-
-    // Barra de menú
-    private JMenuBar menuBar;
-    private JMenu fileMenu;
-    private JMenu editMenu;
-    private JMenu viewMenu;
-    private JMenu helpMenu;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     // Items de menú
     private JMenuItem connectItem;
@@ -32,7 +22,6 @@ public class MainFrame extends JFrame {
     private JMenuItem aboutItem;
 
     // Barra de estado
-    private JPanel statusBar;
     private JLabel statusLabel;
     private JLabel userLabel;
 
@@ -61,9 +50,6 @@ public class MainFrame extends JFrame {
         // Crear menú
         createMenuBar();
 
-        // Crear paneles (se asignarán desde ClientApp)
-        createMainLayout();
-
         // Crear barra de estado
         createStatusBar();
 
@@ -77,20 +63,13 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * Crea el layout principal (vacío, se llenará con setPanels)
-     */
-    private void createMainLayout() {
-        // El layout se configurará cuando se llame a setPanels()
-    }
-
-    /**
      * Crea la barra de menú
      */
     private void createMenuBar() {
-        menuBar = new JMenuBar();
+        JMenuBar menuBar = new JMenuBar();
 
         // Menú Archivo
-        fileMenu = new JMenu("Archivo");
+        JMenu fileMenu = new JMenu("Archivo");
         fileMenu.setMnemonic('A');
 
         connectItem = new JMenuItem("Conectar...");
@@ -108,7 +87,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(exitItem);
 
         // Menú Edición
-        editMenu = new JMenu("Edición");
+        JMenu editMenu = new JMenu("Edición");
         editMenu.setMnemonic('E');
 
         clearItem = new JMenuItem("Limpiar Canvas");
@@ -117,7 +96,7 @@ public class MainFrame extends JFrame {
         editMenu.add(clearItem);
 
         // Menú Ver
-        viewMenu = new JMenu("Ver");
+        JMenu viewMenu = new JMenu("Ver");
         viewMenu.setMnemonic('V');
 
         toggleGridItem = new JCheckBoxMenuItem("Mostrar Grid", true);
@@ -126,7 +105,7 @@ public class MainFrame extends JFrame {
         viewMenu.add(toggleGridItem);
 
         // Menú Ayuda
-        helpMenu = new JMenu("Ayuda");
+        JMenu helpMenu = new JMenu("Ayuda");
         helpMenu.setMnemonic('H');
 
         aboutItem = new JMenuItem("Acerca de...");
@@ -147,7 +126,7 @@ public class MainFrame extends JFrame {
      * Crea la barra de estado
      */
     private void createStatusBar() {
-        statusBar = new JPanel(new BorderLayout());
+        JPanel statusBar = new JPanel(new BorderLayout());
         statusBar.setBorder(BorderFactory.createEtchedBorder());
 
         statusLabel = new JLabel("Desconectado");
@@ -192,11 +171,15 @@ public class MainFrame extends JFrame {
      * Muestra el diálogo "Acerca de"
      */
     public void showAboutDialog() {
-        String message = "Pixel Art Colaborativo\n\n" +
-                "Versión 1.0\n\n" +
-                "Una aplicación de dibujo colaborativo\n" +
-                "en tiempo real con Java Swing.\n\n" +
-                "© 2024 - Equipo de Desarrollo";
+        String message = """
+                Pixel Art Colaborativo
+                
+                Versión 1.0
+                
+                Una aplicación de dibujo colaborativo
+                en tiempo real con Java Swing.
+                
+                © 2024 - Equipo de Desarrollo""";
 
         JOptionPane.showMessageDialog(
                 this,
@@ -234,10 +217,6 @@ public class MainFrame extends JFrame {
      */
     public void setPanels(ToolboxPanel toolbox, CanvasPanel canvas,
                           ChatPanel chat, UserListPanel userList) {
-        this.toolboxPanel = toolbox;
-        this.canvasPanel = canvas;
-        this.chatPanel = chat;
-        this.userListPanel = userList;
 
         // Panel izquierdo (Toolbox)
         JPanel leftPanel = new JPanel(new BorderLayout());
@@ -278,11 +257,6 @@ public class MainFrame extends JFrame {
 
     // ==================== GETTERS ====================
 
-    public ToolboxPanel getToolboxPanel() { return toolboxPanel; }
-    public CanvasPanel getCanvasPanel() { return canvasPanel; }
-    public ChatPanel getChatPanel() { return chatPanel; }
-    public UserListPanel getUserListPanel() { return userListPanel; }
-
     public JMenuItem getConnectItem() { return connectItem; }
     public JMenuItem getDisconnectItem() { return disconnectItem; }
     public JMenuItem getExitItem() { return exitItem; }
@@ -291,12 +265,14 @@ public class MainFrame extends JFrame {
     public JMenuItem getAboutItem() { return aboutItem; }
 
     /**
-     * Diálogo de Conexión Mejorado con dos pantallas separadas
+     * Diálogo de Conexión con dos pantallas separadas
      */
     public static class ConnectionDialog extends JDialog {
-    	private static final long serialVersionUID = 1L;
-        private JTextField serverField;
-        private JTextField portField;
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        private final JTextField serverField;
+        private final JTextField portField;
 
         // Panel de Login
         private JPanel loginPanel;
@@ -309,18 +285,33 @@ public class MainFrame extends JFrame {
         private JPasswordField registerPasswordField;
         private JPasswordField registerConfirmPasswordField;
 
-        private JButton loginButton;
         private JButton goToRegisterButton;
-        private JButton registerButton;
         private JButton backToLoginButton;
-        private JButton cancelButton;
-        private JLabel statusLabel;
+        private final JLabel statusLabel;
 
         private boolean accepted = false;
         private boolean isRegister = false;
 
         public ConnectionDialog(Frame parent) {
             super(parent, "Pixel Art Colaborativo", true);
+
+            // Inicializar campos del servidor
+            serverField = new JTextField("localhost");
+            serverField.setFont(new Font("Arial", Font.PLAIN, 12));
+            portField = new JTextField("12345");
+            portField.setFont(new Font("Arial", Font.PLAIN, 12));
+
+            // Inicializar status label
+            statusLabel = new JLabel(" ", SwingConstants.CENTER);
+            statusLabel.setFont(new Font("Arial", Font.ITALIC, 11));
+            statusLabel.setForeground(Color.BLUE);
+            statusLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+
+            // Crear paneles
+            createLoginPanel();
+            createRegisterPanel();
+
+            // Configurar el diálogo
             setupDialog();
         }
 
@@ -340,34 +331,34 @@ public class MainFrame extends JFrame {
             titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
             mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-            // Panel central que contendrá ambas vistas (CardLayout para cambiar entre ellas)
+            // Panel central con CardLayout
             final JPanel centerContainer = new JPanel(new CardLayout());
 
-            // Crear ambos paneles
-            createLoginPanel();
-            createRegisterPanel();
-
-            // Agregar ambos paneles al contenedor con nombres
+            // Agregar paneles al contenedor
             centerContainer.add(loginPanel, "LOGIN");
             centerContainer.add(registerPanel, "REGISTER");
 
             mainPanel.add(centerContainer, BorderLayout.CENTER);
-
-            // Status label
-            statusLabel = new JLabel(" ", SwingConstants.CENTER);
-            statusLabel.setFont(new Font("Arial", Font.ITALIC, 11));
-            statusLabel.setForeground(Color.BLUE);
-            statusLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
             mainPanel.add(statusLabel, BorderLayout.SOUTH);
 
             add(mainPanel);
 
-            // Actualizar los botones para usar CardLayout
-          
+            // Configurar listeners para cambiar entre paneles
+            goToRegisterButton.addActionListener(e -> {
+                CardLayout cl = (CardLayout) centerContainer.getLayout();
+                cl.show(centerContainer, "REGISTER");
+                statusLabel.setText("💡 Crea tu cuenta para empezar a dibujar");
+                statusLabel.setForeground(new Color(60, 179, 113));
+                registerUsernameField.requestFocus();
+            });
 
-            goToRegisterButton.addActionListener(e -> showRegisterPanel());
-            backToLoginButton.addActionListener(e -> showLoginPanel());
-
+            backToLoginButton.addActionListener(e -> {
+                CardLayout cl = (CardLayout) centerContainer.getLayout();
+                cl.show(centerContainer, "LOGIN");
+                statusLabel.setText(" ");
+                statusLabel.setForeground(Color.BLUE);
+                loginUsernameField.requestFocus();
+            });
         }
 
         private void createLoginPanel() {
@@ -387,13 +378,9 @@ public class MainFrame extends JFrame {
             serverFields.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
             serverFields.add(new JLabel("Dirección:"));
-            serverField = new JTextField("localhost");
-            serverField.setFont(new Font("Arial", Font.PLAIN, 12));
             serverFields.add(serverField);
 
             serverFields.add(new JLabel("Puerto:"));
-            portField = new JTextField("12345");
-            portField.setFont(new Font("Arial", Font.PLAIN, 12));
             serverFields.add(portField);
 
             serverSection.add(serverFields, BorderLayout.CENTER);
@@ -430,7 +417,7 @@ public class MainFrame extends JFrame {
             // Botones
             JPanel loginButtons = new JPanel(new GridLayout(3, 1, 0, 10));
 
-            loginButton = new JButton("🔑 Iniciar Sesión");
+            JButton loginButton = new JButton("🔑 Iniciar Sesión");
             loginButton.setFont(new Font("Arial", Font.BOLD, 14));
             loginButton.setBackground(new Color(100, 149, 237));
             loginButton.setForeground(Color.WHITE);
@@ -442,9 +429,8 @@ public class MainFrame extends JFrame {
             goToRegisterButton.setBackground(new Color(60, 179, 113));
             goToRegisterButton.setForeground(Color.WHITE);
             goToRegisterButton.setFocusPainted(false);
-            // El listener se agrega en setupDialog()
 
-            cancelButton = new JButton("❌ Cancelar");
+            JButton cancelButton = new JButton("❌ Cancelar");
             cancelButton.setFont(new Font("Arial", Font.PLAIN, 12));
             cancelButton.setFocusPainted(false);
             cancelButton.addActionListener(e -> dispose());
@@ -513,7 +499,7 @@ public class MainFrame extends JFrame {
             // Botones de registro
             JPanel registerButtons = new JPanel(new GridLayout(2, 1, 0, 10));
 
-            registerButton = new JButton("✅ Registrar y Conectar");
+            JButton registerButton = new JButton("✅ Registrar y Conectar");
             registerButton.setFont(new Font("Arial", Font.BOLD, 14));
             registerButton.setBackground(new Color(60, 179, 113));
             registerButton.setForeground(Color.WHITE);
@@ -523,28 +509,11 @@ public class MainFrame extends JFrame {
             backToLoginButton = new JButton("← Volver a Iniciar Sesión");
             backToLoginButton.setFont(new Font("Arial", Font.PLAIN, 12));
             backToLoginButton.setFocusPainted(false);
-            // El listener se agrega en setupDialog()
 
             registerButtons.add(registerButton);
             registerButtons.add(backToLoginButton);
 
             registerPanel.add(registerButtons);
-        }
-
-        private void showLoginPanel() {   	
-            loginPanel.setVisible(true);
-            registerPanel.setVisible(false);
-            statusLabel.setText(" ");
-            statusLabel.setForeground(Color.BLUE);
-            loginUsernameField.requestFocus();
-        }
-
-        private void showRegisterPanel() {
-            loginPanel.setVisible(false);
-            registerPanel.setVisible(true);
-            statusLabel.setText("💡 Crea tu cuenta para empezar a dibujar");
-            statusLabel.setForeground(new Color(60, 179, 113));
-            registerUsernameField.requestFocus();
         }
 
         private void handleLogin() {
