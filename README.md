@@ -1,158 +1,214 @@
 # Proyecto: Pixel Art Colaborativo
-Este es el repositorio para el proyecto del curso Algorítmica II. El objetivo es crear una aplicación de escritorio (GUI con Swing) que funcione como un lienzo de pixel art colaborativo en tiempo real, similar a r/place pero en salas privadas y seguras.
-Equipo
-•	Tecsi Alanoca Jean Carlo
-•	Sinche Vega Moises Pedro
-•	Adrian Angel 
-•	No sé xd
-________________________________________
-# Cumplimiento de la Rúbrica
-Este proyecto fue diseñado para cumplir con los criterios de la rúbrica 2, enfocándose en la calidad de la arquitectura y las buenas prácticas sobre la cantidad de funciones.
-¡Tienes toda la razón! El formato de chat no soporta tablas. Mil disculpas.
 
-Aquí tienes la misma información de la rúbrica , pero formateada como texto simple para que puedas copiarla y pegarla sin problemas.
+Este es el repositorio del proyecto del curso **Algorítmica II**.  
+El objetivo es crear una aplicación de escritorio (GUI con Swing) que funcione como un **lienzo de pixel art colaborativo en tiempo real**, similar a *r/place*, pero en **salas privadas y seguras**.
 
-(Copia y pega desde aquí)
+---
 
-🏆 Cumplimiento de la Rúbrica
-Este proyecto fue diseñado para cumplir con los criterios de la rúbrica , enfocándose en la calidad de la arquitectura y las buenas prácticas sobre la cantidad de funciones.
+## Equipo
 
-Criterio: Uso de GitHub
+- Tecsi Alanoca Jean Carlo  
+- Sinche Vega Moises Pedro  
+- Adrián Ángel  
+- (Integrante pendiente)
 
-Implementación: Se utiliza este repositorio, siguiendo un flujo de trabajo de Ramas y Pull Requests (ver sección "Flujo de Git").
+---
 
-Criterio: Metodología (Scrum/Kanban)
+## Cumplimiento de la Rúbrica
 
-Implementación: Se utiliza un tablero Kanban (Task Pool) para la gestión de tareas. Ver sección "Metodología".
+Este proyecto fue diseñado para cumplir con los criterios de la **Rúbrica 2**, enfocándose en la **calidad de la arquitectura** y las **buenas prácticas** sobre la cantidad de funciones.
 
+### Criterio: Uso de GitHub
+- Se utiliza este repositorio, siguiendo un flujo de trabajo con ramas y Pull Requests.  
+  (Ver sección *Flujo de Trabajo con Git*)
 
-Criterio: Funcionalidades (GUI) 
+### Criterio: Metodología (Kanban)
+- Se utiliza un tablero Kanban (Task Pool) para la gestión de tareas.  
+  (Ver sección *Metodología*)
 
-Implementación:
+### Criterio: Funcionalidades (GUI)
+- Menús: `MainFrame.java` implementa una `JMenuBar` completa.  
+- Tablas/Listas: `UserListPanel.java` usa `JList` para mostrar usuarios.  
+- Layout Managers: se emplean `BorderLayout`, `GridLayout` y `BoxLayout` para organizar los paneles.
 
-Manejo de menúes: MainFrame.java implementa una JMenuBar completa.
+### Criterio: Persistencia
+- Implementada en el servidor (`server/persistence/`).  
+- `FileManager.java` usa serialización (`ObjectOutputStream`) para guardar `users.dat` y `canvas.dat`.
 
-Uso de tablas: UserListPanel.java implementa una JList (para los usuarios).
+### Criterio: Calidad de la Solución
+- Pruebas unitarias con **JUnit 5** en `src/test/java/`.  
+  Ejemplos: `AuthServiceTest.java`, `CanvasModelTest.java`.  
+- Arquitectura: Cliente-Servidor y Modelo-Vista-Controlador (MVC).  
+- Patrones de diseño:  
+  - Command (acciones de red y deshacer)  
+  - Observer (NetworkListener)  
+  - Strategy (herramientas)  
+  - Singleton (servicios)
+- Clean Code: código estructurado en paquetes claros (`mvc`, `service`, `network`, `persistence`).
 
-Layout Manager: Se usa BorderLayout (en MainFrame), GridLayout y BoxLayout (en ToolboxPanel, etc.).
+---
 
-Criterio: Persistencia
+## Funcionalidades Principales
 
-Implementación: Implementada en el Servidor (server/persistence/). FileManager.java usa Serialización (ObjectOutputStream) para guardar users.dat y canvas.dat .
+- Arquitectura Cliente-Servidor: múltiples clientes se conectan a un servidor central.  
+- Lienzo colaborativo: dibujo de píxeles en tiempo real visible por todos los usuarios conectados.  
+- Autenticación: sistema de registro e inicio de sesión con contraseñas cifradas.  
+- Herramientas de dibujo:  
+  - Lápiz (con tamaño de pincel)  
+  - Borrador  
+  - Bote de pintura (Flood Fill)  
+  - Gotero (selector de color)
+- Chat en tiempo real: panel de chat (`ChatPanel`) integrado.  
+- Lista de usuarios: panel (`UserListPanel`) que muestra quién está conectado.  
+- Persistencia y autoguardado: el servidor guarda `canvas.dat` y `users.dat` periódicamente.  
+- Consola de administrador (`ServerApp`): comandos `stats`, `users`, `save`, `clear`.
 
+---
 
-Criterio: Calidad de la Solución 
+## Tech Stack (Tecnologías Usadas)
 
-Implementación:
+| Categoría | Tecnología |
+|------------|-------------|
+| Lenguaje | Java 21 |
+| Interfaz Gráfica | Swing |
+| Gestión de Proyecto | Maven |
+| Networking | java.net.Socket (TCP) |
+| Hilos | Thread y SwingWorker |
+| Pruebas | JUnit 5 |
+| Look & Feel (opcional) | FlatLaf |
 
-Test automatizada: Se implementan pruebas unitarias con JUnit 5 en la carpeta src/test/java/ (ej. AuthServiceTest.java, CanvasModelTest.java).
+---
 
-Patrones de arquitectura: Se usa una arquitectura Cliente-Servidor y Modelo-Vista-Controlador (MVC) en el cliente.
+## Metodología (Kanban)
 
-Patrones de diseño: Se usa Patrón Command (para la red y deshacer), Patrón Observer (NetworkListener), Patrón Strategy (herramientas) y Singleton (servicios).
+El proyecto se gestiona mediante un tablero **Kanban** (Task Pool) en GitHub Projects.
 
-Clean code: El código está separado en paquetes claros (MVC, service, network, persistence).
-________________________________________
-# Funcionalidades Principales
-•	Arquitectura Cliente-Servidor: Múltiples clientes pueden conectarse a un servidor central.
-•	Lienzo Colaborativo: Dibujo de píxeles en tiempo real. Lo que un usuario dibuja, los demás lo ven al instante.
-•	Autenticación: Sistema de Registro y Login de usuarios (con hashing de contraseñas) 9.
-•	Herramientas de Dibujo:
-o	Lápiz (con tamaño de pincel).
-o	Borrador.
-o	Bote de Pintura (Flood Fill).
-o	Gotero (Selector de color).
-•	Chat en Tiempo Real: Un panel de chat (ChatPanel) 14 para que los usuarios conectados se comuniquen.
-•	Lista de Usuarios: Un panel (UserListPanel) 15 que muestra quién está conectado (cumpliendo el requisito de JTable).
-•	Persistencia y Auto-Guardado: El servidor guarda el lienzo (canvas.dat) 16y los usuarios (users.dat) 17, e incluye una función de auto-guardado18181818.
-•	Consola de Administrador: El ServerApp 19 tiene su propia consola de comandos (stats, users, save, clear).
-________________________________________
-# Tech Stack (Tecnologías Usadas)
-•	Lenguaje: Java 21
-•	GUI: Java Swing
-•	Gestión de Proyecto: Maven (para pom.xml y dependencias)
-•	Networking: java.net.Socket (Sockets TCP)
-•	Hilos: Thread (para el servidor) y SwingWorker (para el cliente)
-•	Pruebas: JUnit 5
-•	(Opcional) Look & Feel: FlatLaf (para la GUI moderna)
-________________________________________
-# Metodología (Kanban)
-Este proyecto se gestiona usando un método Kanban (Task Pool). Todas las tareas (features, bugs, tests) se añaden a un tablero de proyecto.
-•	Tablero del Proyecto: [Enlace a tu GitHub Project Board]
-El flujo es simple:
-1.	Un miembro del equipo va a la columna To Do.
-2.	Elige una tarea y la mueve a In Progress, asignándosela a sí mismo.
-3.	Crea una rama (feature/...) para esa tarea.
-4.	Al terminar, crea un Pull Request para fusionar a main.
-5.	Una vez aprobado, la tarea se mueve a Done.
-________________________________________
-# Empezando (Guía Rápida)
-(Esta sección de tu README 20 está perfecta, la dejamos igual)
-Sigue estos pasos para tener el proyecto corriendo en tu máquina.
-1. Prerrequisitos
-•	Git: Descargar Git
-•	Java JDK 21: Todos en el equipo debemos usar JDK 21 para evitar problemas. Ya lo configuramos en el pom.xml.
-2. Clonar (Descargar) el Proyecto
-Abre una terminal (CMD, PowerShell, Git Bash) y clona el repositorio:
-Bash
+**Flujo de trabajo:**
+1. Un miembro elige una tarea en *To Do*.  
+2. La mueve a *In Progress* y se asigna.  
+3. Crea una rama (`feature/...`).  
+4. Realiza cambios, commits y push.  
+5. Crea un Pull Request.  
+6. Una vez aprobado, se fusiona y se mueve a *Done*.
+
+**Tablero del proyecto:**  
+[Enlace a tu GitHub Project Board]
+
+---
+
+## Empezando (Guía Rápida)
+
+### 1. Prerrequisitos
+- **Git:** [Descargar aquí](https://git-scm.com/downloads)  
+- **Java JDK 21:** todos los miembros deben usar la misma versión (configurada en `pom.xml`).
+
+### 2. Clonar el Proyecto
+```bash
 git clone https://github.com/tu-usuario/PixelArtColaborativo.git
-cd PIXEL_ART_COLABORATIVO
-3. Importar el Proyecto (¡Importante!)
-Este proyecto usa Maven (el archivo pom.xml). No uses "Abrir Proyecto", usa siempre la opción de "Importar como proyecto Maven".
-•	Para Eclipse:
-o	Ve a File > Import...
-o	Elige Maven > Existing Maven Projects.
-o	Busca la carpeta que clonaste.
-o	Eclipse leerá el pom.xml y lo configurará todo automáticamente.
-•	Para IntelliJ IDEA:
-o	Abre IntelliJ. En la pantalla de bienvenida, haz clic en "Open".
-o	Navega y selecciona la carpeta raíz que clonaste (la que contiene el archivo pom.xml).
-o	IntelliJ te preguntará: "Trust and Open Maven Project?". Haz clic en "Trust Project".
-o	IntelliJ leerá el pom.xml y configurará todo automáticamente.
-•	Para VSCode:
-o	Abre la carpeta que clonaste (File > Open Folder...).
-o	Asegúrate de tener el "Extension Pack for Java" de Microsoft.
-o	La extensión detectará el pom.xml y configurará el proyecto solo.
-________________________________________
-# Cómo Ejecutar el Proyecto
-(Esta sección 21 también está perfecta)
-Para probar la aplicación completa, necesitas ejecutar AMBOS programas:
-1.	Paso 1: Iniciar el Servidor
-o	En tu IDE, busca y ejecuta el main de la clase ServerApp.java.
-o	Verás un mensaje en la consola indicando que el servidor está escuchando.
-2.	Paso 2: Iniciar el Cliente
-o	SIN CERRAR EL SERVIDOR, busca y ejecuta el main de la clase ClientApp.java.
-o	Esto abrirá la ventana de la GUI.
-o	Puedes ejecutar varios clientes en tu propia máquina para probar.
-________________________________________
-# Flujo de Trabajo con Git (¡OBLIGATORIO!)
-(Esta sección 22222222 también está perfecta)
-Para evitar conflictos y caos, seguiremos este flujo de trabajo. NUNCA hagáis push directo a la rama main.
-1. Actualiza tu main
-Antes de empezar a trabajar, asegúrate de tener la última versión del código:
-Bash
+cd PixelArtColaborativo
+
+### 3. Importar el Proyecto (Maven)
+
+#### 🧩 En Eclipse
+1. File > Import...
+2. Selecciona Maven > Existing Maven Projects  
+3. Elige la carpeta del proyecto.  
+4. Espera a que se carguen las dependencias de `pom.xml`.
+
+#### 💡 En IntelliJ IDEA
+1. File > Open...  
+2. Selecciona la carpeta raíz (la que contiene `pom.xml`).  
+3. Acepta el mensaje “Trust Project”.  
+4. IntelliJ configurará automáticamente las dependencias.
+
+#### ⚙️ En VSCode
+1. File > Open Folder...  
+2. Instala la extensión Extension Pack for Java.  
+3. VSCode detectará `pom.xml` y configurará el proyecto automáticamente.
+
+---
+
+## 🚀 Cómo Ejecutar el Proyecto
+
+### 1. Iniciar el Servidor
+- Ejecuta la clase `ServerApp.java`.  
+- Espera el mensaje:
+  ```
+  Servidor escuchando en el puerto 12345...
+  ```
+
+### 2. Iniciar el Cliente
+- Sin cerrar el servidor, ejecuta la clase `ClientApp.java`.  
+- Se abrirá la interfaz gráfica.  
+- Puedes abrir múltiples clientes para probar la colaboración en tiempo real.
+
+---
+
+## 🧭 Flujo de Trabajo con Git (Obligatorio)
+
+> ⚠️ Nunca hagas push directo a main.
+
+### 1. Actualiza tu rama principal
+```bash
 git checkout main
 git pull origin main
-2. Crea tu propia Rama (Branch)
-Nombra tu rama según lo que vas a hacer (ej. feature/login-gui, bug/arreglo-chat).
-Bash
-git checkout -b nombre-de-tu-rama
-3. Trabaja y Guarda tus Cambios (Commit & Push)
-Haz tu magia. Cuando tengas un progreso que quieras guardar:
-Bash
-# 1. Añade tus archivos al "área de espera"
+```
+
+### 2. Crea una nueva rama
+```bash
+git checkout -b feature/nueva-funcion
+```
+
+### 3. Guarda y sube tus cambios
+```bash
 git add .
+git commit -m "Agregada nueva herramienta de dibujo"
+git push -u origin feature/nueva-funcion
+```
 
-# 2. Guarda una "foto" de tus cambios con un mensaje claro
-git commit -m "He añadido el botón de login"
+### 4. Crea un Pull Request
+1. Ve al repositorio en GitHub.  
+2. Crea un Pull Request (comparando tu rama con main).  
+3. Asigna revisores y espera aprobación.  
+4. Una vez aprobado, realiza el merge.
 
-# 3. Sube tu rama a GitHub
-git push -u origin nombre-de-tu-rama
-4. Combina tu Rama (Pull Request)
-Cuando tu funcionalidad esté terminada y probada:
-1.	Ve a la página del repositorio en GitHub.
-2.	Crea un "Pull Request" (PR) comparando tu rama con main.
-3.	Asigna a tus compañeros como "Reviewers".
-4.	¡Revisen el código! (Esto es parte de la rúbrica).
-5.	Una vez aprobado, hagan clic en "Merge pull request".
+---
+
+## 🧱 Estructura del Proyecto
+```
+PixelArtColaborativo/
+├── src/
+│   ├── main/java/
+│   │   ├── client/
+│   │   ├── server/
+│   │   ├── model/
+│   │   ├── service/
+│   │   ├── network/
+│   │   └── persistence/
+│   └── test/java/
+│       └── tests/...
+├── pom.xml
+└── README.md
+```
+
+---
+
+## 🧩 Próximas Mejoras (Backlog)
+
+- [ ] Implementar salas privadas con contraseña  
+- [ ] Agregar capas de dibujo  
+- [ ] Exportar lienzo como imagen (.png)  
+- [ ] Sistema de roles (admin, invitado)  
+
+---
+
+## 🪪 Licencia
+
+Proyecto desarrollado con fines académicos para el curso **Algorítmica II**.  
+Uso libre para aprendizaje y contribuciones no comerciales.
+
+---
+
+✅ **Nota:**  
+Puedes copiar este bloque tal cual, pegarlo en tu archivo `README.md`, y al previsualizarlo en GitHub o VSCode, **todo el formato se verá igual que aquí** — listas, títulos, bloques de código, y emojis incluidos.
 
