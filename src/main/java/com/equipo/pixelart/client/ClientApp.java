@@ -1,12 +1,18 @@
 package com.equipo.pixelart.client;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
 import com.equipo.pixelart.client.controller.CanvasController;
 import com.equipo.pixelart.client.controller.NetworkController;
 import com.equipo.pixelart.client.controller.ToolboxController;
 import com.equipo.pixelart.client.model.CanvasModel;
-import com.equipo.pixelart.client.view.*;
-
-import javax.swing.*;
+import com.equipo.pixelart.client.view.CanvasPanel;
+import com.equipo.pixelart.client.view.ChatPanel;
+import com.equipo.pixelart.client.view.MainFrame;
+import com.equipo.pixelart.client.view.ToolboxPanel;
+import com.equipo.pixelart.client.view.UserListPanel;
 
 /**
  * Aplicación Principal del Cliente
@@ -165,14 +171,21 @@ public class ClientApp {
 
                     String errorMsg = message;
                     if (message.contains("incorrectos") || message.contains("no existe")) {
-                        errorMsg = "Usuario o contraseña incorrectos.\n\n" +
-                                "Si no tienes cuenta, haz clic en 'Registrarse'.";
+                        errorMsg = """
+                        Usuario o contraseña incorrectos.
+
+                        Si no tienes cuenta, haz clic en 'Registrarse'.
+                        """;
                     } else if (message.contains("ya existe")) {
-                        errorMsg = "Este usuario ya existe.\n\n" +
-                                "Por favor usa otro nombre de usuario o inicia sesión.";
+                        errorMsg = """
+                                   Este usuario ya existe.
+                                   
+                                   Por favor usa otro nombre de usuario o inicia sesi\u00f3n.""";
                     } else if (message.contains("ya conectado")) {
-                        errorMsg = "Este usuario ya está conectado.\n\n" +
-                                "Por favor cierra la otra sesión primero.";
+                        errorMsg = """
+                                   Este usuario ya est\u00e1 conectado.
+                                   
+                                   Por favor cierra la otra sesi\u00f3n primero.""";
                     }
 
                     JOptionPane.showMessageDialog(mainFrame,
@@ -265,13 +278,16 @@ public class ClientApp {
 
         if (!connected) {
             JOptionPane.showMessageDialog(mainFrame,
-                    "No se pudo conectar al servidor.\n\n" +
-                            "Asegúrate de que:\n" +
-                            "1. El servidor esté ejecutándose (ServerApp)\n" +
-                            "2. La dirección y puerto sean correctos\n" +
-                            "3. No haya un firewall bloqueando la conexión",
-                    "Error de Conexión",
-                    JOptionPane.ERROR_MESSAGE);
+        """
+        No se pudo conectar al servidor.
+
+        Asegúrate de que:
+        1. El servidor esté ejecutándose (ServerApp)
+        2. La dirección y puerto sean correctos
+        3. No haya un firewall bloqueando la conexión
+        """,
+        "Error de Conexión",
+        JOptionPane.ERROR_MESSAGE);
             chatPanel.addSystemMessage("✗ Error: No se pudo conectar al servidor");
             return;
         }
@@ -355,7 +371,7 @@ public class ClientApp {
         // Configurar Look and Feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException e) {
             System.err.println("No se pudo establecer el Look and Feel: " + e.getMessage());
         }
 
