@@ -1,7 +1,21 @@
 package com.equipo.pixelart.client.view;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 
 /**
  * Panel de Herramientas - Contiene todas las herramientas de dibujo
@@ -228,10 +242,10 @@ public class ToolboxPanel extends JPanel {
         // Marcar el seleccionado
         JButton selectedButton = null;
         switch (toolName) {
-            case "pencil": selectedButton = pencilButton; break;
-            case "eraser": selectedButton = eraserButton; break;
-            case "bucket": selectedButton = bucketButton; break;
-            case "eyedropper": selectedButton = eyedropperButton; break;
+            case "pencil" -> selectedButton = pencilButton;
+            case "eraser" -> selectedButton = eraserButton;
+            case "bucket" -> selectedButton = bucketButton;
+            case "eyedropper" -> selectedButton = eyedropperButton;
         }
 
         if (selectedButton != null) {
