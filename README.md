@@ -9,8 +9,8 @@ El objetivo es crear una aplicación de escritorio (GUI con Swing) que funcione 
 
 - Tecsi Alanoca Jean Carlo  
 - Sinche Vega Moises Pedro  
-- Adrián Ángel  
-- (Integrante pendiente)
+- Casimiro Quino Adrián Ángel  
+- Ramirez Aranibar Anthony Denilson
 
 ---
 
