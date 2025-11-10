@@ -1,7 +1,22 @@
 package com.equipo.pixelart.client.view;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.net.URL;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 
 /**
  * Panel de Herramientas - Contiene todas las herramientas de dibujo
@@ -198,6 +213,16 @@ public class ToolboxPanel extends JPanel {
         panel.add(loadButton);
 
         return panel;
+    }
+
+    private ImageIcon cargarIcono(String path) {
+    URL url = getClass().getResource("/icons/" + path);
+    if (url != null) {
+        return new ImageIcon(url);
+    } else {
+        System.err.println("No se pudo encontrar el ícono: " + path);
+        return null; // Devuelve null si no se encuentra
+    }
     }
 
     /**
