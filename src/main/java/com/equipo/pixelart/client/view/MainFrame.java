@@ -174,12 +174,12 @@ public class MainFrame extends JFrame {
         String message = """
                 Pixel Art Colaborativo
                 
-                Versión 1.0
+                Versión 2.0
                 
                 Una aplicación de dibujo colaborativo
                 en tiempo real con Java Swing.
                 
-                © 2024 - Equipo de Desarrollo""";
+                © 2025 - Equipo de Desarrollo""";
 
         JOptionPane.showMessageDialog(
                 this,
@@ -420,14 +420,14 @@ public class MainFrame extends JFrame {
             JButton loginButton = new JButton("🔑 Iniciar Sesión");
             loginButton.setFont(new Font("Arial", Font.BOLD, 14));
             loginButton.setBackground(new Color(100, 149, 237));
-            loginButton.setForeground(Color.WHITE);
+            loginButton.setForeground(Color.BLACK);
             loginButton.setFocusPainted(false);
             loginButton.addActionListener(e -> handleLogin());
 
             goToRegisterButton = new JButton("📝 Crear Nueva Cuenta");
-            goToRegisterButton.setFont(new Font("Arial", Font.PLAIN, 13));
+            goToRegisterButton.setFont(new Font("Arial", Font.BOLD, 13));
             goToRegisterButton.setBackground(new Color(60, 179, 113));
-            goToRegisterButton.setForeground(Color.WHITE);
+            goToRegisterButton.setForeground(Color.BLACK);
             goToRegisterButton.setFocusPainted(false);
 
             JButton cancelButton = new JButton("❌ Cancelar");
