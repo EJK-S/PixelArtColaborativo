@@ -1,10 +1,5 @@
 package com.equipo.pixelart.server;
 
-import com.equipo.pixelart.server.network.ClientHandler;
-import com.equipo.pixelart.server.persistence.FileManager;
-import com.equipo.pixelart.server.service.AuthService;
-import com.equipo.pixelart.server.service.CanvasService;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,6 +7,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.equipo.pixelart.server.network.ClientHandler;
+import com.equipo.pixelart.server.persistence.FileManager;
+import com.equipo.pixelart.server.service.AuthService;
+import com.equipo.pixelart.server.service.CanvasService;
 
 /**
  * Aplicación del Servidor
@@ -33,7 +33,7 @@ public class ServerApp {
     private CanvasService canvasService;
 
     private boolean running;
-    private int port;
+    private final int port;
 
     /**
      * Constructor
@@ -172,37 +172,19 @@ public class ServerApp {
      */
     private void processCommand(String command) {
         switch (command) {
-            case "stats":
-                mostrarEstadisticas();
-                break;
-
-            case "users":
-                listarUsuarios();
-                break;
-
-            case "save":
-                guardarDatos();
-                break;
-
-            case "clear":
-                limpiarCanvas();
-                break;
-
-            case "help":
-                mostrarAyuda();
-                break;
-
-            case "exit":
-                detener();
-                break;
-
-            case "":
+            case "stats" -> mostrarEstadisticas();
+            case "users" -> listarUsuarios();
+            case "save" -> guardarDatos();
+            case "clear" -> limpiarCanvas();
+            case "help" -> mostrarAyuda();
+            case "exit" -> detener();
+            case "" -> {
                 // Ignorar líneas vacías
-                break;
-
-            default:
+            }
+            default -> {
                 System.out.println("Comando desconocido: " + command);
                 System.out.println("Escribe 'help' para ver los comandos disponibles");
+            }
         }
     }
 

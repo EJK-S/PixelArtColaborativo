@@ -1,11 +1,12 @@
 package com.equipo.pixelart.client.controller;
 
-import com.equipo.pixelart.client.model.CanvasModel;
-import com.equipo.pixelart.client.view.CanvasPanel;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import com.equipo.pixelart.client.model.CanvasModel;
+import com.equipo.pixelart.client.view.CanvasPanel;
 
 /**
  * Controlador del Canvas - Gestiona las interacciones de dibujo del usuario
@@ -92,6 +93,7 @@ public class CanvasController {
     /**
      * Maneja el evento de soltar el mouse
      */
+    @SuppressWarnings("unused")
     private void handleMouseReleased(MouseEvent e) {
         isDragging = false;
         lastPoint = null;
@@ -106,12 +108,8 @@ public class CanvasController {
         if (gridPoint == null) return;
 
         switch (currentTool) {
-            case "bucket":
-                floodFill(gridPoint);
-                break;
-            case "eyedropper":
-                pickColor(gridPoint);
-                break;
+            case "bucket" -> floodFill(gridPoint);
+            case "eyedropper" -> pickColor(gridPoint);
         }
     }
 
