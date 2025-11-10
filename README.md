@@ -109,26 +109,26 @@ cd PixelArtColaborativo
 
 ### 3. Importar el Proyecto (Maven)
 
-#### 🧩 En Eclipse
+#### En Eclipse
 1. File > Import...
 2. Selecciona Maven > Existing Maven Projects  
 3. Elige la carpeta del proyecto.  
 4. Espera a que se carguen las dependencias de `pom.xml`.
 
-#### 💡 En IntelliJ IDEA
+#### En IntelliJ IDEA
 1. File > Open...  
 2. Selecciona la carpeta raíz (la que contiene `pom.xml`).  
 3. Acepta el mensaje “Trust Project”.  
 4. IntelliJ configurará automáticamente las dependencias.
 
-#### ⚙️ En VSCode
+#### En VSCode
 1. File > Open Folder...  
 2. Instala la extensión Extension Pack for Java.  
 3. VSCode detectará `pom.xml` y configurará el proyecto automáticamente.
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto
+## Cómo Ejecutar el Proyecto
 
 ### 1. Iniciar el Servidor
 - Ejecuta la clase `ServerApp.java`.  
@@ -144,9 +144,9 @@ cd PixelArtColaborativo
 
 ---
 
-## 🧭 Flujo de Trabajo con Git (Obligatorio)
+## Flujo de Trabajo con Git (Obligatorio)
 
-> ⚠️ Nunca hagas push directo a main.
+> Nunca hagas push directo a main.
 
 ### 1. Actualiza tu rama principal
 ```bash
@@ -174,7 +174,7 @@ git push -u origin feature/nueva-funcion
 
 ---
 
-## 🧱 Estructura del Proyecto
+## Estructura del Proyecto
 ```
 PixelArtColaborativo/
 ├── src/
@@ -193,7 +193,7 @@ PixelArtColaborativo/
 
 ---
 
-## 🧩 Próximas Mejoras (Backlog)
+## Próximas Mejoras (Backlog)
 
 - [ ] Implementar salas privadas con contraseña  
 - [ ] Agregar capas de dibujo  
@@ -202,13 +202,7 @@ PixelArtColaborativo/
 
 ---
 
-## 🪪 Licencia
+## Licencia
 
 Proyecto desarrollado con fines académicos para el curso **Algorítmica II**.  
 Uso libre para aprendizaje y contribuciones no comerciales.
-
----
-
-✅ **Nota:**  
-Puedes copiar este bloque tal cual, pegarlo en tu archivo `README.md`, y al previsualizarlo en GitHub o VSCode, **todo el formato se verá igual que aquí** — listas, títulos, bloques de código, y emojis incluidos.
-
