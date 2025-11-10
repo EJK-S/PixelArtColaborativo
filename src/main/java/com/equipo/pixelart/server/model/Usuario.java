@@ -1,39 +1,90 @@
-// En: com.equipo.pixelart.server.model.Usuario.java
-
 package com.equipo.pixelart.server.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.Objects;
 
-public class Usuario {
+/**
+ * Modelo de Usuario
+ * Representa un usuario del sistema con sus credenciales
+ */
+public class Usuario implements Serializable {
 
-    // 1. Atributos que SÍ necesitamos
+    private static final long serialVersionUID = 1L;
+
     private String username;
-    private String password;
-    private List<String> amigos;
+    private String passwordHash;
+    private long fechaCreacion;
+    private long ultimoAcceso;
 
-    // --- (El resto de campos como games, puntuaciones, estado, etc.
-    // ---  se han eliminado porque no pertenecen a este proyecto) ---
-
-
-    // 2. Constructor (¡Importante!)
-    // Inicializa la lista de amigos para evitar errores
-    public Usuario() {
-        this.amigos = new ArrayList<>();
-        
-        // --- (El resto de inicializaciones de games, puntuaciones, etc.
-        // ---  se han eliminado) ---
-    }
-    
-    // 3. Constructor sobrecargado
-    public Usuario(String username, String password) {
-        this(); // Llama al constructor de arriba para inicializar la lista
+    /**
+     * Constructor completo
+     */
+    public Usuario(String username, String passwordHash) {
         this.username = username;
-        this.password = password;
+        this.passwordHash = passwordHash;
+        this.fechaCreacion = System.currentTimeMillis();
+        this.ultimoAcceso = System.currentTimeMillis();
     }
 
-    // 4. Getters y Setters que SÍ necesitamos
-    
+    /**
+     * Constructor por defecto (necesario para serialización)
+     */
+    public Usuario() {
+        this.fechaCreacion = System.currentTimeMillis();
+        this.ultimoAcceso = System.currentTimeMillis();
+    }
+
+    /**
+     * Verifica si la contraseña es correcta
+     */
+    public boolean verificarPassword(String password) {
+        return hashPassword(password).equals(this.passwordHash);
+    }
+
+    /**
+     * Actualiza el último acceso
+     */
+    public void actualizarAcceso() {
+        this.ultimoAcceso = System.currentTimeMillis();
+    }
+
+    /**
+     * Hash simple de contraseña (en producción usar BCrypt)
+     */
+    public static String hashPassword(String password) {
+        // Para desarrollo usamos un hash simple
+        // En producción deberías usar BCrypt o similar
+        int hash = 7;
+        for (int i = 0; i < password.length(); i++) {
+            hash = hash * 31 + password.charAt(i);
+        }
+        return Integer.toHexString(hash);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(username, usuario.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username);
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "username='" + username + '\'' +
+                ", fechaCreacion=" + fechaCreacion +
+                ", ultimoAcceso=" + ultimoAcceso +
+                '}';
+    }
+
+    // ==================== GETTERS Y SETTERS ====================
+
     public String getUsername() {
         return username;
     }
@@ -42,22 +93,27 @@ public class Usuario {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
-    public List<String> getAmigos() {
-        return amigos;
+    public long getFechaCreacion() {
+        return fechaCreacion;
     }
 
-    public void setAmigos(List<String> amigos) {
-        this.amigos = amigos;
+    public void setFechaCreacion(long fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
     }
 
-    // --- (El resto de Getters y Setters de games, puntuaciones, etc.
-    // ---  se han eliminado) ---
+    public long getUltimoAcceso() {
+        return ultimoAcceso;
+    }
+
+    public void setUltimoAcceso(long ultimoAcceso) {
+        this.ultimoAcceso = ultimoAcceso;
+    }
 }
