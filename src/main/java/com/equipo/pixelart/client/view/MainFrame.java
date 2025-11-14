@@ -4,13 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.Serial;
 
 /**
  * Ventana Principal - Contiene toda la interfaz de usuario del cliente
  */
 public class MainFrame extends JFrame {
-    @Serial
     private static final long serialVersionUID = 1L;
 
     // Items de menú
@@ -174,12 +172,12 @@ public class MainFrame extends JFrame {
         String message = """
                 Pixel Art Colaborativo
                 
-                Versión 2.0
+                Versión 1.0
                 
                 Una aplicación de dibujo colaborativo
                 en tiempo real con Java Swing.
                 
-                © 2025 - Equipo de Desarrollo""";
+                © 2024 - Equipo de Desarrollo""";
 
         JOptionPane.showMessageDialog(
                 this,
@@ -268,11 +266,10 @@ public class MainFrame extends JFrame {
      * Diálogo de Conexión con dos pantallas separadas
      */
     public static class ConnectionDialog extends JDialog {
-        @Serial
         private static final long serialVersionUID = 1L;
 
-        private final JTextField serverField;
-        private final JTextField portField;
+        private JTextField serverField;
+        private JTextField portField;
 
         // Panel de Login
         private JPanel loginPanel;
@@ -285,9 +282,11 @@ public class MainFrame extends JFrame {
         private JPasswordField registerPasswordField;
         private JPasswordField registerConfirmPasswordField;
 
+        private JButton loginButton;
         private JButton goToRegisterButton;
+        private JButton registerButton;
         private JButton backToLoginButton;
-        private final JLabel statusLabel;
+        private JLabel statusLabel;
 
         private boolean accepted = false;
         private boolean isRegister = false;
@@ -316,7 +315,7 @@ public class MainFrame extends JFrame {
         }
 
         private void setupDialog() {
-            setSize(450, 450);
+            setSize(500, 550);
             setLocationRelativeTo(getParent());
             setResizable(false);
 
@@ -325,7 +324,7 @@ public class MainFrame extends JFrame {
             mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
             // Título
-            JLabel titleLabel = new JLabel("🎨 Pixel Art Colaborativo", SwingConstants.CENTER);
+            JLabel titleLabel = new JLabel("Pixel Art Colaborativo", SwingConstants.CENTER);
             titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
             titleLabel.setForeground(new Color(100, 149, 237));
             titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
@@ -347,7 +346,7 @@ public class MainFrame extends JFrame {
             goToRegisterButton.addActionListener(e -> {
                 CardLayout cl = (CardLayout) centerContainer.getLayout();
                 cl.show(centerContainer, "REGISTER");
-                statusLabel.setText("💡 Crea tu cuenta para empezar a dibujar");
+                statusLabel.setText("Crea tu cuenta para empezar a dibujar");
                 statusLabel.setForeground(new Color(60, 179, 113));
                 registerUsernameField.requestFocus();
             });
@@ -369,7 +368,7 @@ public class MainFrame extends JFrame {
             JPanel serverSection = new JPanel(new BorderLayout(5, 5));
             serverSection.setBorder(BorderFactory.createTitledBorder(
                     BorderFactory.createLineBorder(new Color(100, 149, 237), 2),
-                    "🖥️ Servidor",
+                    "Configuracion del Servidor",
                     0, 0,
                     new Font("Arial", Font.BOLD, 12)
             ));
@@ -377,13 +376,26 @@ public class MainFrame extends JFrame {
             JPanel serverFields = new JPanel(new GridLayout(2, 2, 10, 10));
             serverFields.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            serverFields.add(new JLabel("Dirección:"));
+            serverFields.add(new JLabel("Direccion IP:"));
             serverFields.add(serverField);
 
             serverFields.add(new JLabel("Puerto:"));
             serverFields.add(portField);
 
             serverSection.add(serverFields, BorderLayout.CENTER);
+
+            // Panel de ayuda con ejemplos
+            JPanel helpPanel = new JPanel(new BorderLayout());
+            helpPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            JLabel helpLabel = new JLabel("<html><small><b>Ejemplos:</b><br>" +
+                    "• <b>localhost</b> (mismo equipo)<br>" +
+                    "• <b>192.168.1.100</b> (red local)<br>" +
+                    "Pide la IP al host del servidor (comando: network)</small></html>");
+            helpLabel.setFont(new Font("Arial", Font.PLAIN, 10));
+            helpLabel.setForeground(new Color(100, 100, 100));
+            helpPanel.add(helpLabel, BorderLayout.CENTER);
+            serverSection.add(helpPanel, BorderLayout.SOUTH);
+
             loginPanel.add(serverSection);
             loginPanel.add(Box.createVerticalStrut(15));
 
@@ -391,7 +403,7 @@ public class MainFrame extends JFrame {
             JPanel loginSection = new JPanel(new BorderLayout(5, 5));
             loginSection.setBorder(BorderFactory.createTitledBorder(
                     BorderFactory.createLineBorder(new Color(100, 149, 237), 2),
-                    "🔐 Iniciar Sesión",
+                    "Iniciar Sesion",
                     0, 0,
                     new Font("Arial", Font.BOLD, 12)
             ));
@@ -404,7 +416,7 @@ public class MainFrame extends JFrame {
             loginUsernameField.setFont(new Font("Arial", Font.PLAIN, 14));
             loginFields.add(loginUsernameField);
 
-            loginFields.add(new JLabel("Contraseña:"));
+            loginFields.add(new JLabel("Contrasena:"));
             loginPasswordField = new JPasswordField();
             loginPasswordField.setFont(new Font("Arial", Font.PLAIN, 14));
             loginPasswordField.addActionListener(e -> handleLogin());
@@ -412,34 +424,41 @@ public class MainFrame extends JFrame {
 
             loginSection.add(loginFields, BorderLayout.CENTER);
             loginPanel.add(loginSection);
-            loginPanel.add(Box.createVerticalStrut(15));
+            loginPanel.add(Box.createVerticalStrut(20));
 
-            // Botones
-            JPanel loginButtons = new JPanel(new GridLayout(3, 1, 0, 10));
+            // Botones de login en un panel horizontal
+            JPanel loginButtonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
 
-            JButton loginButton = new JButton("🔑 Iniciar Sesión");
-            loginButton.setFont(new Font("Arial", Font.BOLD, 14));
+            loginButton = new JButton("Iniciar Sesion");
+            loginButton.setFont(new Font("Arial", Font.BOLD, 13));
             loginButton.setBackground(new Color(100, 149, 237));
             loginButton.setForeground(Color.BLACK);
             loginButton.setFocusPainted(false);
+            loginButton.setPreferredSize(new Dimension(180, 40));
             loginButton.addActionListener(e -> handleLogin());
+            loginButtonsPanel.add(loginButton);
 
-            goToRegisterButton = new JButton("📝 Crear Nueva Cuenta");
-            goToRegisterButton.setFont(new Font("Arial", Font.BOLD, 13));
+            goToRegisterButton = new JButton("Crear Cuenta");
+            goToRegisterButton.setFont(new Font("Arial", Font.PLAIN, 13));
             goToRegisterButton.setBackground(new Color(60, 179, 113));
             goToRegisterButton.setForeground(Color.BLACK);
             goToRegisterButton.setFocusPainted(false);
+            goToRegisterButton.setPreferredSize(new Dimension(180, 40));
+            loginButtonsPanel.add(goToRegisterButton);
 
-            JButton cancelButton = new JButton("❌ Cancelar");
-            cancelButton.setFont(new Font("Arial", Font.PLAIN, 12));
+            loginPanel.add(loginButtonsPanel);
+            loginPanel.add(Box.createVerticalStrut(10));
+
+            // Botón cancelar centrado
+            JPanel cancelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            JButton cancelButton = new JButton("Cancelar");
+            cancelButton.setFont(new Font("Arial", Font.PLAIN, 11));
             cancelButton.setFocusPainted(false);
+            cancelButton.setPreferredSize(new Dimension(120, 30));
             cancelButton.addActionListener(e -> dispose());
+            cancelPanel.add(cancelButton);
 
-            loginButtons.add(loginButton);
-            loginButtons.add(goToRegisterButton);
-            loginButtons.add(cancelButton);
-
-            loginPanel.add(loginButtons);
+            loginPanel.add(cancelPanel);
         }
 
         private void createRegisterPanel() {
@@ -450,7 +469,7 @@ public class MainFrame extends JFrame {
             JPanel registerSection = new JPanel(new BorderLayout(5, 5));
             registerSection.setBorder(BorderFactory.createTitledBorder(
                     BorderFactory.createLineBorder(new Color(60, 179, 113), 2),
-                    "📝 Registro de Nuevo Usuario",
+                    "Registro de Nuevo Usuario",
                     0, 0,
                     new Font("Arial", Font.BOLD, 12)
             ));
@@ -461,21 +480,21 @@ public class MainFrame extends JFrame {
             JLabel regUserLabel = new JLabel("Usuario:");
             regUserLabel.setFont(new Font("Arial", Font.BOLD, 12));
             registerFields.add(regUserLabel);
-            registerUsernameField = new JTextField();
+            registerUsernameField = new JTextField(12);
             registerUsernameField.setFont(new Font("Arial", Font.PLAIN, 14));
             registerFields.add(registerUsernameField);
 
             JLabel regPassLabel = new JLabel("Contraseña:");
             regPassLabel.setFont(new Font("Arial", Font.BOLD, 12));
             registerFields.add(regPassLabel);
-            registerPasswordField = new JPasswordField();
+            registerPasswordField = new JPasswordField(12);
             registerPasswordField.setFont(new Font("Arial", Font.PLAIN, 14));
             registerFields.add(registerPasswordField);
 
             JLabel regConfirmLabel = new JLabel("Confirmar:");
             regConfirmLabel.setFont(new Font("Arial", Font.BOLD, 12));
             registerFields.add(regConfirmLabel);
-            registerConfirmPasswordField = new JPasswordField();
+            registerConfirmPasswordField = new JPasswordField(12);
             registerConfirmPasswordField.setFont(new Font("Arial", Font.PLAIN, 14));
             registerConfirmPasswordField.addActionListener(e -> handleRegister());
             registerFields.add(registerConfirmPasswordField);
@@ -485,9 +504,9 @@ public class MainFrame extends JFrame {
             // Info panel
             JPanel infoPanel = new JPanel(new BorderLayout());
             infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            JLabel infoLabel = new JLabel("<html><center>💡 <b>Requisitos:</b><br>" +
-                    "• Mínimo 3 caracteres<br>" +
-                    "• Las contraseñas deben coincidir</center></html>");
+            JLabel infoLabel = new JLabel("<html><center><b>Requisitos:</b><br>" +
+                    "Minimo 3 caracteres<br>" +
+                    "Las contrasenas deben coincidir</center></html>");
             infoLabel.setFont(new Font("Arial", Font.PLAIN, 11));
             infoLabel.setForeground(new Color(100, 100, 100));
             infoPanel.add(infoLabel, BorderLayout.CENTER);
@@ -499,14 +518,14 @@ public class MainFrame extends JFrame {
             // Botones de registro
             JPanel registerButtons = new JPanel(new GridLayout(2, 1, 0, 10));
 
-            JButton registerButton = new JButton("✅ Registrar y Conectar");
+            registerButton = new JButton("Registrar y Conectar");
             registerButton.setFont(new Font("Arial", Font.BOLD, 14));
             registerButton.setBackground(new Color(60, 179, 113));
             registerButton.setForeground(Color.WHITE);
             registerButton.setFocusPainted(false);
             registerButton.addActionListener(e -> handleRegister());
 
-            backToLoginButton = new JButton("← Volver a Iniciar Sesión");
+            backToLoginButton = new JButton("Volver a Iniciar Sesion");
             backToLoginButton.setFont(new Font("Arial", Font.PLAIN, 12));
             backToLoginButton.setFocusPainted(false);
 
@@ -521,14 +540,14 @@ public class MainFrame extends JFrame {
             String pass = new String(loginPasswordField.getPassword());
 
             if (user.isEmpty() || pass.isEmpty()) {
-                statusLabel.setText("⚠️ Por favor completa usuario y contraseña");
+                statusLabel.setText("*** Por favor completa usuario y contrasena");
                 statusLabel.setForeground(Color.RED);
                 return;
             }
 
             isRegister = false;
             accepted = true;
-            statusLabel.setText("✓ Conectando...");
+            statusLabel.setText("Conectando...");
             statusLabel.setForeground(new Color(0, 128, 0));
             setVisible(false);
         }
@@ -539,45 +558,46 @@ public class MainFrame extends JFrame {
             String confirm = new String(registerConfirmPasswordField.getPassword());
 
             if (user.isEmpty()) {
-                statusLabel.setText("⚠️ El campo usuario está vacío");
+                statusLabel.setText("*** El campo usuario esta vacio");
                 statusLabel.setForeground(Color.RED);
                 registerUsernameField.requestFocus();
                 return;
             }
 
             if (pass.isEmpty()) {
-                statusLabel.setText("⚠️ El campo contraseña está vacío");
+                statusLabel.setText("*** El campo contrasena esta vacio");
                 statusLabel.setForeground(Color.RED);
                 registerPasswordField.requestFocus();
                 return;
             }
 
             if (confirm.isEmpty()) {
-                statusLabel.setText("⚠️ Debes confirmar tu contraseña");
+                statusLabel.setText("*** Debes confirmar tu contrasena");
                 statusLabel.setForeground(Color.RED);
                 registerConfirmPasswordField.requestFocus();
                 return;
             }
 
             if (pass.length() < 3) {
-                statusLabel.setText("⚠️ La contraseña debe tener al menos 3 caracteres");
+                statusLabel.setText("*** La contrasena debe tener al menos 3 caracteres");
                 statusLabel.setForeground(Color.RED);
                 registerPasswordField.requestFocus();
                 return;
             }
 
             if (!pass.equals(confirm)) {
-                statusLabel.setText("⚠️ Las contraseñas no coinciden");
+                statusLabel.setText("*** Las contrasenas no coinciden");
                 statusLabel.setForeground(Color.RED);
                 registerConfirmPasswordField.setText("");
                 registerConfirmPasswordField.requestFocus();
                 return;
             }
 
+            // Marcar que es un registro
             isRegister = true;
             accepted = true;
-            statusLabel.setText("✓ Registrando usuario...");
-            statusLabel.setForeground(new Color(0, 128, 0));
+
+            // Cerrar el diálogo para que el ClientApp procese el registro
             setVisible(false);
         }
 

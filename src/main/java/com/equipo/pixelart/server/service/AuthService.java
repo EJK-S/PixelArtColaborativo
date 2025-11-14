@@ -3,6 +3,7 @@ package com.equipo.pixelart.server.service;
 import com.equipo.pixelart.server.model.Usuario;
 import com.equipo.pixelart.server.persistence.FileManager;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
@@ -34,7 +35,7 @@ public class AuthService {
     public synchronized boolean registrarUsuario(String username, String password) {
         // Validaciones
         if (username == null || username.trim().isEmpty()) {
-            System.out.println("Registro fallido: username vacío");
+            System.out.println("Registro fallido: username vacio");
             return false;
         }
 
@@ -45,7 +46,7 @@ public class AuthService {
 
         if (usuarios.containsKey(username)) {
             System.out.println("Registro fallido: usuario ya existe - " + username);
-            return false;
+            return false; // Usuario ya existe
         }
 
         // Crear usuario
@@ -55,7 +56,7 @@ public class AuthService {
         usuarios.put(username, nuevoUsuario);
         fileManager.guardarUsuarios(usuarios);
 
-        System.out.println("Usuario registrado: " + username);
+        System.out.println("*** Usuario registrado exitosamente: " + username);
         return true;
     }
 

@@ -154,26 +154,26 @@ public class ClientHandler implements Runnable {
      */
     private void handleRegister(String[] parts) {
         if (parts.length < 3) {
-            sendMessage("AUTH_FAILED|Formato inválido");
+            sendMessage("AUTH_FAILED|Formato invalido");
             return;
         }
 
         String user = parts[1];
         String pass = parts[2];
 
-        if (authService.registrarUsuario(user, pass)) {
-            // Auto-login después de registrar
-            if (authService.autenticar(user, pass)) {
-                this.username = user;
-                this.authenticated = true;
+        boolean registered = authService.registrarUsuario(user, pass);
 
-                sendMessage("AUTH_SUCCESS|" + user);
-                broadcastMessage("USER_JOINED|" + user, this);
+        if (registered) {
+            // Registro exitoso - informar al cliente y NO autenticar automáticamente
+            sendMessage("AUTH_SUCCESS|" + user);
+            System.out.println("Usuario registrado exitosamente: " + user);
 
-                System.out.println("Usuario registrado y autenticado: " + user);
-            }
+            // NO autenticar automáticamente, el cliente debe hacer login después
+            // NO establecer this.username ni this.authenticated
+
         } else {
-            sendMessage("AUTH_FAILED|No se pudo registrar el usuario");
+            // El registro falló (usuario ya existe o password inválida)
+            sendMessage("AUTH_FAILED|No se pudo registrar el usuario (posiblemente ya existe)");
         }
     }
 

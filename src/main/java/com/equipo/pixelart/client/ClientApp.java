@@ -1,18 +1,12 @@
 package com.equipo.pixelart.client;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-
 import com.equipo.pixelart.client.controller.CanvasController;
 import com.equipo.pixelart.client.controller.NetworkController;
 import com.equipo.pixelart.client.controller.ToolboxController;
 import com.equipo.pixelart.client.model.CanvasModel;
-import com.equipo.pixelart.client.view.CanvasPanel;
-import com.equipo.pixelart.client.view.ChatPanel;
-import com.equipo.pixelart.client.view.MainFrame;
-import com.equipo.pixelart.client.view.ToolboxPanel;
-import com.equipo.pixelart.client.view.UserListPanel;
+import com.equipo.pixelart.client.view.*;
+
+import javax.swing.*;
 
 /**
  * Aplicación Principal del Cliente
@@ -79,7 +73,7 @@ public class ClientApp {
 
         // Crear ToolboxController
         toolboxController = new ToolboxController(toolboxPanel, canvasController);
-        toolboxController.getCurrentTool();
+
         // Conectar NetworkController con CanvasController
         networkController.setCanvasController(canvasController);
 
@@ -106,8 +100,7 @@ public class ClientApp {
      */
     private void setupEventHandlers() {
         System.out.println("Configurando manejadores de eventos...");
-    
-       
+
         // ========== EVENTOS DE MENÚ ==========
 
         // Menú: Conectar
@@ -160,53 +153,71 @@ public class ClientApp {
                 if (success) {
                     String username = networkController.getUsername();
                     mainFrame.updateUsername(username);
-                    chatPanel.addSystemMessage("✓ Autenticación exitosa! Bienvenido " + username);
+                    chatPanel.addSystemMessage("*** Autenticacion exitosa! Bienvenido " + username);
                     JOptionPane.showMessageDialog(mainFrame,
-                            "¡Bienvenido " + username + "!\n\n" +
+                            "Bienvenido " + username + "!\n\n" +
                                     "Ahora puedes empezar a dibujar en el lienzo colaborativo.",
                             "Login Exitoso",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    chatPanel.addSystemMessage("✗ Error de autenticación: " + message);
+                    chatPanel.addSystemMessage("*** Error de autenticacion: " + message);
 
                     String errorMsg = message;
-                    if (message.contains("incorrectos") || message.contains("no existe")) {
-                        errorMsg = """
-                        Usuario o contraseña incorrectos.
+                    boolean shouldRetry = true;
+                    boolean wasRegistration = message.toLowerCase().contains("ya existe") ||
+                            message.toLowerCase().contains("usuario ya registrado");
 
-                        Si no tienes cuenta, haz clic en 'Registrarse'.
-                        """;
-                    } else if (message.contains("ya existe")) {
-                        errorMsg = """
-                                   Este usuario ya existe.
-                                   
-                                   Por favor usa otro nombre de usuario o inicia sesi\u00f3n.""";
+                    if (message.contains("incorrectos") || message.contains("no existe")) {
+                        errorMsg = "Usuario o contrasena incorrectos.\n\n" +
+                                "Si no tienes cuenta, haz clic en 'Crear Nueva Cuenta'.";
+                    } else if (wasRegistration) {
+                        // El servidor rechaza porque ya existe = registro exitoso
+                        errorMsg = "Usuario registrado exitosamente!\n\n" +
+                                "Tu cuenta ha sido creada.\n" +
+                                "Ahora puedes iniciar sesion con tus credenciales.";
+                        shouldRetry = false;
+
+                        chatPanel.addSystemMessage("*** Usuario registrado correctamente!");
+
+                        // Desconectar después de registro exitoso
+                        networkController.disconnect();
+
+                        // Volver al diálogo de login
+                        SwingUtilities.invokeLater(() -> {
+                            JOptionPane.showMessageDialog(mainFrame,
+                                    "Usuario registrado exitosamente!\n\n" +
+                                            "Ahora puedes iniciar sesion con tu usuario y contrasena.",
+                                    "Registro Exitoso",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            handleConnect(); // Volver a mostrar el diálogo de login
+                        });
+                        return;
                     } else if (message.contains("ya conectado")) {
-                        errorMsg = """
-                                   Este usuario ya est\u00e1 conectado.
-                                   
-                                   Por favor cierra la otra sesi\u00f3n primero.""";
+                        errorMsg = "Este usuario ya esta conectado.\n\n" +
+                                "Por favor cierra la otra sesion primero.";
                     }
 
                     JOptionPane.showMessageDialog(mainFrame,
                             errorMsg,
-                            "Autenticación Fallida",
+                            "Autenticacion Fallida",
                             JOptionPane.ERROR_MESSAGE);
 
                     // Desconectar y permitir reintentar
                     networkController.disconnect();
 
-                    // Ofrecer reconectar
-                    SwingUtilities.invokeLater(() -> {
-                        int retry = JOptionPane.showConfirmDialog(mainFrame,
-                                "¿Quieres intentar nuevamente?",
-                                "Reintentar Conexión",
-                                JOptionPane.YES_NO_OPTION);
+                    if (shouldRetry) {
+                        // Ofrecer reconectar
+                        SwingUtilities.invokeLater(() -> {
+                            int retry = JOptionPane.showConfirmDialog(mainFrame,
+                                    "Quieres intentar nuevamente?",
+                                    "Reintentar Conexion",
+                                    JOptionPane.YES_NO_OPTION);
 
-                        if (retry == JOptionPane.YES_OPTION) {
-                            handleConnect();
-                        }
-                    });
+                            if (retry == JOptionPane.YES_OPTION) {
+                                handleConnect();
+                            }
+                        });
+                    }
                 }
             }
 
@@ -261,6 +272,96 @@ public class ClientApp {
         String password = dialog.getPassword();
         boolean isRegister = dialog.isRegister();
 
+        // Si es registro, solo registrar y volver al diálogo de login
+        if (isRegister) {
+            handleRegistration(server, port, username, password);
+            return;
+        }
+
+        // Si es login, conectar y autenticar
+        handleLogin(server, port, username, password);
+    }
+
+    /**
+     * Maneja solo el registro de usuario (sin conectar)
+     */
+    private void handleRegistration(String server, int port, String username, String password) {
+        // Validar campos
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame,
+                    "Por favor ingresa usuario y contraseña",
+                    "Campos Vacíos",
+                    JOptionPane.WARNING_MESSAGE);
+            handleConnect(); // Volver a mostrar el diálogo
+            return;
+        }
+
+        // Validar dirección del servidor
+        if (server.isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame,
+                    "Por favor ingresa la dirección del servidor",
+                    "Servidor No Especificado",
+                    JOptionPane.WARNING_MESSAGE);
+            handleConnect(); // Volver a mostrar el diálogo
+            return;
+        }
+
+        chatPanel.addSystemMessage("===========================================");
+        chatPanel.addSystemMessage("Registrando nuevo usuario...");
+        chatPanel.addSystemMessage("   Servidor: " + server);
+        chatPanel.addSystemMessage("   Puerto: " + port);
+        chatPanel.addSystemMessage("   Usuario: " + username);
+        chatPanel.addSystemMessage("===========================================");
+
+        // Conectar temporalmente para registrar
+        boolean connected = networkController.connect(server, port);
+
+        if (!connected) {
+            String errorMsg = """
+                No se pudo conectar al servidor.
+                
+                Verifica:
+                ✓ El servidor está ejecutándose (ServerApp)
+                ✓ La IP y puerto son correctos
+                ✓ Estás en la misma red (para LAN)
+                ✓ El firewall no bloquea el puerto
+                
+                Ejemplos de dirección:
+                • localhost (mismo equipo)
+                • 127.0.0.1 (mismo equipo)
+                • 192.168.1.100 (red local)
+                
+                El servidor debe mostrar su IP al iniciar.
+                Usa el comando 'network' en el servidor.""";
+
+            JOptionPane.showMessageDialog(mainFrame,
+                    errorMsg,
+                    "Error de Conexión",
+                    JOptionPane.ERROR_MESSAGE);
+            chatPanel.addSystemMessage("*** Error: No se pudo conectar al servidor");
+            handleConnect(); // Volver a mostrar el diálogo
+            return;
+        }
+
+        // Esperar un momento
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            // Ignorar
+        }
+
+        // Enviar registro
+        chatPanel.addSystemMessage("Conectado! Registrando usuario '" + username + "'...");
+        networkController.register(username, password);
+
+        // Esperar respuesta del servidor (el listener de NetworkController manejará el resultado)
+        // El usuario será notificado y luego se desconectará
+    }
+
+    /**
+     * Maneja el login de usuario
+     */
+    private void handleLogin(String server, int port, String username, String password) {
         // Validar campos
         if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(mainFrame,
@@ -270,25 +371,49 @@ public class ClientApp {
             return;
         }
 
-        // Mostrar mensaje de conexión
-        chatPanel.addSystemMessage("Conectando al servidor " + server + ":" + port + "...");
+        // Validar dirección del servidor
+        if (server.isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame,
+                    "Por favor ingresa la dirección del servidor",
+                    "Servidor No Especificado",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-        // Intentar conectar primero
+        // Mostrar mensaje de conexión
+        chatPanel.addSystemMessage("===========================================");
+        chatPanel.addSystemMessage("Conectando al servidor...");
+        chatPanel.addSystemMessage("   Servidor: " + server);
+        chatPanel.addSystemMessage("   Puerto: " + port);
+        chatPanel.addSystemMessage("===========================================");
+
+        // Intentar conectar
         boolean connected = networkController.connect(server, port);
 
         if (!connected) {
-            JOptionPane.showMessageDialog(mainFrame,
-        """
-        No se pudo conectar al servidor.
+            String errorMsg = """
+                No se pudo conectar al servidor.
+                
+                Verifica:
+                ✓ El servidor está ejecutándose (ServerApp)
+                ✓ La IP y puerto son correctos
+                ✓ Estás en la misma red (para LAN)
+                ✓ El firewall no bloquea el puerto
+                
+                Ejemplos de dirección:
+                • localhost (mismo equipo)
+                • 127.0.0.1 (mismo equipo)
+                • 192.168.1.100 (red local)
+                
+                El servidor debe mostrar su IP al iniciar.
+                Usa el comando 'network' en el servidor.""";
 
-        Asegúrate de que:
-        1. El servidor esté ejecutándose (ServerApp)
-        2. La dirección y puerto sean correctos
-        3. No haya un firewall bloqueando la conexión
-        """,
-        "Error de Conexión",
-        JOptionPane.ERROR_MESSAGE);
-            chatPanel.addSystemMessage("✗ Error: No se pudo conectar al servidor");
+            JOptionPane.showMessageDialog(mainFrame,
+                    errorMsg,
+                    "Error de Conexión",
+                    JOptionPane.ERROR_MESSAGE);
+            chatPanel.addSystemMessage("*** Error: No se pudo conectar al servidor");
+            chatPanel.addSystemMessage("Verifica la IP y que el servidor esté corriendo");
             return;
         }
 
@@ -301,14 +426,8 @@ public class ClientApp {
 
         // Intentar autenticar
         chatPanel.addSystemMessage("Conectado! Autenticando como '" + username + "'...");
-
-        if (isRegister) {
-            networkController.register(username, password);
-            chatPanel.addSystemMessage("Intentando registrar nuevo usuario...");
-        } else {
-            networkController.login(username, password);
-            chatPanel.addSystemMessage("Intentando iniciar sesión...");
-        }
+        networkController.login(username, password);
+        chatPanel.addSystemMessage("Iniciando sesion...");
     }
 
     /**
@@ -371,7 +490,7 @@ public class ClientApp {
         // Configurar Look and Feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException e) {
+        } catch (Exception e) {
             System.err.println("No se pudo establecer el Look and Feel: " + e.getMessage());
         }
 

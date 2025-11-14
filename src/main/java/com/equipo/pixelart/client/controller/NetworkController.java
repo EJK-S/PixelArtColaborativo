@@ -43,7 +43,12 @@ public class NetworkController {
      */
     public boolean connect(String host, int port) {
         try {
-            socket = new Socket(host, port);
+            System.out.println("🔗 Intentando conectar a " + host + ":" + port);
+
+            // Configurar timeout de conexión (5 segundos)
+            socket = new Socket();
+            socket.connect(new java.net.InetSocketAddress(host, port), 5000);
+
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -52,12 +57,26 @@ public class NetworkController {
             // Iniciar thread de recepción
             startReceiver();
 
-            notifyConnectionStatus(true, "Conectado al servidor");
+            System.out.println("✅ Conectado exitosamente a " + host + ":" + port);
+            notifyConnectionStatus(true, "Conectado a " + host);
 
             return true;
 
+        } catch (java.net.SocketTimeoutException e) {
+            System.err.println("❌ Timeout de conexión: El servidor no respondió");
+            notifyConnectionStatus(false, "Timeout: El servidor no responde");
+            return false;
+        } catch (java.net.UnknownHostException e) {
+            System.err.println("❌ Host desconocido: " + host);
+            notifyConnectionStatus(false, "Host desconocido: " + host);
+            return false;
+        } catch (java.net.ConnectException e) {
+            System.err.println("❌ Conexión rechazada: " + e.getMessage());
+            notifyConnectionStatus(false, "Conexión rechazada. ¿Está el servidor corriendo?");
+            return false;
         } catch (IOException e) {
-            notifyConnectionStatus(false, "Error de conexión: " + e.getMessage());
+            System.err.println("❌ Error de conexión: " + e.getMessage());
+            notifyConnectionStatus(false, "Error: " + e.getMessage());
             return false;
         }
     }
