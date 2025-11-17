@@ -14,8 +14,6 @@ public class NetworkController {
     private BufferedReader in;
     private boolean connected;
 
-    private CanvasController canvasController;
-
     private List<NetworkListener> listeners;
 
     private Thread receiverThread;
@@ -208,7 +206,7 @@ public class NetworkController {
     // ==================== MANEJAR RESPUESTAS ====================
 
     private void handleAuthSuccess(String[] parts) {
-        // AUTH_SUCCESS|username
+        
         if (parts.length > 1) {
             username = parts[1];
         }
@@ -219,13 +217,13 @@ public class NetworkController {
     }
 
     private void handleAuthFailed(String[] parts) {
-        // AUTH_FAILED|reason
+        
         String reason = parts.length > 1 ? parts[1] : "Error desconocido";
         notifyAuthResult(false, reason);
     }
 
     private void handlePixelUpdate(String[] parts) {
-        // PIXEL_UPDATE|x|y|colorHex
+       
         if (parts.length < 4) return;
 
         try {
@@ -233,8 +231,8 @@ public class NetworkController {
             int y = Integer.parseInt(parts[2]);
             Color color = Color.decode("#" + parts[3]);
 
-            if (canvasController != null) {
-                canvasController.updatePixelFromServer(x, y, color);
+            for (NetworkListener listener : listeners) {
+                listener.onPixelUpdateReceived(x, y, color);
             }
         } catch (Exception e) {
             System.err.println("Error en PIXEL_UPDATE: " + e.getMessage());
@@ -242,7 +240,7 @@ public class NetworkController {
     }
 
     private void handleCanvasState(String[] parts) {
-        // CANVAS_STATE|width|height|pixelData
+        
         if (parts.length < 4) return;
 
         try {
@@ -266,18 +264,17 @@ public class NetworkController {
                 }
             }
 
-            if (canvasController != null) {
-                canvasController.updateCanvas(canvas);
+            for (NetworkListener listener : listeners) {
+                listener.onCanvasStateReceived(canvas);
             }
-
         } catch (Exception e) {
             System.err.println("Error en CANVAS_STATE: " + e.getMessage());
         }
     }
 
     private void handleClearCanvas() {
-        if (canvasController != null) {
-            canvasController.getModel().clear();
+    	for (NetworkListener listener : listeners) {
+            listener.onCanvasCleared();
         }
     }
 
@@ -371,9 +368,6 @@ public class NetworkController {
         }
     }
 
-    public void setCanvasController(CanvasController canvasController) {
-        this.canvasController = canvasController;
-    }
 
     public boolean isConnected() {
         return connected;
@@ -383,13 +377,5 @@ public class NetworkController {
         return username;
     }
 
-    public interface NetworkListener {
-        default void onConnectionStatusChanged(boolean connected, String message) {}
-        default void onAuthResult(boolean success, String message) {}
-        default void onChatMessage(String user, String message) {}
-        default void onUserJoined(String user) {}
-        default void onUserLeft(String user) {}
-        default void onUserListReceived(String[] users) {}
-        default void onError(String message) {}
-    }
+ 
 }

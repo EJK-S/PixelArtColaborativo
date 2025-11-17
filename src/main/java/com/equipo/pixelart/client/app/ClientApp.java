@@ -1,12 +1,24 @@
 package com.equipo.pixelart.client.app;
 
-import com.equipo.pixelart.client.controller.CanvasController;
-import com.equipo.pixelart.client.controller.NetworkController;
-import com.equipo.pixelart.client.controller.ToolboxController;
-import com.equipo.pixelart.client.model.CanvasModel;
-import com.equipo.pixelart.client.view.*;
+import java.awt.Color;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import com.equipo.pixelart.client.controller.CanvasController;
+import com.equipo.pixelart.client.controller.ChatController;
+import com.equipo.pixelart.client.controller.MenuController;
+import com.equipo.pixelart.client.controller.NetworkController;
+import com.equipo.pixelart.client.controller.NetworkListener;
+import com.equipo.pixelart.client.controller.ToolboxController;
+import com.equipo.pixelart.client.controller.UserListController;
+import com.equipo.pixelart.client.model.CanvasModel;
+import com.equipo.pixelart.client.view.CanvasPanel;
+import com.equipo.pixelart.client.view.ChatPanel;
+import com.equipo.pixelart.client.view.MainFrame;
+import com.equipo.pixelart.client.view.ToolboxPanel;
+import com.equipo.pixelart.client.view.UserListPanel;
 
 
 public class ClientApp {
@@ -23,11 +35,14 @@ public class ClientApp {
     private NetworkController networkController;
     private CanvasController canvasController;
     private ToolboxController toolboxController;
+    private ChatController chatController;
+    private UserListController userListController;
+    private MenuController menuController;
 
     public ClientApp() {
         inicializacionComponentes();
-        inicializacionControladores();
         inicialiazarMarcoPrincipal();
+        inicializacionControladores();        
         iniciarEventos();
     }
 
@@ -44,7 +59,10 @@ public class ClientApp {
         canvasController = new CanvasController(canvasModel, canvasPanel, networkController);
         toolboxController = new ToolboxController(toolboxPanel, canvasController);
         toolboxController.init();
-        networkController.setCanvasController(canvasController);
+        chatController = new ChatController(chatPanel, networkController);
+        userListController = new UserListController(userListPanel, networkController);
+        userListController.init();
+        menuController = new MenuController(mainFrame, canvasController, canvasPanel, this);
     }
 
     private void inicialiazarMarcoPrincipal() {
@@ -53,45 +71,21 @@ public class ClientApp {
     }
 
     private void iniciarEventos() {
-        mainFrame.getConnectItem().addActionListener(e -> manejarConexion());
-        mainFrame.getDisconnectItem().addActionListener(e -> gestionarDesconexion());
-        mainFrame.getExitItem().addActionListener(e -> System.exit(0));
-
-        mainFrame.getClearItem().addActionListener(e -> canvasController.clearCanvas());
-        mainFrame.getToggleGridItem().addActionListener(e ->
-                canvasPanel.setShowGrid(mainFrame.getToggleGridItem().isSelected()));
-        mainFrame.getAboutItem().addActionListener(e -> mainFrame.showAboutDialog());
-
-        chatPanel.addSendListener(e -> gestionarEnvioMensaje());
-
-        networkController.addNetworkListener(new NetworkController.NetworkListener() {
+       
+        chatController.init();
+        userListController.init();
+        menuController.init();
+        
+        networkController.addNetworkListener(new NetworkListener() {
 
             public void onConnectionStatusChanged(boolean connected, String msg) {
-                mainFrame.updateConnectionStatus(connected, msg);
-
-                chatPanel.setEnabled(connected);
-                chatPanel.addSystemMessage(connected ? "Conectado" : "Desconectado");
-
-                if (!connected) userListPanel.clearUsers();
+            	mainFrame.updateConnectionStatus(connected, msg);            
+                
             }
 
             public void onAuthResult(boolean ok, String msg) {
                 if (ok) procesarAutenticacionExitosa();
                 else procesarFalloDeAutenticacion(msg);
-            }
-
-            public void onChatMessage(String user, String txt) {
-                chatPanel.addMessage(user, txt);
-            }
-
-            public void onUserJoined(String u) {
-                userListPanel.addUser(u);
-                chatPanel.addSystemMessage(u + " se ha unido");
-            }
-
-            public void onUserLeft(String u) {
-                userListPanel.removeUser(u);
-                chatPanel.addSystemMessage(u + " se ha desconectado");
             }
 
             public void onUserListReceived(String[] u) {
@@ -100,12 +94,25 @@ public class ClientApp {
 
             public void onError(String m) {
                 JOptionPane.showMessageDialog(mainFrame, m, "Error", JOptionPane.ERROR_MESSAGE);
-                chatPanel.addSystemMessage("ERROR: " + m);
+            }
+            @Override
+            public void onPixelUpdateReceived(int x, int y, Color color) {
+                canvasController.updatePixelFromServer(x, y, color);
+            }
+
+            @Override
+            public void onCanvasStateReceived(Color[][] canvas) {
+                canvasController.updateCanvas(canvas);
+            }
+
+            @Override
+            public void onCanvasCleared() {
+                canvasController.getModel().clear();
             }
         });
     }
 
-    private void manejarConexion() {
+    public void manejarConexion() {
         var dialog = mainFrame.showConnectionDialog();
         if (!dialog.isAccepted()) return;
 
@@ -145,7 +152,7 @@ public class ClientApp {
         }
 
         sleep(200);
-        chatPanel.addSystemMessage("Autenticando...");
+        chatController.addSystemMessage("Autenticando...");
         networkController.login(u, pw);
     }
 
@@ -157,7 +164,7 @@ public class ClientApp {
         return true;
     }
 
-    private void gestionarDesconexion() {
+    public void gestionarDesconexion() {
         if (networkController.isConnected()) {
             if (JOptionPane.showConfirmDialog(mainFrame,
                     "¿Desconectar?", "Confirmar",
@@ -165,19 +172,7 @@ public class ClientApp {
                 networkController.disconnect();
         }
     }
- 
-    private void gestionarEnvioMensaje() {
-        String msg = chatPanel.getMessageAndClear();
-        if (msg.isEmpty()) return;
 
-        if (networkController.isConnected())
-            networkController.sendChatMessage(msg);
-        else
-            chatPanel.addSystemMessage("No estás conectado.");
-
-        chatPanel.focusMessageField();
-    }
- 
     private void procesarAutenticacionExitosa() {
         String user = networkController.getUsername();
         mainFrame.updateUsername(user);
@@ -187,7 +182,7 @@ public class ClientApp {
                 "Login Exitoso",
                 JOptionPane.INFORMATION_MESSAGE);
 
-        chatPanel.addSystemMessage("Autenticación exitosa");
+        chatController.addSystemMessage("Autenticación exitosa");
     }
 
     private void procesarFalloDeAutenticacion(String msg) {
@@ -216,7 +211,7 @@ public class ClientApp {
     public void start() {
         SwingUtilities.invokeLater(() -> {
             mainFrame.setVisible(true);
-            chatPanel.addSystemMessage("=== Pixel Art Colaborativo ===");
+            chatController.addSystemMessage("=== Pixel Art Colaborativo ===");
             manejarConexion();
         });
     }

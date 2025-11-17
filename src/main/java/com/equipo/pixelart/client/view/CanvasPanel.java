@@ -4,9 +4,7 @@ import com.equipo.pixelart.client.model.CanvasModel;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Panel del Canvas - Vista principal donde se dibuja el pixel art
- */
+
 public class CanvasPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
     private final CanvasModel model;

@@ -7,9 +7,7 @@ import java.io.Serial;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Panel de Chat - Permite la comunicación entre usuarios
- */
+
 public class ChatPanel extends JPanel {
     @Serial
 	private static final long serialVersionUID = 1L;
@@ -19,17 +17,11 @@ public class ChatPanel extends JPanel {
 
     private final SimpleDateFormat timeFormat;
 
-    /**
-     * Constructor
-     */
     public ChatPanel() {
         timeFormat = new SimpleDateFormat("HH:mm:ss");
         setupUI();
     }
 
-    /**
-     * Configura la interfaz del panel
-     */
     private void setupUI() {
         setLayout(new BorderLayout(5, 5));
         setBorder(BorderFactory.createTitledBorder(
@@ -39,8 +31,7 @@ public class ChatPanel extends JPanel {
                 0,
                 new Font("Arial", Font.BOLD, 12)
         ));
-
-        // Área de texto del chat (solo lectura)
+     
         chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
@@ -54,7 +45,7 @@ public class ChatPanel extends JPanel {
 
         add(scrollPane, BorderLayout.CENTER);
 
-        // Panel inferior con campo de texto y botón
+        
         JPanel inputPanel = new JPanel(new BorderLayout(5, 0));
 
         messageField = new JTextField();
@@ -71,9 +62,6 @@ public class ChatPanel extends JPanel {
         add(inputPanel, BorderLayout.SOUTH);
     }
 
-    /**
-     * Agrega un mensaje al chat
-     */
     public void addMessage(String username, String message) {
         String timestamp = timeFormat.format(new Date());
         String formattedMessage = String.format("[%s] %s: %s\n", timestamp, username, message);
@@ -84,9 +72,6 @@ public class ChatPanel extends JPanel {
         chatArea.setCaretPosition(chatArea.getDocument().getLength());
     }
 
-    /**
-     * Agrega un mensaje del sistema
-     */
     public void addSystemMessage(String message) {
         String timestamp = timeFormat.format(new Date());
         String formattedMessage = String.format("[%s] *** %s ***\n", timestamp, message);
@@ -95,46 +80,29 @@ public class ChatPanel extends JPanel {
         chatArea.setCaretPosition(chatArea.getDocument().getLength());
     }
 
-    /**
-     * Limpia el chat
-     */
     public void clearChat() {
         chatArea.setText("");
     }
 
-    /**
-     * Obtiene el texto del campo de mensaje y lo limpia
-     */
     public String getMessageAndClear() {
         String message = messageField.getText().trim();
         messageField.setText("");
         return message;
     }
 
-    /**
-     * Establece el foco en el campo de mensaje
-     */
     public void focusMessageField() {
         messageField.requestFocusInWindow();
     }
 
-    /**
-     * Agrega un listener al botón de enviar
-     */
     public void addSendListener(ActionListener listener) {
         sendButton.addActionListener(listener);
     }
 
-    /**
-     * Habilita o deshabilita el chat
-     */
     public void setEnabled(boolean enabled) {
         messageField.setEnabled(enabled);
         sendButton.setEnabled(enabled);
         super.setEnabled(enabled);
     }
-
-    // ==================== GETTERS ====================
 
     public JTextField getMessageField() {
         return messageField;

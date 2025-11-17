@@ -2,22 +2,15 @@ package com.equipo.pixelart.client.model;
 
 import java.awt.Color;
 
-/**
- * Modelo del Canvas - Representa el estado del lienzo de dibujo
- * Almacena una matriz bidimensional de píxeles (colores)
- */
+
 public class CanvasModel {
 
     private final int width;
     private final int height;
     private Color[][] pixels;
 
-    // Color por defecto (blanco)
     private static final Color DEFAULT_COLOR = Color.WHITE;
 
-    /**
-     * Constructor con dimensiones personalizadas
-     */
     public CanvasModel(int width, int height) {
         this.width = width;
         this.height = height;
@@ -25,16 +18,10 @@ public class CanvasModel {
         clear();
     }
 
-    /**
-     * Constructor con dimensiones por defecto (48x48)
-     */
     public CanvasModel() {
         this(48, 48);
     }
 
-    /**
-     * Limpia todo el canvas al color por defecto
-     */
     public void clear() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -43,18 +30,12 @@ public class CanvasModel {
         }
     }
 
-    /**
-     * Establece el color de un píxel específico
-     */
     public void setPixel(int x, int y, Color color) {
         if (isValidPosition(x, y)) {
             pixels[x][y] = color;
         }
     }
 
-    /**
-     * Obtiene el color de un píxel específico
-     */
     public Color getPixel(int x, int y) {
         if (isValidPosition(x, y)) {
             return pixels[x][y];
@@ -62,16 +43,10 @@ public class CanvasModel {
         return DEFAULT_COLOR;
     }
 
-    /**
-     * Valida si una posición está dentro del canvas
-     */
     public boolean isValidPosition(int x, int y) {
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
-    /**
-     * Establece todo el canvas desde una matriz de píxeles
-     */
     public void setPixels(Color[][] newPixels) {
         if (newPixels == null) return;
 
@@ -87,9 +62,6 @@ public class CanvasModel {
         }
     }
 
-    /**
-     * Obtiene una copia de toda la matriz de píxeles
-     */
     public Color[][] getPixels() {
         Color[][] copy = new Color[width][height];
         for (int x = 0; x < width; x++) {
@@ -100,16 +72,11 @@ public class CanvasModel {
         return copy;
     }
 
-    /**
-     * Crea una copia profunda del modelo
-     */
     public CanvasModel copy() {
         CanvasModel newModel = new CanvasModel(width, height);
         newModel.setPixels(this.getPixels());
         return newModel;
     }
-
-    // ==================== GETTERS ====================
 
     public int getWidth() {
         return width;

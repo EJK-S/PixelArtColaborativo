@@ -13,14 +13,14 @@ import static org.mockito.Mockito.verify;
 class NetworkControllerTest {
 
     private NetworkController networkController;
-    private NetworkController.NetworkListener listenerMock;
+    private NetworkListener listenerMock;
 
         @SuppressWarnings("unused")
 
     @BeforeEach
     void setUp() {
         networkController = new NetworkController();
-        listenerMock = mock(NetworkController.NetworkListener.class);
+        listenerMock = mock(NetworkListener.class);
         networkController.addNetworkListener(listenerMock);
     }
 
