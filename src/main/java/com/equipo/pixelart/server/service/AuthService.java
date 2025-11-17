@@ -3,24 +3,18 @@ package com.equipo.pixelart.server.service;
 import com.equipo.pixelart.server.model.Usuario;
 import com.equipo.pixelart.server.persistence.FileManager;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
-/**
- * Servicio de Autenticación
- * Gestiona usuarios, login y registro
- */
+
 public class AuthService {
 
     private final FileManager fileManager;
     private final Map<String, Usuario> usuarios;
     private final Set<String> usuariosConectados;
 
-    /**
-     * Constructor
-     */
+  
     public AuthService(FileManager fileManager) {
         this.fileManager = fileManager;
         this.usuarios = fileManager.cargarUsuarios();
@@ -29,9 +23,7 @@ public class AuthService {
         System.out.println("AuthService inicializado con " + usuarios.size() + " usuarios");
     }
 
-    /**
-     * Registra un nuevo usuario
-     */
+  
     public synchronized boolean registrarUsuario(String username, String password) {
         // Validaciones
         if (username == null || username.trim().isEmpty()) {
@@ -60,9 +52,7 @@ public class AuthService {
         return true;
     }
 
-    /**
-     * Intenta autenticar un usuario
-     */
+  
     public synchronized boolean autenticar(String username, String password) {
         Usuario usuario = usuarios.get(username);
 
@@ -92,9 +82,7 @@ public class AuthService {
         return true;
     }
 
-    /**
-     * Marca un usuario como desconectado
-     */
+  
     public synchronized void desconectar(String username) {
         if (username != null && usuariosConectados.contains(username)) {
             usuariosConectados.remove(username);
@@ -102,44 +90,32 @@ public class AuthService {
         }
     }
 
-    /**
-     * Obtiene la lista de usuarios conectados
-     */
+  
     public synchronized String[] obtenerUsuariosConectados() {
         return usuariosConectados.toArray(new String[0]);
     }
 
-    /**
-     * Verifica si un usuario está conectado
-     */
+   
     public synchronized boolean estaConectado(String username) {
         return usuariosConectados.contains(username);
     }
 
-    /**
-     * Obtiene el número total de usuarios registrados
-     */
+  
     public int getTotalUsuarios() {
         return usuarios.size();
     }
 
-    /**
-     * Obtiene el número de usuarios conectados
-     */
+   
     public int getUsuariosConectadosCount() {
         return usuariosConectados.size();
     }
 
-    /**
-     * Obtiene un usuario por su nombre
-     */
+   
     public Usuario obtenerUsuario(String username) {
         return usuarios.get(username);
     }
 
-    /**
-     * Elimina un usuario (admin)
-     */
+    
     public synchronized boolean eliminarUsuario(String username) {
         if (usuarios.containsKey(username)) {
             usuarios.remove(username);
@@ -151,9 +127,7 @@ public class AuthService {
         return false;
     }
 
-    /**
-     * Cambia la contraseña de un usuario
-     */
+   
     public synchronized boolean cambiarPassword(String username, String oldPassword, String newPassword) {
         Usuario usuario = usuarios.get(username);
 
