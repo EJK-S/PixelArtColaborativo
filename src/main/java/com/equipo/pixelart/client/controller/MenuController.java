@@ -4,15 +4,13 @@ import com.equipo.pixelart.client.app.ClientApp;
 import com.equipo.pixelart.client.view.CanvasPanel;
 import com.equipo.pixelart.client.view.MainFrame;
 
-/**
- * Gestiona toda la lógica de los JMenuItems de la barra de menú.
- */
+
 public class MenuController {
 
     private final MainFrame mainFrame;
     private final CanvasController canvasController;
     private final CanvasPanel canvasPanel;
-    private final ClientApp clientApp; // Para llamar a conectar/desconectar
+    private final ClientApp clientApp; 
 
     public MenuController(MainFrame mainFrame, CanvasController canvasController,
                           CanvasPanel canvasPanel, ClientApp clientApp) {
@@ -22,9 +20,6 @@ public class MenuController {
         this.clientApp = clientApp;
     }
 
-    /**
-     * Conecta todos los ActionListeners a los items del menú.
-     */
     public void init() {
         mainFrame.getConnectItem().addActionListener(e -> clientApp.manejarConexion());
         mainFrame.getDisconnectItem().addActionListener(e -> clientApp.gestionarDesconexion());

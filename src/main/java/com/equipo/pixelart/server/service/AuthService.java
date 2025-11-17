@@ -38,10 +38,9 @@ public class AuthService {
 
         if (usuarios.containsKey(username)) {
             System.out.println("Registro fallido: usuario ya existe - " + username);
-            return false; // Usuario ya existe
+            return false; 
         }
 
-        // Crear usuario
         String passwordHash = Usuario.hashPassword(password);
         Usuario nuevoUsuario = new Usuario(username, passwordHash);
 
@@ -71,11 +70,9 @@ public class AuthService {
             return false;
         }
 
-        // Actualizar último acceso
         usuario.actualizarAcceso();
         fileManager.guardarUsuarios(usuarios);
 
-        // Marcar como conectado
         usuariosConectados.add(username);
 
         System.out.println("Login exitoso: " + username);

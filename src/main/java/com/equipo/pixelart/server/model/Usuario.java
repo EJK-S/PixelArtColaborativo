@@ -3,10 +3,6 @@ package com.equipo.pixelart.server.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * Modelo de Usuario
- * Representa un usuario del sistema con sus credenciales
- */
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -16,9 +12,6 @@ public class Usuario implements Serializable {
     private long fechaCreacion;
     private long ultimoAcceso;
 
-    /**
-     * Constructor completo
-     */
     public Usuario(String username, String passwordHash) {
         this.username = username;
         this.passwordHash = passwordHash;
@@ -26,34 +19,21 @@ public class Usuario implements Serializable {
         this.ultimoAcceso = System.currentTimeMillis();
     }
 
-    /**
-     * Constructor por defecto (necesario para serialización)
-     */
     public Usuario() {
         this.fechaCreacion = System.currentTimeMillis();
         this.ultimoAcceso = System.currentTimeMillis();
     }
 
-    /**
-     * Verifica si la contraseña es correcta
-     */
     public boolean verificarPassword(String password) {
         return hashPassword(password).equals(this.passwordHash);
     }
 
-    /**
-     * Actualiza el último acceso
-     */
     public void actualizarAcceso() {
         this.ultimoAcceso = System.currentTimeMillis();
     }
 
-    /**
-     * Hash simple de contraseña (en producción usar BCrypt)
-     */
     public static String hashPassword(String password) {
-        // Para desarrollo usamos un hash simple
-        // En producción deberías usar BCrypt o similar
+
         int hash = 7;
         for (int i = 0; i < password.length(); i++) {
             hash = hash * 31 + password.charAt(i);
@@ -83,7 +63,6 @@ public class Usuario implements Serializable {
                 '}';
     }
 
-    // ==================== GETTERS Y SETTERS ====================
 
     public String getUsername() {
         return username;

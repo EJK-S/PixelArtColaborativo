@@ -8,11 +8,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.List;
 
-/**
- * Manejador de Cliente
- * Gestiona la conexión individual con cada cliente
- * Cada cliente tiene su propio thread
- */
 public class ClientHandler implements Runnable {
 
     private final Socket socket;
@@ -27,9 +22,6 @@ public class ClientHandler implements Runnable {
     private boolean authenticated;
     private boolean running;
 
-    /**
-     * Constructor
-     */
     public ClientHandler(Socket socket, AuthService authService,
                          CanvasService canvasService, List<ClientHandler> allClients) {
         this.socket = socket;
@@ -40,19 +32,16 @@ public class ClientHandler implements Runnable {
         this.running = true;
     }
 
-    /**
-     * Thread principal del cliente
-     */
     @Override
     public void run() {
         try {
-            // Configurar streams
+            
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             System.out.println("Nuevo cliente conectado desde: " + socket.getInetAddress());
 
-            // Procesar mensajes del cliente
+            
             String message;
             while (running && (message = in.readLine()) != null) {
                 processMessage(message);
@@ -65,9 +54,6 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    /**
-     * Procesa un mensaje recibido del cliente
-     */
     private void processMessage(String message) {
         String[] parts = message.split("\\|");
 
@@ -118,12 +104,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    // ==================== MANEJADORES DE COMANDOS ====================
 
-    /**
-     * Maneja el login de un usuario
-     * LOGIN|username|password
-     */
     private void handleLogin(String[] parts) {
         if (parts.length < 3) {
             sendMessage("AUTH_FAILED|Formato inválido");
@@ -148,10 +129,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    /**
-     * Maneja el registro de un nuevo usuario
-     * REGISTER|username|password
-     */
+ 
     private void handleRegister(String[] parts) {
         if (parts.length < 3) {
             sendMessage("AUTH_FAILED|Formato invalido");
@@ -164,23 +142,16 @@ public class ClientHandler implements Runnable {
         boolean registered = authService.registrarUsuario(user, pass);
 
         if (registered) {
-            // Registro exitoso - informar al cliente y NO autenticar automáticamente
             sendMessage("AUTH_SUCCESS|" + user);
             System.out.println("Usuario registrado exitosamente: " + user);
 
-            // NO autenticar automáticamente, el cliente debe hacer login después
-            // NO establecer this.username ni this.authenticated
 
         } else {
-            // El registro falló (usuario ya existe o password inválida)
             sendMessage("AUTH_FAILED|No se pudo registrar el usuario (posiblemente ya existe)");
         }
     }
 
-    /**
-     * Maneja la actualización de un píxel
-     * PIXEL|x|y|colorHex
-     */
+ 
     private void handlePixel(String[] parts) {
         if (parts.length < 4) {
             sendMessage("ERROR|Formato inválido");
@@ -205,10 +176,6 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    /**
-     * Envía el estado completo del canvas
-     * GET_CANVAS
-     */
     private void handleGetCanvas() {
         int width = canvasService.getWidth();
         int height = canvasService.getHeight();
@@ -217,20 +184,12 @@ public class ClientHandler implements Runnable {
         sendMessage("CANVAS_STATE|" + width + "|" + height + "|" + pixelData);
     }
 
-    /**
-     * Limpia el canvas
-     * CLEAR
-     */
     private void handleClear() {
         canvasService.clear();
         broadcastMessage("CLEAR_CANVAS", null);
         System.out.println("Canvas limpiado por: " + username);
     }
 
-    /**
-     * Maneja un mensaje de chat
-     * CHAT|message
-     */
     private void handleChat(String[] parts) {
         if (parts.length < 2) return;
 
@@ -240,10 +199,6 @@ public class ClientHandler implements Runnable {
         broadcastMessage(chatMsg, null);
     }
 
-    /**
-     * Envía la lista de usuarios conectados
-     * GET_USERS
-     */
     private void handleGetUsers() {
         String[] users = authService.obtenerUsuariosConectados();
         String userList = String.join(",", users);
@@ -251,20 +206,12 @@ public class ClientHandler implements Runnable {
         sendMessage("USER_LIST|" + userList);
     }
 
-    // ==================== MÉTODOS DE ENVÍO ====================
-
-    /**
-     * Envía un mensaje a este cliente
-     */
     public void sendMessage(String message) {
         if (out != null) {
             out.println(message);
         }
     }
 
-    /**
-     * Envía un mensaje a todos los clientes excepto al excluido
-     */
     private void broadcastMessage(String message, ClientHandler exclude) {
         synchronized (allClients) {
             for (ClientHandler client : allClients) {
@@ -275,25 +222,19 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    /**
-     * Desconecta el cliente
-     */
     private void disconnect() {
         running = false;
 
-        // Desautenticar usuario
         if (authenticated && username != null) {
             authService.desconectar(username);
             broadcastMessage("USER_LEFT|" + username, this);
             System.out.println("Usuario desconectado: " + username);
         }
 
-        // Remover de la lista de clientes
         synchronized (allClients) {
             allClients.remove(this);
         }
 
-        // Cerrar recursos
         try {
             if (in != null) in.close();
             if (out != null) out.close();
@@ -304,8 +245,6 @@ public class ClientHandler implements Runnable {
 
         System.out.println("Cliente desconectado: " + socket.getInetAddress());
     }
-
-    // ==================== GETTERS ====================
 
     public String getUsername() {
         return username;

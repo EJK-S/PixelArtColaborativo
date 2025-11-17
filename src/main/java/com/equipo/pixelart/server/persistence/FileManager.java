@@ -6,19 +6,13 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Gestor de Archivos - Maneja la persistencia de datos
- * Guarda usuarios y estado del canvas en archivos
- */
 public class FileManager {
 
     private static final String DATA_DIR = "data";
     private static final String USERS_FILE = DATA_DIR + "/users.dat";
     private static final String CANVAS_FILE = DATA_DIR + "/canvas.dat";
+    
 
-    /**
-     * Constructor - Crea el directorio de datos si no existe
-     */
     public FileManager() {
         File dataDir = new File(DATA_DIR);
         if (!dataDir.exists()) {
@@ -27,12 +21,6 @@ public class FileManager {
         }
     }
 
-    // ==================== GESTIÓN DE USUARIOS ====================
-
-    /**
-     * Carga todos los usuarios desde el archivo
-     */
-    @SuppressWarnings("unchecked")
     public Map<String, Usuario> cargarUsuarios() {
         File file = new File(USERS_FILE);
 
@@ -42,6 +30,7 @@ public class FileManager {
         }
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+        	@SuppressWarnings("unchecked")
             Map<String, Usuario> usuarios = (Map<String, Usuario>) ois.readObject();
             System.out.println("Usuarios cargados: " + usuarios.size());
             return usuarios;
@@ -51,9 +40,6 @@ public class FileManager {
         }
     }
 
-    /**
-     * Guarda todos los usuarios en el archivo
-     */
     public void guardarUsuarios(Map<String, Usuario> usuarios) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(USERS_FILE))) {
             oos.writeObject(usuarios);
@@ -63,11 +49,6 @@ public class FileManager {
         }
     }
 
-    // ==================== GESTIÓN DEL CANVAS ====================
-
-    /**
-     * Carga el estado del canvas desde el archivo
-     */
     public Color[][] cargarCanvas(int width, int height) {
         File file = new File(CANVAS_FILE);
 
@@ -93,9 +74,6 @@ public class FileManager {
         }
     }
 
-    /**
-     * Guarda el estado del canvas en el archivo
-     */
     public void guardarCanvas(Color[][] canvas) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(CANVAS_FILE))) {
             oos.writeObject(canvas);
@@ -105,9 +83,6 @@ public class FileManager {
         }
     }
 
-    /**
-     * Crea un canvas vacío (blanco)
-     */
     private Color[][] crearCanvasVacio(int width, int height) {
         Color[][] canvas = new Color[width][height];
         for (int x = 0; x < width; x++) {
@@ -118,17 +93,11 @@ public class FileManager {
         return canvas;
     }
 
-    /**
-     * Exporta el canvas como imagen PNG
-     */
     public void exportarCanvasPNG(Color[][] canvas, String filename) {
-        // Implementación para exportar a PNG (opcional)
+       
         System.out.println("Exportar a PNG no implementado aún");
     }
 
-    /**
-     * Limpia todos los datos persistidos
-     */
     public void limpiarDatos() {
         File usersFile = new File(USERS_FILE);
         File canvasFile = new File(CANVAS_FILE);
