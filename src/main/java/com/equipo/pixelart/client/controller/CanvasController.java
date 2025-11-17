@@ -8,10 +8,7 @@ import java.awt.event.MouseEvent;
 import com.equipo.pixelart.client.model.CanvasModel;
 import com.equipo.pixelart.client.view.CanvasPanel;
 
-/**
- * Controlador del Canvas - Gestiona las interacciones de dibujo del usuario
- * Patrón MVC: Conecta la vista (CanvasPanel) con el modelo (CanvasModel)
- */
+
 public class CanvasController {
 
     private final CanvasModel model;
@@ -188,9 +185,6 @@ public class CanvasController {
         floodFillRecursive(x, y - 1, targetColor);
     }
 
-    /**
-     * Toma el color del píxel seleccionado (Eyedropper)
-     */
     private void pickColor(Point p) {
         if (!model.isValidPosition(p.x, p.y)) return;
 
