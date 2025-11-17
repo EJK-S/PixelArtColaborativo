@@ -9,23 +9,18 @@ import javax.swing.JColorChooser;
 import javax.swing.JSlider;
 
 
-
-/**
- * Controlador de la Caja de Herramientas
- * Gestiona las herramientas de dibujo, colores y configuraciones
- */
 public class ToolboxController {
 
     private final ToolboxPanel view;
     private final CanvasController canvasController;
 
-    // Herramientas disponibles
+   
     private static final String TOOL_PENCIL = "pencil";
     private static final String TOOL_ERASER = "eraser";
     private static final String TOOL_BUCKET = "bucket";
     private static final String TOOL_EYEDROPPER = "eyedropper";
 
-    // Colores predefinidos comunes
+
     private static final Color[] PRESET_COLORS = {
             Color.BLACK, Color.WHITE, Color.RED, Color.GREEN, Color.BLUE,
             Color.YELLOW, Color.ORANGE, Color.PINK, Color.MAGENTA, Color.CYAN,
@@ -41,33 +36,33 @@ public class ToolboxController {
             new Color(255, 215, 0)     // Dorado
     };
 
-    // Estado actual
+  
     private String currentTool;
     private Color currentColor;
     private Color secondaryColor; // Para el botón derecho del mouse
     private int brushSize;
 
-    /**
-     * Constructor
-     */
+   
     public ToolboxController(ToolboxPanel view, CanvasController canvasController) {
         this.view = view;
         this.canvasController = canvasController;
 
-        // Valores por defecto
+        
         this.currentTool = TOOL_PENCIL;
         this.currentColor = Color.BLACK;
         this.secondaryColor = Color.WHITE;
         this.brushSize = 1;
 
-        initializeListeners();
+        
+    }
+    
+    public void init() {
+    	initializeListeners();
         updateCanvasController();
     }
 
-    /**
-     * Inicializa todos los listeners de la toolbox
-     */
-    private void initializeListeners() {
+   
+    private  void initializeListeners() {
         // Botones de herramientas
         view.getPencilButton().addActionListener(e -> selectTool(TOOL_PENCIL));
         view.getEraserButton().addActionListener(e -> selectTool(TOOL_ERASER));
@@ -290,7 +285,7 @@ public class ToolboxController {
     /**
      * Actualiza el canvas controller con los valores actuales
      */
-    private void updateCanvasController() {
+    private  void updateCanvasController() {
         canvasController.setCurrentTool(currentTool);
         canvasController.setCurrentColor(currentColor);
         canvasController.setBrushSize(brushSize);

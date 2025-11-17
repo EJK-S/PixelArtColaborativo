@@ -1,4 +1,4 @@
-package com.equipo.pixelart.client;
+package com.equipo.pixelart.client.app;
 
 import com.equipo.pixelart.client.controller.CanvasController;
 import com.equipo.pixelart.client.controller.NetworkController;
@@ -8,10 +8,7 @@ import com.equipo.pixelart.client.view.*;
 
 import javax.swing.*;
 
-/**
- * Aplicación Cliente compacta y optimizada.
- * Mantiene toda la funcionalidad en una sola clase pero organizada.
- */
+
 public class ClientApp {
 
     private MainFrame mainFrame;
@@ -22,22 +19,19 @@ public class ClientApp {
     private CanvasPanel canvasPanel;
     private ChatPanel chatPanel;
     private UserListPanel userListPanel;
-
+    
     private NetworkController networkController;
     private CanvasController canvasController;
     private ToolboxController toolboxController;
 
     public ClientApp() {
-        initComponents();
-        initControllers();
-        initMainFrame();
-        initEvents();
+        inicializacionComponentes();
+        inicializacionControladores();
+        inicialiazarMarcoPrincipal();
+        iniciarEventos();
     }
 
-    // ============================================================
-    //  1. Inicialización de componentes
-    // ============================================================
-    private void initComponents() {
+    private void inicializacionComponentes() {
         canvasModel = new CanvasModel(48, 48);
         canvasPanel = new CanvasPanel(canvasModel, 12);
         toolboxPanel = new ToolboxPanel();
@@ -46,29 +40,21 @@ public class ClientApp {
         networkController = new NetworkController();
     }
 
-    // ============================================================
-    //  2. Inicialización de controladores
-    // ============================================================
-    private void initControllers() {
+    private void inicializacionControladores() {
         canvasController = new CanvasController(canvasModel, canvasPanel, networkController);
         toolboxController = new ToolboxController(toolboxPanel, canvasController);
+        toolboxController.init();
         networkController.setCanvasController(canvasController);
     }
 
-    // ============================================================
-    //  3. Configurar ventana principal
-    // ============================================================
-    private void initMainFrame() {
+    private void inicialiazarMarcoPrincipal() {
         mainFrame = new MainFrame();
         mainFrame.setPanels(toolboxPanel, canvasPanel, chatPanel, userListPanel);
     }
 
-    // ============================================================
-    //  4. Manejadores de eventos compactos
-    // ============================================================
-    private void initEvents() {
-        mainFrame.getConnectItem().addActionListener(e -> handleConnect());
-        mainFrame.getDisconnectItem().addActionListener(e -> handleDisconnect());
+    private void iniciarEventos() {
+        mainFrame.getConnectItem().addActionListener(e -> manejarConexion());
+        mainFrame.getDisconnectItem().addActionListener(e -> gestionarDesconexion());
         mainFrame.getExitItem().addActionListener(e -> System.exit(0));
 
         mainFrame.getClearItem().addActionListener(e -> canvasController.clearCanvas());
@@ -76,7 +62,7 @@ public class ClientApp {
                 canvasPanel.setShowGrid(mainFrame.getToggleGridItem().isSelected()));
         mainFrame.getAboutItem().addActionListener(e -> mainFrame.showAboutDialog());
 
-        chatPanel.addSendListener(e -> handleSendMessage());
+        chatPanel.addSendListener(e -> gestionarEnvioMensaje());
 
         networkController.addNetworkListener(new NetworkController.NetworkListener() {
 
@@ -90,8 +76,8 @@ public class ClientApp {
             }
 
             public void onAuthResult(boolean ok, String msg) {
-                if (ok) handleAuthSuccess();
-                else handleAuthFail(msg);
+                if (ok) procesarAutenticacionExitosa();
+                else procesarFalloDeAutenticacion(msg);
             }
 
             public void onChatMessage(String user, String txt) {
@@ -119,10 +105,7 @@ public class ClientApp {
         });
     }
 
-    // ============================================================
-    //  5. Conexión / Registro / Login
-    // ============================================================
-    private void handleConnect() {
+    private void manejarConexion() {
         var dialog = mainFrame.showConnectionDialog();
         if (!dialog.isAccepted()) return;
 
@@ -132,18 +115,18 @@ public class ClientApp {
         String pass = dialog.getPassword();
 
         if (dialog.isRegister()) {
-            handleRegistration(server, port, user, pass);
+            manejarRegistro(server, port, user, pass);
         } else {
-            handleLogin(server, port, user, pass);
+            gestionarLogin(server, port, user, pass);
         }
     }
 
-    private void handleRegistration(String s, int p, String u, String pw) {
-        if (!validateFields(s, u, pw)) { handleConnect(); return; }
+    private void manejarRegistro(String s, int p, String u, String pw) {
+        if (!validarCampos(s, u, pw)) { manejarConexion(); return; }
 
         if (!networkController.connect(s, p)) {
-            showConnectionError();
-            handleConnect();
+            mostrarErrorDeConexion();
+            manejarConexion();
             return;
         }
 
@@ -151,13 +134,13 @@ public class ClientApp {
         networkController.register(u, pw);
     }
 
-    private void handleLogin(String s, int p, String u, String pw) {
-        if (!validateFields(s, u, pw)) return;
+    private void gestionarLogin(String s, int p, String u, String pw) {
+        if (!validarCampos(s, u, pw)) return;
 
         chatPanel.addSystemMessage("Conectando a " + s + ":" + p + "...");
 
         if (!networkController.connect(s, p)) {
-            showConnectionError();
+            mostrarErrorDeConexion();
             return;
         }
 
@@ -166,7 +149,7 @@ public class ClientApp {
         networkController.login(u, pw);
     }
 
-    private boolean validateFields(String server, String user, String pw) {
+    private boolean validarCampos(String server, String user, String pw) {
         if (server.isEmpty() || user.isEmpty() || pw.isEmpty()) {
             JOptionPane.showMessageDialog(mainFrame, "Completa todos los campos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return false;
@@ -174,7 +157,7 @@ public class ClientApp {
         return true;
     }
 
-    private void handleDisconnect() {
+    private void gestionarDesconexion() {
         if (networkController.isConnected()) {
             if (JOptionPane.showConfirmDialog(mainFrame,
                     "¿Desconectar?", "Confirmar",
@@ -182,11 +165,8 @@ public class ClientApp {
                 networkController.disconnect();
         }
     }
-
-    // ============================================================
-    //  6. Chat
-    // ============================================================
-    private void handleSendMessage() {
+ 
+    private void gestionarEnvioMensaje() {
         String msg = chatPanel.getMessageAndClear();
         if (msg.isEmpty()) return;
 
@@ -197,11 +177,8 @@ public class ClientApp {
 
         chatPanel.focusMessageField();
     }
-
-    // ============================================================
-    //  7. Respuestas de Autenticación
-    // ============================================================
-    private void handleAuthSuccess() {
+ 
+    private void procesarAutenticacionExitosa() {
         String user = networkController.getUsername();
         mainFrame.updateUsername(user);
 
@@ -213,7 +190,7 @@ public class ClientApp {
         chatPanel.addSystemMessage("Autenticación exitosa");
     }
 
-    private void handleAuthFail(String msg) {
+    private void procesarFalloDeAutenticacion(String msg) {
         JOptionPane.showMessageDialog(mainFrame, msg, "Error de Autenticación", JOptionPane.ERROR_MESSAGE);
         networkController.disconnect();
 
@@ -222,14 +199,11 @@ public class ClientApp {
                     "Usuario registrado exitosamente.\nInicia sesión.",
                     "Registro Exitoso",
                     JOptionPane.INFORMATION_MESSAGE);
-            handleConnect();
+            manejarConexion();
         }
     }
 
-    // ============================================================
-    //  Utilidades
-    // ============================================================
-    private void showConnectionError() {
+    private void mostrarErrorDeConexion() {
         JOptionPane.showMessageDialog(mainFrame,
                 "No se pudo conectar al servidor.",
                 "Error", JOptionPane.ERROR_MESSAGE);
@@ -239,14 +213,11 @@ public class ClientApp {
         try { Thread.sleep(ms); } catch (Exception ignored) {}
     }
 
-    // ============================================================
-    //  Arranque
-    // ============================================================
     public void start() {
         SwingUtilities.invokeLater(() -> {
             mainFrame.setVisible(true);
             chatPanel.addSystemMessage("=== Pixel Art Colaborativo ===");
-            handleConnect();
+            manejarConexion();
         });
     }
 
