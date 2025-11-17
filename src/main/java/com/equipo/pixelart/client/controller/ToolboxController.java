@@ -99,9 +99,7 @@ public class ToolboxController {
         view.getLoadButton().addActionListener(e -> loadCanvas());
     }
 
-    /**
-     * Inicializa los botones de colores predefinidos
-     */
+  
     private void initializeColorPresets() {
         JButton[] colorButtons = view.getColorPresetButtons();
 
@@ -112,9 +110,7 @@ public class ToolboxController {
         }
     }
 
-    /**
-     * Selecciona una herramienta
-     */
+    
     private void selectTool(String tool) {
         currentTool = tool;
 
@@ -126,10 +122,7 @@ public class ToolboxController {
 
         System.out.println("Herramienta seleccionada: " + tool);
     }
-
-    /**
-     * Abre el selector de color primario
-     */
+ 
     private void choosePrimaryColor() {
         Color newColor = JColorChooser.showDialog(
                 view,
@@ -142,9 +135,7 @@ public class ToolboxController {
         }
     }
 
-    /**
-     * Abre el selector de color secundario
-     */
+    
     private void chooseSecondaryColor() {
         Color newColor = JColorChooser.showDialog(
                 view,
@@ -156,10 +147,7 @@ public class ToolboxController {
             setSecondaryColor(newColor);
         }
     }
-
-    /**
-     * Intercambia los colores primario y secundario
-     */
+  
     private void swapColors() {
         Color temp = currentColor;
         currentColor = secondaryColor;
@@ -173,17 +161,11 @@ public class ToolboxController {
 
         System.out.println("Colores intercambiados");
     }
-
-    /**
-     * Selecciona un color predefinido
-     */
+    
     private void selectPresetColor(Color color) {
         setCurrentColor(color);
     }
 
-    /**
-     * Cambia el tamaño del pincel
-     */
     private void changeBrushSize(int size) {
         brushSize = size;
 
@@ -195,10 +177,7 @@ public class ToolboxController {
 
         System.out.println("Tamaño de pincel: " + size);
     }
-
-    /**
-     * Limpia el canvas
-     */
+    
     private void clearCanvas() {
         int confirm = view.showConfirmDialog(
                 "¿Estás seguro de que quieres limpiar el canvas?",
@@ -210,10 +189,7 @@ public class ToolboxController {
             System.out.println("Canvas limpiado");
         }
     }
-
-    /**
-     * Guarda el canvas actual
-     */
+  
     private void saveCanvas() {
         try {
             String filename = view.showSaveDialog();
@@ -235,10 +211,7 @@ public class ToolboxController {
             System.err.println("Error guardando canvas: " + e.getMessage());
         }
     }
-
-    /**
-     * Carga un canvas desde archivo
-     */
+  
     private void loadCanvas() {
         try {
             String filename = view.showLoadDialog();
@@ -257,9 +230,6 @@ public class ToolboxController {
         }
     }
 
-    /**
-     * Establece el color actual
-     */
     public void setCurrentColor(Color color) {
         this.currentColor = color;
 
@@ -271,10 +241,7 @@ public class ToolboxController {
 
         System.out.println("Color seleccionado: " + colorToString(color));
     }
-
-    /**
-     * Establece el color secundario
-     */
+ 
     public void setSecondaryColor(Color color) {
         this.secondaryColor = color;
 
@@ -282,25 +249,18 @@ public class ToolboxController {
         view.updateColorDisplay(currentColor, secondaryColor);
     }
 
-    /**
-     * Actualiza el canvas controller con los valores actuales
-     */
+
     private  void updateCanvasController() {
         canvasController.setCurrentTool(currentTool);
         canvasController.setCurrentColor(currentColor);
         canvasController.setBrushSize(brushSize);
     }
 
-    /**
-     * Convierte un color a string legible
-     */
     private String colorToString(Color color) {
         return String.format("RGB(%d, %d, %d)",
                 color.getRed(), color.getGreen(), color.getBlue());
     }
-
-    // ==================== GETTERS ====================
-
+ 
     public String getCurrentTool() {
         return currentTool;
     }

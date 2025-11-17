@@ -17,45 +17,37 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 
-/**
- * Panel de Herramientas - Contiene todas las herramientas de dibujo
- */
+
 public class ToolboxPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
-    // Botones de herramientas
+ 
     private JButton pencilButton;
     private JButton eraserButton;
     private JButton bucketButton;
     private JButton eyedropperButton;
 
-    // Selectores de color
+   
     private JButton primaryColorButton;
     private JButton secondaryColorButton;
     private JButton swapColorsButton;
 
-    // Botones de colores predefinidos
+    
     private JButton[] colorPresetButtons;
     private static final int COLOR_PRESET_COUNT = 20;
 
-    // Control de tamaño de pincel
+   
     private JSlider brushSizeSlider;
     private JLabel brushSizeLabel;
 
-    // Botones de acción
+    
     private JButton clearButton;
     private JButton saveButton;
     private JButton loadButton;
 
-    /**
-     * Constructor
-     */
     public ToolboxPanel() {
         setupUI();
     }
 
-    /**
-     * Configura la interfaz del panel
-     */
     private void setupUI() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createTitledBorder(
@@ -67,7 +59,6 @@ public class ToolboxPanel extends JPanel {
         ));
         setPreferredSize(new Dimension(280, 600));
 
-        // Agregar secciones
         add(createToolsSection());
         add(Box.createVerticalStrut(10));
         add(createColorSection());
@@ -80,9 +71,6 @@ public class ToolboxPanel extends JPanel {
         add(Box.createVerticalGlue());
     }
 
-    /**
-     * Crea la sección de herramientas
-     */
     private JPanel createToolsSection() {
         JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
         panel.setBorder(BorderFactory.createTitledBorder("Herramientas"));
@@ -100,9 +88,6 @@ public class ToolboxPanel extends JPanel {
         return panel;
     }
 
-    /**
-     * Crea un botón de herramienta
-     */
     private JButton createToolButton(String text, String name) {
         JButton button = new JButton(text);
         button.setName(name);
@@ -111,14 +96,10 @@ public class ToolboxPanel extends JPanel {
         return button;
     }
 
-    /**
-     * Crea la sección de colores primario y secundario
-     */
     private JPanel createColorSection() {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(BorderFactory.createTitledBorder("Colores"));
 
-        // Panel de colores
         JPanel colorPanel = new JPanel(new GridLayout(1, 2, 5, 5));
 
         primaryColorButton = new JButton();
@@ -136,7 +117,6 @@ public class ToolboxPanel extends JPanel {
         colorPanel.add(primaryColorButton);
         colorPanel.add(secondaryColorButton);
 
-        // Botón de intercambio
         swapColorsButton = new JButton("⇄ Intercambiar");
         swapColorsButton.setFont(new Font("Arial", Font.PLAIN, 10));
 
@@ -146,9 +126,6 @@ public class ToolboxPanel extends JPanel {
         return panel;
     }
 
-    /**
-     * Crea la sección de colores predefinidos
-     */
     private JPanel createColorPresetsSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Paleta"));
@@ -169,9 +146,6 @@ public class ToolboxPanel extends JPanel {
         return panel;
     }
 
-    /**
-     * Crea la sección de tamaño de pincel
-     */
     private JPanel createBrushSizeSection() {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(BorderFactory.createTitledBorder("Tamaño del Pincel"));
@@ -191,9 +165,6 @@ public class ToolboxPanel extends JPanel {
         return panel;
     }
 
-    /**
-     * Crea la sección de acciones
-     */
     private JPanel createActionsSection() {
         JPanel panel = new JPanel(new GridLayout(3, 1, 5, 5));
         panel.setBorder(BorderFactory.createTitledBorder("Acciones"));
@@ -214,32 +185,22 @@ public class ToolboxPanel extends JPanel {
         return panel;
     }
 
-    /**
-     * Actualiza la visualización de colores
-     */
     public void updateColorDisplay(Color primary, Color secondary) {
         primaryColorButton.setBackground(primary);
         secondaryColorButton.setBackground(secondary);
     }
 
-    /**
-     * Actualiza el label del tamaño de pincel
-     */
     public void updateBrushSizeLabel(int size) {
         brushSizeLabel.setText("Tamaño: " + size);
     }
 
-    /**
-     * Marca una herramienta como seleccionada
-     */
     public void setSelectedTool(String toolName) {
-        // Resetear todos los botones
+
         pencilButton.setBorder(BorderFactory.createEmptyBorder());
         eraserButton.setBorder(BorderFactory.createEmptyBorder());
         bucketButton.setBorder(BorderFactory.createEmptyBorder());
         eyedropperButton.setBorder(BorderFactory.createEmptyBorder());
 
-        // Marcar el seleccionado
         JButton selectedButton = null;
         switch (toolName) {
             case "pencil" -> selectedButton = pencilButton;
@@ -253,17 +214,11 @@ public class ToolboxPanel extends JPanel {
         }
     }
 
-    /**
-     * Muestra un diálogo de confirmación
-     */
     public int showConfirmDialog(String message, String title) {
         return JOptionPane.showConfirmDialog(this, message, title,
                 JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
     }
 
-    /**
-     * Muestra un diálogo de guardar archivo
-     */
     public String showSaveDialog() {
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showSaveDialog(this);
@@ -274,9 +229,6 @@ public class ToolboxPanel extends JPanel {
         return null;
     }
 
-    /**
-     * Muestra un diálogo de cargar archivo
-     */
     public String showLoadDialog() {
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showOpenDialog(this);
@@ -287,23 +239,16 @@ public class ToolboxPanel extends JPanel {
         return null;
     }
 
-    /**
-     * Muestra un mensaje
-     */
     public void showMessage(String message, String title) {
         JOptionPane.showMessageDialog(this, message, title,
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-    /**
-     * Muestra un error
-     */
     public void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Error",
                 JOptionPane.ERROR_MESSAGE);
     }
 
-    // ==================== GETTERS ====================
 
     public JButton getPencilButton() { return pencilButton; }
     public JButton getEraserButton() { return eraserButton; }

@@ -18,24 +18,19 @@ public class CanvasController {
     private final CanvasPanel view;
     private final NetworkController networkController;
 
-    // Estado actual de la herramienta
     private Color currentColor;
-    private String currentTool; // "pencil", "eraser", "bucket", "eyedropper"
+    private String currentTool;
     private int brushSize;
 
-    // Control de arrastre
+  
     private boolean isDragging;
     private Point lastPoint;
 
-    /**
-     * Constructor
-     */
     public CanvasController(CanvasModel model, CanvasPanel view, NetworkController networkController) {
         this.model = model;
         this.view = view;
         this.networkController = networkController;
-
-        // Valores por defecto
+      
         this.currentColor = Color.BLACK;
         this.currentTool = "pencil";
         this.brushSize = 1;
@@ -44,9 +39,6 @@ public class CanvasController {
         initializeListeners();
     }
 
-    /**
-     * Inicializa los listeners del mouse para el canvas
-     */
     private void initializeListeners() {
         view.addMouseListener(new MouseAdapter() {
             @Override
@@ -73,9 +65,6 @@ public class CanvasController {
         });
     }
 
-    /**
-     * Maneja el evento de presionar el mouse
-     */
     private void handleMousePressed(MouseEvent e) {
         Point gridPoint = view.pixelToGrid(e.getPoint());
 
@@ -84,24 +73,17 @@ public class CanvasController {
         isDragging = true;
         lastPoint = gridPoint;
 
-        // Aplicar herramienta según el tipo
         if (currentTool.equals("pencil") || currentTool.equals("eraser")) {
             drawPixel(gridPoint);
         }
     }
 
-    /**
-     * Maneja el evento de soltar el mouse
-     */
     @SuppressWarnings("unused")
     private void handleMouseReleased(MouseEvent e) {
         isDragging = false;
         lastPoint = null;
     }
 
-    /**
-     * Maneja el evento de click del mouse
-     */
     private void handleMouseClicked(MouseEvent e) {
         Point gridPoint = view.pixelToGrid(e.getPoint());
 
@@ -113,9 +95,6 @@ public class CanvasController {
         }
     }
 
-    /**
-     * Maneja el evento de arrastrar el mouse
-     */
     private void handleMouseDragged(MouseEvent e) {
         if (!isDragging) return;
 
@@ -131,9 +110,6 @@ public class CanvasController {
         lastPoint = gridPoint;
     }
 
-    /**
-     * Dibuja un píxel en la posición especificada
-     */
     private void drawPixel(Point p) {
         Color colorToUse = currentTool.equals("eraser") ? Color.WHITE : currentColor;
 
@@ -157,9 +133,6 @@ public class CanvasController {
         view.repaint();
     }
 
-    /**
-     * Dibuja una línea entre dos puntos (algoritmo de Bresenham)
-     */
     private void drawLine(Point p1, Point p2) {
         int dx = Math.abs(p2.x - p1.x);
         int dy = Math.abs(p2.y - p1.y);
@@ -187,9 +160,6 @@ public class CanvasController {
         }
     }
 
-    /**
-     * Relleno de área (Flood Fill)
-     */
     private void floodFill(Point start) {
         if (!model.isValidPosition(start.x, start.y)) return;
 
@@ -203,9 +173,6 @@ public class CanvasController {
         view.repaint();
     }
 
-    /**
-     * Algoritmo recursivo de flood fill
-     */
     private void floodFillRecursive(int x, int y, Color targetColor) {
         if (!model.isValidPosition(x, y)) return;
         if (!model.getPixel(x, y).equals(targetColor)) return;
@@ -214,7 +181,7 @@ public class CanvasController {
         model.setPixel(x, y, currentColor);
         networkController.sendPixelUpdate(x, y, currentColor);
 
-        // Llamadas recursivas a los 4 vecinos
+      
         floodFillRecursive(x + 1, y, targetColor);
         floodFillRecursive(x - 1, y, targetColor);
         floodFillRecursive(x, y + 1, targetColor);
@@ -234,17 +201,11 @@ public class CanvasController {
         setCurrentTool("pencil");
     }
 
-    /**
-     * Actualiza el canvas completo desde el servidor
-     */
     public void updateCanvas(Color[][] pixels) {
         model.setPixels(pixels);
         view.repaint();
     }
 
-    /**
-     * Actualiza un píxel individual desde el servidor
-     */
     public void updatePixelFromServer(int x, int y, Color color) {
         if (model.isValidPosition(x, y)) {
             model.setPixel(x, y, color);
@@ -252,16 +213,11 @@ public class CanvasController {
         }
     }
 
-    /**
-     * Limpia todo el canvas
-     */
     public void clearCanvas() {
         model.clear();
         networkController.sendClearCanvas();
         view.repaint();
     }
-
-    // ==================== SETTERS ====================
 
     public void setCurrentColor(Color color) {
         this.currentColor = color;
@@ -274,8 +230,6 @@ public class CanvasController {
     public void setBrushSize(int size) {
         this.brushSize = Math.max(1, size);
     }
-
-    // ==================== GETTERS ====================
 
     public Color getCurrentColor() {
         return currentColor;

@@ -7,10 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingUtilities;
 
-/**
- * Controlador de Red - Gestiona toda la comunicación con el servidor
- * Maneja: Autenticación, sincronización del canvas, chat y lista de usuarios
- */
 public class NetworkController {
 
     private Socket socket;
@@ -18,29 +14,19 @@ public class NetworkController {
     private BufferedReader in;
     private boolean connected;
 
-    // Referencias a otros controladores
     private CanvasController canvasController;
 
-    // Listeners para eventos de red
     private List<NetworkListener> listeners;
 
-    // Thread para recibir mensajes
     private Thread receiverThread;
 
-    // Información del usuario
     private String username;
 
-    /**
-     * Constructor
-     */
     public NetworkController() {
         this.connected = false;
         this.listeners = new ArrayList<>();
     }
-
-    /**
-     * Conecta al servidor
-     */
+  
     public boolean connect(String host, int port) {
         try {
             System.out.println("🔗 Intentando conectar a " + host + ":" + port);
@@ -53,8 +39,7 @@ public class NetworkController {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             connected = true;
-
-            // Iniciar thread de recepción
+          
             startReceiver();
 
             System.out.println("✅ Conectado exitosamente a " + host + ":" + port);
@@ -80,10 +65,7 @@ public class NetworkController {
             return false;
         }
     }
-
-    /**
-     * Desconecta del servidor
-     */
+ 
     public void disconnect() {
         if (!connected) return;
 
@@ -103,9 +85,6 @@ public class NetworkController {
         }
     }
 
-    /**
-     * Inicia el thread que recibe mensajes del servidor
-     */
     private void startReceiver() {
         receiverThread = new Thread(() -> {
             try {
@@ -125,10 +104,6 @@ public class NetworkController {
         receiverThread.start();
     }
 
-    /**
-     * Procesa mensajes recibidos del servidor
-     * Protocolo: COMMAND|param1|param2|...
-     */
     private void processMessage(String message) {
         String[] parts = message.split("\\|");
 
@@ -189,11 +164,6 @@ public class NetworkController {
         });
     }
 
-    // ==================== ENVIAR MENSAJES ====================
-
-    /**
-     * Envía un mensaje al servidor
-     */
     private void sendMessage(String message) {
         if (!connected || out == null) {
             System.err.println("No conectado al servidor");
@@ -202,56 +172,35 @@ public class NetworkController {
         out.println(message);
     }
 
-    /**
-     * Intenta autenticarse con el servidor
-     */
     public void login(String username, String password) {
         this.username = username;
         sendMessage("LOGIN|" + username + "|" + password);
         System.out.println("Enviando LOGIN para: " + username);
     }
 
-    /**
-     * Intenta registrar un nuevo usuario
-     */
     public void register(String username, String password) {
         this.username = username;
         sendMessage("REGISTER|" + username + "|" + password);
         System.out.println("Enviando REGISTER para: " + username);
     }
 
-    /**
-     * Envía actualización de un píxel
-     */
     public void sendPixelUpdate(int x, int y, Color color) {
         String colorHex = String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
         sendMessage("PIXEL|" + x + "|" + y + "|" + colorHex);
     }
 
-    /**
-     * Solicita el estado completo del canvas
-     */
     public void requestCanvasState() {
         sendMessage("GET_CANVAS");
     }
 
-    /**
-     * Envía comando para limpiar el canvas
-     */
     public void sendClearCanvas() {
         sendMessage("CLEAR");
     }
 
-    /**
-     * Envía un mensaje de chat
-     */
     public void sendChatMessage(String message) {
         sendMessage("CHAT|" + message);
     }
 
-    /**
-     * Solicita la lista de usuarios conectados
-     */
     public void requestUserList() {
         sendMessage("GET_USERS");
     }
@@ -265,7 +214,6 @@ public class NetworkController {
         }
         notifyAuthResult(true, "Autenticación exitosa");
 
-        // Solicitar estado inicial
         requestCanvasState();
         requestUserList();
     }
@@ -334,7 +282,7 @@ public class NetworkController {
     }
 
     private void handleChatMessage(String[] parts) {
-        // CHAT_MESSAGE|username|message
+        
         if (parts.length < 3) return;
 
         String user = parts[1];
@@ -344,7 +292,7 @@ public class NetworkController {
     }
 
     private void handleUserJoined(String[] parts) {
-        // USER_JOINED|username
+        
         if (parts.length < 2) return;
 
         String user = parts[1];
@@ -352,7 +300,7 @@ public class NetworkController {
     }
 
     private void handleUserLeft(String[] parts) {
-        // USER_LEFT|username
+      
         if (parts.length < 2) return;
 
         String user = parts[1];
@@ -360,7 +308,7 @@ public class NetworkController {
     }
 
     private void handleUserList(String[] parts) {
-        // USER_LIST|user1,user2,user3
+      
         if (parts.length < 2) return;
 
         String[] users = parts[1].split(",");
@@ -368,12 +316,10 @@ public class NetworkController {
     }
 
     private void handleError(String[] parts) {
-        // ERROR|message
+        
         String errorMsg = parts.length > 1 ? parts[1] : "Error desconocido";
         notifyError(errorMsg);
     }
-
-    // ==================== LISTENERS ====================
 
     public void addNetworkListener(NetworkListener listener) {
         listeners.add(listener);
@@ -425,13 +371,9 @@ public class NetworkController {
         }
     }
 
-    // ==================== SETTERS ====================
-
     public void setCanvasController(CanvasController canvasController) {
         this.canvasController = canvasController;
     }
-
-    // ==================== GETTERS ====================
 
     public boolean isConnected() {
         return connected;
@@ -441,11 +383,6 @@ public class NetworkController {
         return username;
     }
 
-    // ==================== INTERFAZ LISTENER ====================
-
-    /**
-     * Interfaz para recibir eventos de red
-     */
     public interface NetworkListener {
         default void onConnectionStatusChanged(boolean connected, String message) {}
         default void onAuthResult(boolean success, String message) {}

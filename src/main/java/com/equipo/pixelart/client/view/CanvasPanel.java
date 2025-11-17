@@ -10,15 +10,12 @@ import java.awt.*;
 public class CanvasPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
     private final CanvasModel model;
-    private final int pixelSize; // Tamaño de cada píxel en pantalla
+    private final int pixelSize; 
     private final int gridWidth;
     private final int gridHeight;
 
     private boolean showGrid;
 
-    /**
-     * Constructor
-     */
     public CanvasPanel(CanvasModel model, int pixelSize) {
         this.model = model;
         this.pixelSize = pixelSize;
@@ -29,16 +26,10 @@ public class CanvasPanel extends JPanel {
         setupPanel();
     }
 
-    /**
-     * Constructor con tamaño de píxel por defecto (12px)
-     */
     public CanvasPanel(CanvasModel model) {
         this(model, 12);
     }
 
-    /**
-     * Configura las propiedades del panel
-     */
     private void setupPanel() {
         int width = gridWidth * pixelSize;
         int height = gridHeight * pixelSize;
@@ -48,9 +39,6 @@ public class CanvasPanel extends JPanel {
         setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
     }
 
-    /**
-     * Dibuja el canvas
-     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -69,9 +57,6 @@ public class CanvasPanel extends JPanel {
         }
     }
 
-    /**
-     * Dibuja todos los píxeles del canvas
-     */
     private void drawPixels(Graphics2D g2d) {
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
@@ -86,28 +71,22 @@ public class CanvasPanel extends JPanel {
         }
     }
 
-    /**
-     * Dibuja la cuadrícula
-     */
     private void drawGrid(Graphics2D g2d) {
         g2d.setColor(new Color(200, 200, 200, 100)); // Gris semi-transparente
 
-        // Líneas verticales
+        
         for (int x = 0; x <= gridWidth; x++) {
             int screenX = x * pixelSize;
             g2d.drawLine(screenX, 0, screenX, gridHeight * pixelSize);
         }
 
-        // Líneas horizontales
+      
         for (int y = 0; y <= gridHeight; y++) {
             int screenY = y * pixelSize;
             g2d.drawLine(0, screenY, gridWidth * pixelSize, screenY);
         }
     }
 
-    /**
-     * Convierte coordenadas de pantalla a coordenadas de grid
-     */
     public Point pixelToGrid(Point screenPoint) {
         if (screenPoint == null) return null;
 
@@ -122,9 +101,6 @@ public class CanvasPanel extends JPanel {
         return null;
     }
 
-    /**
-     * Convierte coordenadas de grid a coordenadas de pantalla
-     */
     public Point gridToPixel(Point gridPoint) {
         if (gridPoint == null) return null;
 
@@ -134,17 +110,11 @@ public class CanvasPanel extends JPanel {
         return new Point(screenX, screenY);
     }
 
-    /**
-     * Activa o desactiva la visualización del grid
-     */
     public void setShowGrid(boolean showGrid) {
         this.showGrid = showGrid;
         repaint();
     }
 
-    /**
-     * Exporta el canvas como imagen
-     */
     public Image exportAsImage() {
         int width = gridWidth * pixelSize;
         int height = gridHeight * pixelSize;
@@ -157,7 +127,6 @@ public class CanvasPanel extends JPanel {
         return img;
     }
 
-    // ==================== GETTERS ====================
 
     public boolean isShowGrid() {
         return showGrid;
