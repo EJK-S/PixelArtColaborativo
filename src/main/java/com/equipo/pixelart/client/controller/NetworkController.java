@@ -368,6 +368,13 @@ public class NetworkController {
         }
     }
 
+    /**
+     * Solicita deshacer al servidor
+     */
+    public void sendUndo() {
+        sendMessage("UNDO");
+    }
+
 
     public boolean isConnected() {
         return connected;

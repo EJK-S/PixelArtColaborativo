@@ -67,6 +67,9 @@ public class CanvasController {
 
         if (gridPoint == null) return; // Fuera del canvas
 
+        // Guardar estado antes de dibujar
+        model.saveState();
+
         isDragging = true;
         lastPoint = gridPoint;
 
@@ -211,6 +214,25 @@ public class CanvasController {
         model.clear();
         networkController.sendClearCanvas();
         view.repaint();
+    }
+    /**
+     * Deshace el último cambio
+     */
+    public void undo() {
+        if (model.canUndo()) {
+            // Enviar comando UNDO al servidor
+            networkController.sendUndo();
+            System.out.println("Solicitando deshacer al servidor");
+        } else {
+            System.out.println("No hay cambios para deshacer");
+        }
+    }
+
+    /**
+     * Verifica si se puede deshacer
+     */
+    public boolean canUndo() {
+        return model.canUndo();
     }
 
     public void setCurrentColor(Color color) {

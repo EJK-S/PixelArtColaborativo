@@ -14,6 +14,7 @@ public class MainFrame extends JFrame {
     private JMenuItem disconnectItem;
     private JMenuItem exitItem;
     private JMenuItem clearItem;
+    private JMenuItem undoItem;
     private JMenuItem toggleGridItem;
     private JMenuItem aboutItem;
 
@@ -73,9 +74,13 @@ public class MainFrame extends JFrame {
         JMenu editMenu = new JMenu("Edición");
         editMenu.setMnemonic('E');
 
+        undoItem = new JMenuItem("Deshacer");
+        undoItem.setAccelerator(KeyStroke.getKeyStroke("ctrl Z"));
+
         clearItem = new JMenuItem("Limpiar Canvas");
         clearItem.setAccelerator(KeyStroke.getKeyStroke("ctrl L"));
 
+        editMenu.add(undoItem);
         editMenu.add(clearItem);
 
         
@@ -222,6 +227,7 @@ public class MainFrame extends JFrame {
     public JMenuItem getDisconnectItem() { return disconnectItem; }
     public JMenuItem getExitItem() { return exitItem; }
     public JMenuItem getClearItem() { return clearItem; }
+    public JMenuItem getUndoItem() { return undoItem; }
     public JMenuItem getToggleGridItem() { return toggleGridItem; }
     public JMenuItem getAboutItem() { return aboutItem; }
 

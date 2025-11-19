@@ -62,7 +62,7 @@ public class ClientApp {
         chatController = new ChatController(chatPanel, networkController);
         userListController = new UserListController(userListPanel, networkController);
         userListController.init();
-        menuController = new MenuController(mainFrame, canvasController, canvasPanel, this);
+        menuController = new MenuController(mainFrame, canvasController, canvasPanel, this, toolboxPanel);
     }
 
     private void inicialiazarMarcoPrincipal() {

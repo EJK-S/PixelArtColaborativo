@@ -92,6 +92,9 @@ public class ToolboxController {
         // Botón de limpiar canvas
         view.getClearButton().addActionListener(e -> clearCanvas());
 
+        // Botón de deshacer
+        view.getUndoButton().addActionListener(e -> undo());
+
         // Botón de guardar
         view.getSaveButton().addActionListener(e -> saveCanvas());
 
@@ -247,6 +250,13 @@ public class ToolboxController {
 
         // Actualizar UI
         view.updateColorDisplay(currentColor, secondaryColor);
+    }
+
+    /**
+     * Deshace el último cambio
+     */
+    private void undo() {
+        canvasController.undo();
     }
 
 

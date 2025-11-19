@@ -95,6 +95,10 @@ public class ClientHandler implements Runnable {
                     running = false;
                     break;
 
+                case "UNDO":
+                    if (authenticated) handleUndo();
+                    break;
+
                 default:
                     sendMessage("ERROR|Comando desconocido: " + command);
             }
@@ -244,6 +248,29 @@ public class ClientHandler implements Runnable {
         }
 
         System.out.println("Cliente desconectado: " + socket.getInetAddress());
+    }
+    /**
+     * Maneja el comando UNDO
+     */
+    private void handleUndo() {
+        // El servidor también debe mantener historial
+        if (canvasService.undo()) {
+            // Obtener el estado actual después del undo
+            String canvasData = canvasService.getCanvasAsString();
+            int width = canvasService.getWidth();
+            int height = canvasService.getHeight();
+
+            // Enviar el canvas completo a TODOS los clientes
+            String msg = "CANVAS_STATE|" + width + "|" + height + "|" + canvasData;
+
+            for (ClientHandler client : allClients) {
+                if (client.isAuthenticated()) {
+                    client.sendMessage(msg);
+                }
+            }
+
+            System.out.println("UNDO aplicado por: " + username);
+        }
     }
 
     public String getUsername() {

@@ -43,6 +43,7 @@ public class ToolboxPanel extends JPanel {
     private JButton clearButton;
     private JButton saveButton;
     private JButton loadButton;
+    private JButton undoButton;
 
     public ToolboxPanel() {
         setupUI();
@@ -166,18 +167,22 @@ public class ToolboxPanel extends JPanel {
     }
 
     private JPanel createActionsSection() {
-        JPanel panel = new JPanel(new GridLayout(3, 1, 5, 5));
+        JPanel panel = new JPanel(new GridLayout(4, 1, 5, 5));  // ← Cambiar 3 a 4
         panel.setBorder(BorderFactory.createTitledBorder("Acciones"));
 
-        clearButton = new JButton("🗑️ Limpiar Canvas");
+        undoButton = new JButton("Deshacer (Ctrl+Z)");  // ← NUEVO
+        undoButton.setFont(new Font("Arial", Font.PLAIN, 11));  // ← NUEVO
+
+        clearButton = new JButton("Limpiar Canvas");
         clearButton.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        saveButton = new JButton("💾 Guardar");
+        saveButton = new JButton("Guardar");
         saveButton.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        loadButton = new JButton("📂 Cargar");
+        loadButton = new JButton("Cargar");
         loadButton.setFont(new Font("Arial", Font.PLAIN, 11));
 
+        panel.add(undoButton);  // ← NUEVO (primero)
         panel.add(clearButton);
         panel.add(saveButton);
         panel.add(loadButton);
@@ -263,4 +268,5 @@ public class ToolboxPanel extends JPanel {
     public JButton getClearButton() { return clearButton; }
     public JButton getSaveButton() { return saveButton; }
     public JButton getLoadButton() { return loadButton; }
+    public JButton getUndoButton() { return undoButton; }
 }

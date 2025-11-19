@@ -2,6 +2,7 @@ package com.equipo.pixelart.server.service;
 
 import com.equipo.pixelart.server.persistence.FileManager;
 import java.awt.Color;
+import java.util.Stack;
 
 
 public class CanvasService {
@@ -10,6 +11,8 @@ public class CanvasService {
     private final Color[][] canvas;
     private final int width;
     private final int height;
+    private Stack<Color[][]> undoStack;
+    private static final int MAX_UNDO_STEPS = 50;
 
     private long pixelsModificados = 0;
 
@@ -17,6 +20,7 @@ public class CanvasService {
         this.fileManager = fileManager;
         this.width = width;
         this.height = height;
+        this.undoStack = new Stack<>();
 
         this.canvas = fileManager.cargarCanvas(width, height);
 
@@ -36,6 +40,10 @@ public class CanvasService {
         if (color == null) {
             System.err.println("Color nulo");
             return false;
+        }
+        // Guardar estado antes del cambio (solo si cambió el color)
+        if (!canvas[x][y].equals(color)) {
+            saveState();
         }
 
         canvas[x][y] = color;
@@ -122,6 +130,42 @@ public class CanvasService {
     public String getEstadisticas() {
         return String.format("Canvas: %dx%d | Píxeles modificados: %d",
                 width, height, pixelsModificados);
+    }
+    /**
+     * Guarda el estado actual en el historial
+     */
+    private synchronized void saveState() {
+        Color[][] copy = new Color[width][height];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                copy[x][y] = canvas[x][y];
+            }
+        }
+
+        undoStack.push(copy);
+
+        if (undoStack.size() > MAX_UNDO_STEPS) {
+            undoStack.remove(0);
+        }
+    }
+
+    /**
+     * Deshace el último cambio
+     */
+    public synchronized boolean undo() {
+        if (undoStack.isEmpty()) {
+            return false;
+        }
+
+        Color[][] previousState = undoStack.pop();
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                canvas[x][y] = previousState[x][y];
+            }
+        }
+
+        return true;
     }
 
 
