@@ -14,20 +14,18 @@ class UserListControllerTest {
 
     @BeforeEach
     void setUp() {
-        // 1. Mocks de dependencias
+
         mockPanel = mock(UserListPanel.class);
         mockNetwork = mock(NetworkController.class);
 
-        // 2. Instanciar la clase a probar
         userListController = new UserListController(mockPanel, mockNetwork);
     }
 
     @Test
     void testInit() {
-        // Ejecutar
+
         userListController.init();
 
-        // Verificar: ¿Se agregó el controller como listener de la red?
         verify(mockNetwork).addNetworkListener(userListController);
     }
 
@@ -37,7 +35,6 @@ class UserListControllerTest {
         
         userListController.onUserJoined(usuario);
 
-        // Verificar que el panel visual agregue al usuario
         verify(mockPanel).addUser(usuario);
     }
 
@@ -61,20 +58,17 @@ class UserListControllerTest {
 
     @Test
     void testOnConnectionStatusChanged_Desconectado() {
-        // Caso: Se perdió la conexión (false)
+
         userListController.onConnectionStatusChanged(false, "Desconectado");
 
-        // Verificar: Debe limpiar la lista visual
         verify(mockPanel).clearUsers();
     }
 
     @Test
     void testOnConnectionStatusChanged_Conectado() {
-        // Caso: Se conectó (true)
-        // El código tiene un 'if (!connected)', así que si es true, NO entra al if.
+
         userListController.onConnectionStatusChanged(true, "Conectado");
 
-        // Verificar: NO debe limpiar la lista
         verify(mockPanel, never()).clearUsers();
     }
 }

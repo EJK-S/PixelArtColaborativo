@@ -14,10 +14,9 @@ class StatsCommandTest {
 
     @BeforeEach
     void setUp() {
-        // 1. Mock del servidor
+       
         mockServer = mock(ServerApp.class);
-        
-        // 2. Instancia del comando
+
         statsCommand = new StatsCommand(mockServer);
     }
 
@@ -30,10 +29,9 @@ class StatsCommandTest {
 
     @Test
     void testExecute() {
-        // 1. Ejecutar
+       
         statsCommand.execute();
 
-        // 2. Verificar que delegó la acción al método correcto del servidor
         verify(mockServer, times(1)).imprimirEstadisticas();
     }
 }

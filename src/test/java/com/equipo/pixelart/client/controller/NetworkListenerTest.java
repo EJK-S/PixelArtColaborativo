@@ -9,12 +9,10 @@ class NetworkListenerTest {
 
     @Test
     void testDefaultMethods() {
-        // 1. Creamos una implementación anónima de la interfaz
-        // Esto usa las implementaciones 'default' que definiste
+   
         NetworkListener listener = new NetworkListener() {};
 
-        // 2. Llamamos a CADA método para forzar a la JVM a entrar en las llaves {}
-        // Usamos assertDoesNotThrow para confirmar que la ejecución es limpia.
+       
         
         assertDoesNotThrow(() -> {
             listener.onConnectionStatusChanged(true, "Test Message");

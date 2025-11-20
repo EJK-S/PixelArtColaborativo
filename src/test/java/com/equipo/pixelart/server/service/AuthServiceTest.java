@@ -19,23 +19,16 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 1. Crear el Mock
+        
         mockFileManager = mock(FileManager.class);
 
-        // 2. Preparar datos iniciales (Base de datos vacía)
         baseDatosSimulada = new HashMap<>();
-        
-        // 3. ENTRENAR AL MOCK ANTES DE INSTANCIAR EL SERVICIO
-        // Esto es crucial: el constructor llama a cargarUsuarios()
+  
         when(mockFileManager.cargarUsuarios()).thenReturn(baseDatosSimulada);
 
-        // 4. Instanciar el servicio
         authService = new AuthService(mockFileManager);
     }
 
-    // ==========================================
-    // TEST DE REGISTRO
-    // ==========================================
 
     @Test
     void testRegistrarUsuarioExitoso() {
@@ -43,8 +36,7 @@ class AuthServiceTest {
 
         assertTrue(resultado);
         assertEquals(1, authService.getTotalUsuarios());
-        
-        // Verificar que se intentó guardar en disco
+
         verify(mockFileManager).guardarUsuarios(anyMap());
     }
 
@@ -59,29 +51,25 @@ class AuthServiceTest {
 
     @Test
     void testRegistrarUsuarioFallido_PasswordCorta() {
-        assertFalse(authService.registrarUsuario("Anthony", "12")); // Menos de 3 chars
+        assertFalse(authService.registrarUsuario("Anthony", "12")); 
         assertEquals(0, authService.getTotalUsuarios());
     }
 
     @Test
     void testRegistrarUsuarioFallido_YaExiste() {
-        // Primero registramos uno
-        authService.registrarUsuario("Anthony", "pass1");
         
-        // Intentamos registrar el mismo
+        authService.registrarUsuario("Anthony", "pass1");
+
         boolean resultado = authService.registrarUsuario("Anthony", "pass2");
 
         assertFalse(resultado);
         assertEquals(1, authService.getTotalUsuarios());
     }
 
-    // ==========================================
-    // TEST DE AUTENTICACIÓN (LOGIN)
-    // ==========================================
 
     @Test
     void testAutenticarExitoso() {
-        // Setup: Usuario debe existir
+       
         authService.registrarUsuario("Anthony", "secreto");
 
         boolean resultado = authService.autenticar("Anthony", "secreto");
@@ -111,18 +99,13 @@ class AuthServiceTest {
     void testAutenticarFallido_YaConectado() {
         authService.registrarUsuario("Anthony", "secreto");
 
-        // Primer login: Éxito
         authService.autenticar("Anthony", "secreto");
-        
-        // Segundo login: Fallo
+
         boolean resultado = authService.autenticar("Anthony", "secreto");
 
         assertFalse(resultado, "No debe permitir login doble");
     }
 
-    // ==========================================
-    // TEST DE DESCONEXIÓN Y ESTADO
-    // ==========================================
 
     @Test
     void testDesconectar() {
@@ -138,7 +121,7 @@ class AuthServiceTest {
 
     @Test
     void testDesconectarUsuarioNoConectado() {
-        // No debe lanzar excepción
+       
         assertDoesNotThrow(() -> authService.desconectar("Nadie"));
         assertDoesNotThrow(() -> authService.desconectar(null));
     }
@@ -154,8 +137,7 @@ class AuthServiceTest {
         String[] conectados = authService.obtenerUsuariosConectados();
         
         assertEquals(2, conectados.length);
-        // No podemos asegurar el orden en un Set, así que verificamos contenido
-        // (Esto asume que los nombres están en el array)
+
     }
     
     @Test
@@ -169,20 +151,17 @@ class AuthServiceTest {
         assertNull(authService.obtenerUsuario("Nadie"));
     }
 
-    // ==========================================
-    // TEST DE ELIMINACIÓN
-    // ==========================================
 
     @Test
     void testEliminarUsuario() {
         authService.registrarUsuario("Anthony", "pass");
-        authService.autenticar("Anthony", "pass"); // Lo conectamos también
+        authService.autenticar("Anthony", "pass"); 
 
         boolean eliminado = authService.eliminarUsuario("Anthony");
 
         assertTrue(eliminado);
         assertEquals(0, authService.getTotalUsuarios());
-        assertFalse(authService.estaConectado("Anthony")); // Debe desconectarlo también
+        assertFalse(authService.estaConectado("Anthony")); 
         verify(mockFileManager, atLeastOnce()).guardarUsuarios(anyMap());
     }
 
@@ -192,9 +171,6 @@ class AuthServiceTest {
         assertFalse(eliminado);
     }
 
-    // ==========================================
-    // TEST DE CAMBIO DE PASSWORD
-    // ==========================================
 
     @Test
     void testCambiarPasswordExitoso() {
@@ -203,11 +179,10 @@ class AuthServiceTest {
         boolean resultado = authService.cambiarPassword("Anthony", "antigua", "nueva123");
 
         assertTrue(resultado);
-        
-        // Verificar que la nueva funciona
+
         assertTrue(authService.autenticar("Anthony", "nueva123"));
-        // Verificar que la vieja ya no funciona
-        authService.desconectar("Anthony"); // Necesario para probar login de nuevo
+       
+        authService.desconectar("Anthony");
         assertFalse(authService.autenticar("Anthony", "antigua"));
     }
 
@@ -215,13 +190,8 @@ class AuthServiceTest {
     void testCambiarPasswordFallos() {
         authService.registrarUsuario("Anthony", "antigua");
 
-        // 1. Usuario no existe
         assertFalse(authService.cambiarPassword("Nadie", "1", "2"));
-
-        // 2. Password antigua incorrecta
         assertFalse(authService.cambiarPassword("Anthony", "mal", "nueva"));
-
-        // 3. Nueva password inválida (corta o null)
         assertFalse(authService.cambiarPassword("Anthony", "antigua", "12"));
         assertFalse(authService.cambiarPassword("Anthony", "antigua", null));
     }

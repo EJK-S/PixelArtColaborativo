@@ -27,10 +27,8 @@ class ExitCommandTest {
 
     @Test
     void testExecute() {
-        // Ejecutar el comando
+       
         exitCommand.execute();
-
-        // Verificar que se llamó al método de detener el servidor
         verify(mockServer, times(1)).stopServer();
     }
 }

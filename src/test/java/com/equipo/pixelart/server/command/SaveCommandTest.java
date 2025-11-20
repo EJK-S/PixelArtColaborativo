@@ -14,10 +14,9 @@ class SaveCommandTest {
 
     @BeforeEach
     void setUp() {
-        // 1. Mock del servidor
-        mockServer = mock(ServerApp.class);
         
-        // 2. Instancia del comando
+        mockServer = mock(ServerApp.class);
+  
         saveCommand = new SaveCommand(mockServer);
     }
 
@@ -30,10 +29,8 @@ class SaveCommandTest {
 
     @Test
     void testExecute() {
-        // 1. Ejecutar
+      
         saveCommand.execute();
-
-        // 2. Verificar que delegó la acción al servidor
         verify(mockServer, times(1)).saveCanvas();
     }
 }

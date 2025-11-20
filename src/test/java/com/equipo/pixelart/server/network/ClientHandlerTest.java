@@ -32,46 +32,32 @@ class ClientHandlerTest {
         mockSocket = mock(Socket.class);
         mockAuthService = mock(AuthService.class);
         mockCanvasService = mock(CanvasService.class);
-        clientList = new ArrayList<>(); // Lista real para probar añadir/quitar
+        clientList = new ArrayList<>(); 
 
-        // 2. Preparamos la "boca" falsa para capturar lo que el servidor responde
         outputStreamCaptor = new ByteArrayOutputStream();
         when(mockSocket.getOutputStream()).thenReturn(outputStreamCaptor);
 
-        // 3. Instanciamos el handler (Aun no corremos el run)
         clientHandler = new ClientHandler(mockSocket, mockAuthService, mockCanvasService, clientList);
-        clientList.add(clientHandler); // Se agrega a sí mismo como si el Server lo hubiera hecho
+        clientList.add(clientHandler); 
     }
 
-    /**
-     * Ayudante: Ejecuta el método run() inyectando comandos específicos
-     */
     private void ejecutarHandlerConComandos(String comandos) throws IOException {
-        // Inyectamos los comandos en el InputStream del socket
+       
         ByteArrayInputStream input = new ByteArrayInputStream(comandos.getBytes());
         when(mockSocket.getInputStream()).thenReturn(input);
 
-        // Ejecutamos el run(). Como el input stream es finito, el while terminará cuando lea null
-        // o cuando lea DISCONNECT.
         clientHandler.run();
     }
-
-    // ==========================================
-    // TESTS DE LOGIN Y REGISTRO
-    // ==========================================
 
     @Test
     void testLoginExitoso() throws IOException {
         when(mockAuthService.autenticar("Anthony", "123")).thenReturn(true);
 
-        // Enviamos LOGIN y luego DISCONNECT para salir del bucle
         ejecutarHandlerConComandos("LOGIN|Anthony|123\nDISCONNECT");
 
-        // Verificaciones
         assertTrue(clientHandler.isAuthenticated());
         assertEquals("Anthony", clientHandler.getUsername());
-        
-        // Verificamos que respondió AUTH_SUCCESS
+
         String respuesta = outputStreamCaptor.toString();
         assertTrue(respuesta.contains("AUTH_SUCCESS|Anthony"));
     }
@@ -98,8 +84,6 @@ class ClientHandlerTest {
 
         ejecutarHandlerConComandos("REGISTER|Nuevo|pass\nDISCONNECT");
 
-        // OJO: Según tu código, registrarse NO autentica automáticamente (no pone authenticated=true)
-        // Solo devuelve AUTH_SUCCESS
         assertTrue(outputStreamCaptor.toString().contains("AUTH_SUCCESS"));
     }
 
@@ -111,38 +95,31 @@ class ClientHandlerTest {
         assertTrue(outputStreamCaptor.toString().contains("AUTH_FAILED"));
     }
 
-    // ==========================================
-    // TESTS DE LÓGICA DE JUEGO (Requieren Auth)
-    // ==========================================
-
     @Test
     void testPixelUpdate() throws IOException {
-        // Simulamos que ya estamos logueados
+      
         when(mockAuthService.autenticar("User", "Pass")).thenReturn(true);
         when(mockCanvasService.setPixel(anyInt(), anyInt(), any())).thenReturn(true);
 
-        // Flujo: Login -> Pintar Pixel -> Salir
         ejecutarHandlerConComandos("LOGIN|User|Pass\nPIXEL|10|10|ff0000\nDISCONNECT");
 
         verify(mockCanvasService).setPixel(eq(10), eq(10), any(Color.class));
-        
-        // Verificar que mandó broadcast (se busca en la salida)
+
         assertTrue(outputStreamCaptor.toString().contains("PIXEL_UPDATE|10|10|ff0000"));
     }
 
     @Test
     void testPixelSinAutenticacion() throws IOException {
-        // Intentamos pintar sin login
-        ejecutarHandlerConComandos("PIXEL|10|10|ff0000\nDISCONNECT");
         
-        // No debe llamar al servicio
+        ejecutarHandlerConComandos("PIXEL|10|10|ff0000\nDISCONNECT");
+
         verify(mockCanvasService, never()).setPixel(anyInt(), anyInt(), any());
     }
     
     @Test
     void testPixelErrorFormato() throws IOException {
         when(mockAuthService.autenticar("User", "Pass")).thenReturn(true);
-        // Coordenada X no es un número
+        
         ejecutarHandlerConComandos("LOGIN|User|Pass\nPIXEL|XX|10|ff0000\nDISCONNECT");
         
         assertTrue(outputStreamCaptor.toString().contains("ERROR"));
@@ -151,7 +128,7 @@ class ClientHandlerTest {
     @Test
     void testPixelFalloLogico() throws IOException {
         when(mockAuthService.autenticar("User", "Pass")).thenReturn(true);
-        // El servicio dice false (ej. fuera de rango)
+       
         when(mockCanvasService.setPixel(anyInt(), anyInt(), any())).thenReturn(false);
         
         ejecutarHandlerConComandos("LOGIN|User|Pass\nPIXEL|1|1|ff0000\nDISCONNECT");
@@ -225,10 +202,6 @@ class ClientHandlerTest {
         assertTrue(outputStreamCaptor.toString().contains("CANVAS_STATE"));
     }
 
-    // ==========================================
-    // TESTS DE EXCEPCIONES Y CIERRE
-    // ==========================================
-
     @Test
     void testComandoDesconocido() throws IOException {
         ejecutarHandlerConComandos("COMANDO_RARO\nDISCONNECT");
@@ -237,22 +210,18 @@ class ClientHandlerTest {
     
     @Test
     void testEmptyMessage() throws IOException {
-        // Mensaje vacío (simulando doble pipe o error de red)
-        // split("\\|") en una linea vacia da array vacio o de 1 elemento vacio
+
         ejecutarHandlerConComandos("\nDISCONNECT"); 
-        // No debe explotar
+
     }
 
     @Test
     void testIOExceptionEnRun() throws IOException {
-        // Simulamos que el socket explota al intentar crear los streams
+        
         when(mockSocket.getInputStream()).thenThrow(new IOException("Error de red simulado"));
 
-        // Ejecutamos directamente run (no el helper)
         clientHandler.run();
 
-        // Debe imprimir error y llamar a disconnect()
-        // Verificamos que se intentó cerrar el socket
         verify(mockSocket).close();
     }
     
@@ -261,29 +230,27 @@ class ClientHandlerTest {
         when(mockAuthService.autenticar("User", "Pass")).thenReturn(true);
         
         ejecutarHandlerConComandos("LOGIN|User|Pass\nDISCONNECT");
-        
-        // Verificar que se removió de la lista
+ 
         assertFalse(clientList.contains(clientHandler));
-        // Verificar que se llamó al servicio de auth
+      
         verify(mockAuthService).desconectar("User");
-        // Verificar cierre de socket
+        
         verify(mockSocket, atLeastOnce()).close();
     }
     
     @Test
     void testExceptionEnProcessMessage() throws IOException {
-        // Provocamos un NullPointerException interno
+        
         when(mockAuthService.autenticar(any(), any())).thenThrow(new RuntimeException("Crash"));
         
         ejecutarHandlerConComandos("LOGIN|A|B\nDISCONNECT");
-        
-        // Debe capturar la excepción y mandar ERROR
+
         assertTrue(outputStreamCaptor.toString().contains("ERROR|Error procesando mensaje"));
     }
     
     @Test
     void testGetters() {
         assertEquals(mockSocket, clientHandler.getSocket());
-        assertNull(clientHandler.getUsername()); // Antes de login
+        assertNull(clientHandler.getUsername()); 
     }
 }

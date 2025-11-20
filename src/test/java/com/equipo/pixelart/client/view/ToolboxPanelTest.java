@@ -18,23 +18,21 @@ class ToolboxPanelTest {
 
     @BeforeEach
     void setUp() {
-        // Instancia real para pruebas visuales
-        toolboxPanel = new ToolboxPanel();
         
-        // Spy para pruebas de diálogos (bloqueantes)
+        toolboxPanel = new ToolboxPanel();
+
         spyPanel = spy(new ToolboxPanel());
     }
 
     @Test
     void testInicializacionUI() {
-        // Verificamos que los componentes principales existan
+       
         assertNotNull(toolboxPanel.getPencilButton());
         assertNotNull(toolboxPanel.getEraserButton());
         assertNotNull(toolboxPanel.getPrimaryColorButton());
         assertNotNull(toolboxPanel.getBrushSizeSlider());
-        assertNotNull(toolboxPanel.getUndoButton()); // Verificar el botón nuevo
-        
-        // Verificar valores por defecto
+        assertNotNull(toolboxPanel.getUndoButton()); 
+
         assertEquals(Color.BLACK, toolboxPanel.getPrimaryColorButton().getBackground());
         assertEquals(Color.WHITE, toolboxPanel.getSecondaryColorButton().getBackground());
         assertEquals(20, toolboxPanel.getColorPresetButtons().length);
@@ -42,26 +40,21 @@ class ToolboxPanelTest {
 
     @Test
     void testSetSelectedTool() {
-        // 1. Seleccionar Lápiz
+       
         toolboxPanel.setSelectedTool("pencil");
-        
-        // Verificar que el lápiz tenga borde azul grueso (indicador de selección)
+
         JButton pencil = toolboxPanel.getPencilButton();
         assertTrue(pencil.getBorder() instanceof LineBorder);
         assertEquals(Color.BLUE, ((LineBorder) pencil.getBorder()).getLineColor());
         assertEquals(3, ((LineBorder) pencil.getBorder()).getThickness());
 
-        // Verificar que otros no tengan borde (o tengan el default vacío)
         JButton eraser = toolboxPanel.getEraserButton();
         assertFalse(eraser.getBorder() instanceof LineBorder);
 
-        // 2. Cambiar a Borrador
         toolboxPanel.setSelectedTool("eraser");
-        
-        // Lápiz debe perder el borde
+ 
         assertFalse(pencil.getBorder() instanceof LineBorder);
-        
-        // Borrador debe ganar el borde
+  
         assertTrue(eraser.getBorder() instanceof LineBorder);
     }
 
@@ -79,13 +72,9 @@ class ToolboxPanelTest {
         assertEquals("Tamaño: 5", toolboxPanel.getBrushSizeLabel().getText());
     }
 
-    // ==========================================
-    // TEST DE DIÁLOGOS (Usando el Spy)
-    // ==========================================
-
     @Test
     void testShowConfirmDialog() {
-        // Burlamos el método protegido interno
+     
         doReturn(JOptionPane.YES_OPTION).when(spyPanel).showConfirmDialogInternal(anyString(), anyString());
 
         int result = spyPanel.showConfirmDialog("Msg", "Title");
@@ -96,7 +85,7 @@ class ToolboxPanelTest {
 
     @Test
     void testShowMessageAndError() {
-        // Evitamos que salga la ventana real
+       
         doNothing().when(spyPanel).showMessageDialogInternal(anyString(), anyString(), anyInt());
 
         spyPanel.showMessage("Hola", "Titulo");
@@ -108,24 +97,17 @@ class ToolboxPanelTest {
 
     @Test
     void testShowSaveDialog_Aprobar() {
-        // ESTE ES EL TRUCO MAESTRO PARA JFILECHOOSER
-        
-        // 1. Creamos un JFileChooser falso (Mock)
+   
         JFileChooser mockChooser = mock(JFileChooser.class);
-        File mockFile = new File("C:/test/dibujo.png"); // Archivo simulado
-
-        // 2. Configuramos el Mock para que diga "Sí, el usuario eligió este archivo"
+        File mockFile = new File("C:/test/dibujo.png"); 
+       
         when(mockChooser.showSaveDialog(any())).thenReturn(JFileChooser.APPROVE_OPTION);
         when(mockChooser.getSelectedFile()).thenReturn(mockFile);
 
-        // 3. Inyectamos el Mock en nuestro Spy
         doReturn(mockChooser).when(spyPanel).createFileChooser();
 
-        // 4. Ejecutamos
         String result = spyPanel.showSaveDialog();
 
-        // 5. Verificamos
-        // Nota: getAbsolutePath() depende del SO, pero verificamos que termine en el nombre
         assertNotNull(result);
         assertTrue(result.endsWith("dibujo.png"));
     }
@@ -144,7 +126,7 @@ class ToolboxPanelTest {
 
     @Test
     void testShowLoadDialog() {
-        // Misma lógica que SaveDialog pero con showOpenDialog
+        
         JFileChooser mockChooser = mock(JFileChooser.class);
         File mockFile = new File("imagen.png");
         

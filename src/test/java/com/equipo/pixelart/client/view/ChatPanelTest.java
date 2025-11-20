@@ -15,7 +15,7 @@ class ChatPanelTest {
 
     @BeforeEach
     void setUp() {
-        // Al ser un panel ligero, podemos instanciarlo directamente
+    
         chatPanel = new ChatPanel();
     }
 
@@ -25,7 +25,6 @@ class ChatPanelTest {
         assertNotNull(chatPanel.getMessageField());
         assertNotNull(chatPanel.getSendButton());
 
-        // Verificar propiedades iniciales
         assertFalse(chatPanel.getChatArea().isEditable(), "El área de chat no debe ser editable");
         assertEquals("", chatPanel.getChatArea().getText());
     }
@@ -39,10 +38,9 @@ class ChatPanelTest {
 
         String contenido = chatPanel.getChatArea().getText();
 
-        // Verificamos que contenga las partes clave, ya que la hora cambia
         assertTrue(contenido.contains(user), "Debe contener el usuario");
         assertTrue(contenido.contains(msg), "Debe contener el mensaje");
-        // Verificamos el formato de los corchetes de la hora [...]
+
         assertTrue(contenido.matches("(?s).*?\\[\\d{2}:\\d{2}:\\d{2}].*"), "Debe tener timestamp [HH:mm:ss]");
     }
 
@@ -53,7 +51,6 @@ class ChatPanelTest {
 
         String contenido = chatPanel.getChatArea().getText();
 
-        // Verificamos el formato de sistema (*** mensaje ***)
         assertTrue(contenido.contains("*** " + msg + " ***"));
     }
 
@@ -69,9 +66,9 @@ class ChatPanelTest {
 
     @Test
     void testGetMessageAndClear() {
-        // Escribimos en el campo de texto (simulado)
+        
         JTextField field = chatPanel.getMessageField();
-        field.setText("  Mensaje con espacios  "); // Probamos el trim()
+        field.setText("  Mensaje con espacios  "); 
 
         String resultado = chatPanel.getMessageAndClear();
 
@@ -81,12 +78,12 @@ class ChatPanelTest {
 
     @Test
     void testSetEnabled() {
-        // Desactivar
+       
         chatPanel.setEnabled(false);
         assertFalse(chatPanel.getMessageField().isEnabled());
         assertFalse(chatPanel.getSendButton().isEnabled());
 
-        // Activar
+      
         chatPanel.setEnabled(true);
         assertTrue(chatPanel.getMessageField().isEnabled());
         assertTrue(chatPanel.getSendButton().isEnabled());
@@ -94,43 +91,30 @@ class ChatPanelTest {
 
     @Test
     void testFocusMessageField() {
-        // Simplemente verificamos que no lance excepción.
-        // Para probar el foco real se necesita una ventana visible,
-        // pero para cobertura esto es suficiente.
+
         assertDoesNotThrow(() -> chatPanel.focusMessageField());
     }
 
-    // ==========================================
-    // TEST DE INTERACCIÓN (LISTENERS)
-    // ==========================================
-
     @Test
     void testBotonEnviarDisparaListener() {
-        // 1. Crear un Listener espía
+        
         ActionListener mockListener = mock(ActionListener.class);
         chatPanel.addSendListener(mockListener);
 
-        // 2. Simular clic en el botón "Enviar"
         chatPanel.getSendButton().doClick();
 
-        // 3. Verificar que el listener se activó
         verify(mockListener, times(1)).actionPerformed(any());
     }
 
     @Test
     void testEnterEnTextFieldDisparaBoton() {
-        // Este es el truco para probar la lambda: e -> sendButton.doClick()
-        
-        // 1. Espiamos el botón para ver si recibe el clic
+   
         ActionListener mockListener = mock(ActionListener.class);
         chatPanel.addSendListener(mockListener);
 
-        // 2. Disparamos un "Enter" en la caja de texto
         JTextField field = chatPanel.getMessageField();
-        field.postActionEvent(); // Simula presionar Enter
+        field.postActionEvent(); 
 
-        // 3. El Enter debe haber llamado a sendButton.doClick(),
-        // lo cual a su vez llama a nuestro listener.
         verify(mockListener, times(1)).actionPerformed(any());
     }
 }

@@ -58,7 +58,5 @@ public class ClientAppTest{
     	assertNotNull(mainFrame,"La ventana principal debe estar configurada");
     	
     }
-   /*
-    *AppTest
-    */
+  
 }

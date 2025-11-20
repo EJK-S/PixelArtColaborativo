@@ -14,10 +14,9 @@ class UsersCommandTest {
 
     @BeforeEach
     void setUp() {
-        // 1. Mock del servidor
-        mockServer = mock(ServerApp.class);
         
-        // 2. Instancia del comando
+        mockServer = mock(ServerApp.class);
+
         usersCommand = new UsersCommand(mockServer);
     }
 
@@ -30,10 +29,8 @@ class UsersCommandTest {
 
     @Test
     void testExecute() {
-        // 1. Ejecutar
+        
         usersCommand.execute();
-
-        // 2. Verificar que delegó la acción al servidor
         verify(mockServer, times(1)).imprimirUsuarios();
     }
 }
