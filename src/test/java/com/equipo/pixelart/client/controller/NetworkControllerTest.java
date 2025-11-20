@@ -31,11 +31,17 @@ class NetworkControllerTest {
 
     @Test
     void testNotificaConexionExitosa() throws Exception {
+        // 1. Obtener el método privado
+        var method = networkController.getClass()
+            .getDeclaredMethod("notifyConnectionStatus", boolean.class, String.class);
         
-        networkController.getClass()
-            .getDeclaredMethod("notifyConnectionStatus", boolean.class, String.class)
-            .invoke(networkController, true, "Conectado");
+        // 2. DESBLOQUEARLO (Esta es la línea que te faltaba)
+        method.setAccessible(true);
 
+        // 3. Ejecutarlo
+        method.invoke(networkController, true, "Conectado");
+
+        // 4. Verificar
         verify(listenerMock).onConnectionStatusChanged(true, "Conectado");
     }
 

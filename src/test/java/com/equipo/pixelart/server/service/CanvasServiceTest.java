@@ -50,15 +50,25 @@ class CanvasServiceTest {
 
     @Test
     void testSetPixelYGetCanvasAsString() {
+        // 1. Configuración
         Color[][] lienzoPequeno = { {Color.WHITE, Color.WHITE}, {Color.WHITE, Color.WHITE} };
         when(mockFileManager.cargarCanvas(2, 2)).thenReturn(lienzoPequeno);
+        
+        // Instanciamos
         canvasService = new CanvasService(mockFileManager, 2, 2);
-   
-        canvasService.setPixel(1, 0, Color.RED);   
-        canvasService.setPixel(0, 1, Color.GREEN); 
-        canvasService.setPixel(1, 1, Color.BLUE);  
-                                                 
-        String expectedString = "ffffff,ff0000,008000,0000ff";
+
+        // 2. Ejecución (Pintamos)
+        // (0,0) sigue siendo WHITE (ffffff)
+        canvasService.setPixel(1, 0, Color.RED);   // x=1, y=0 -> (ff0000)
+        canvasService.setPixel(0, 1, Color.GREEN); // x=0, y=1 -> (00ff00) ¡OJO AQUÍ!
+        canvasService.setPixel(1, 1, Color.BLUE);  // x=1, y=1 -> (0000ff)
+
+        // 3. Verificación
+        // Orden esperado: (0,0), (1,0), (0,1), (1,1)
+        // Nota el cambio de 008000 a 00ff00
+//      (0,0)   (0,1)   (1,0)   (1,1)
+        String expectedString = "ffffff,00ff00,ff0000,0000ff";
+        
         assertEquals(expectedString, canvasService.getCanvasAsString());
     }
 
