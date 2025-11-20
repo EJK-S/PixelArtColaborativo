@@ -127,12 +127,8 @@ public class ToolboxController {
     }
  
     private void choosePrimaryColor() {
-        Color newColor = JColorChooser.showDialog(
-                view,
-                "Seleccionar Color Primario",
-                currentColor
-        );
-
+        // CAMBIO: Usamos un método auxiliar en lugar de llamar a JColorChooser directamente
+        Color newColor = openColorChooser("Seleccionar Color Primario", currentColor);
         if (newColor != null) {
             setCurrentColor(newColor);
         }
@@ -140,15 +136,16 @@ public class ToolboxController {
 
     
     private void chooseSecondaryColor() {
-        Color newColor = JColorChooser.showDialog(
-                view,
-                "Seleccionar Color Secundario",
-                secondaryColor
-        );
-
+        // CAMBIO: Lo mismo aquí
+        Color newColor = openColorChooser("Seleccionar Color Secundario", secondaryColor);
         if (newColor != null) {
             setSecondaryColor(newColor);
         }
+    }
+
+    // NUEVO MÉTODO PROTECTED (Para poder burlarlo en el test)
+    protected Color openColorChooser(String title, Color initialColor) {
+        return JColorChooser.showDialog(view, title, initialColor);
     }
   
     private void swapColors() {
@@ -196,16 +193,14 @@ public class ToolboxController {
     private void saveCanvas() {
         try {
             String filename = view.showSaveDialog();
-            FileManager fileManager = new FileManager();
-
-
+            
             if (filename != null) {
-                // Obtener el modelo del canvas
+                // CAMBIO: Usamos método factoría en vez de 'new' directo
+                FileManager fileManager = createFileManager(); 
+                
                 Color[][] pixels = canvasController.getModel().getPixels();
-
-                // Guardar en archivo (implementar FileManager)
-                 fileManager.guardarCanvas(pixels);
-
+                fileManager.guardarCanvas(pixels); // Asumo que guardas el filename dentro o pasas filename
+                
                 view.showMessage("Canvas guardado exitosamente", "Éxito");
                 System.out.println("Canvas guardado: " + filename);
             }
@@ -213,6 +208,10 @@ public class ToolboxController {
             view.showError("Error al guardar: " + e.getMessage());
             System.err.println("Error guardando canvas: " + e.getMessage());
         }
+    }
+    
+    protected FileManager createFileManager() {
+        return new FileManager();
     }
   
     private void loadCanvas() {

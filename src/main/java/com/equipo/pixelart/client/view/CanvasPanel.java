@@ -85,13 +85,22 @@ public class CanvasPanel extends JPanel {
         }
     }
 
+ // En CanvasPanel.java
+
     public Point pixelToGrid(Point screenPoint) {
         if (screenPoint == null) return null;
+
+        // --- FIX: Validar negativos ANTES de dividir ---
+        // Esto evita que -5 se convierta en 0
+        if (screenPoint.x < 0 || screenPoint.y < 0) {
+            return null;
+        }
+        // -----------------------------------------------
 
         int gridX = screenPoint.x / pixelSize;
         int gridY = screenPoint.y / pixelSize;
 
-        // Validar que está dentro del canvas
+        // Validar que está dentro del canvas (Límite derecho e inferior)
         if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
             return new Point(gridX, gridY);
         }

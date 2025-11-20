@@ -1,11 +1,9 @@
-package com.equipo.pixelart.client;
+package com.equipo.pixelart.client.app;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.equipo.pixelart.client.app.ClientApp;
 
 
 public class ClientAppTest{
