@@ -35,7 +35,7 @@ public class ServerConsole {
                 System.out.print("server> ");
                 try {
                     String line = br.readLine();
-                    if (line == null) continue;
+                    if (line == null) break;
 
                     ServerCommand cmd = commands.get(line.trim());
                     if (cmd != null) cmd.execute();

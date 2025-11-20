@@ -36,7 +36,7 @@ public class ServerApp {
         this.port = port;	
     }
 
-    private void initServicios() {
+    protected void initServicios() {
         log("Inicializando servicios...");
 
         fileManager = new FileManager();
@@ -101,21 +101,31 @@ public class ServerApp {
             imprimirInfoRed();
 
         
-            new ServerConsole(this).inicio();
+            startConsole();
 
             log("Esperando conexiones...\n");
 
-            while (running) {
-                try {
-                    aceptarCliente(serverSocket.accept());
-                } catch (IOException e) {
-                    if (running) log("Error aceptando cliente: " + e.getMessage());
-                }
-            }
+            ejecutarBuclePrincipal(); 
 
         } catch (IOException e) {
             log("No se pudo iniciar el servidor: " + e.getMessage());
         }
+    }
+    
+    protected void ejecutarBuclePrincipal() {
+        while (running) {
+            try {
+                aceptarCliente(serverSocket.accept());
+            } catch (IOException e) {
+                if (running) log("Error aceptando cliente: " + e.getMessage());
+                // Opcional: Romper el bucle en el test para que no sea infinito
+                if (e.getMessage().contains("TEST_EXIT")) running = false; 
+            }
+        }
+    }
+    
+    protected void startConsole() {
+        new ServerConsole(this).inicio();
     }
 
     private void aceptarCliente(Socket sock) {
@@ -180,7 +190,7 @@ public class ServerApp {
         log("Deteniendo servidor...");
 
         running = false;
-        saveCanvas();
+        if (canvasService != null) saveCanvas();
 
         for (ClientHandler c : clients) {
             try {
@@ -192,32 +202,58 @@ public class ServerApp {
         }
 
         try {
-            serverSocket.close();
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
+            }
         } catch (IOException e) {
             log("Error cerrando servidor: " + e.getMessage());
         }
 
         log("Servidor detenido.");
+        exitSystem();
+    }
+    
+    protected void exitSystem() {
         System.exit(0);
     }
+    
+    public void setServices(FileManager fm, AuthService as, CanvasService cs) {
+        this.fileManager = fm;
+        this.authService = as;
+        this.canvasService = cs;
+    }
+    
+    public List<ClientHandler> getClients() {
+        return clients;
+    }
+    
+    public boolean isRunning() { return running; }
 
     private void log(String msg) {
         System.out.println("[SERVER] " + msg);
     }
-
-    public static void main(String[] args) {
-        int port = DEFAULT_PORT;
-
+    
+    public static int getPortFromArgs(String[] args) {
         if (args.length > 0) {
             try {
-                port = Integer.parseInt(args[0]);
+                return Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
                 System.out.println("Puerto inválido, usando " + DEFAULT_PORT);
             }
         }
+        return DEFAULT_PORT;
+    }
+
+    public static void main(String[] args) {
+        
+
+        int port = getPortFromArgs(args);
 
         ServerApp server = new ServerApp(port);
         Runtime.getRuntime().addShutdownHook(new Thread(server::stopServer));
         server.inicio();
     }
+    
+    
+    
 }
