@@ -220,12 +220,17 @@ public class ToolboxPanel extends JPanel {
     }
 
     public int showConfirmDialog(String message, String title) {
+        return showConfirmDialogInternal(message, title);
+    }
+
+    protected int showConfirmDialogInternal(String message, String title) {
         return JOptionPane.showConfirmDialog(this, message, title,
                 JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
     }
 
     public String showSaveDialog() {
-        JFileChooser fileChooser = new JFileChooser();
+        // CAMBIO: Usamos el método factoría para poder mockear el JFileChooser
+        JFileChooser fileChooser = createFileChooser();
         int result = fileChooser.showSaveDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -235,7 +240,8 @@ public class ToolboxPanel extends JPanel {
     }
 
     public String showLoadDialog() {
-        JFileChooser fileChooser = new JFileChooser();
+        // CAMBIO: Usamos el mismo método factoría
+        JFileChooser fileChooser = createFileChooser();
         int result = fileChooser.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -244,14 +250,22 @@ public class ToolboxPanel extends JPanel {
         return null;
     }
 
+    // NUEVO MÉTODO PROTECTED: Nos permite inyectar un FileChooser falso en el test
+    protected JFileChooser createFileChooser() {
+        return new JFileChooser();
+    }
+
     public void showMessage(String message, String title) {
-        JOptionPane.showMessageDialog(this, message, title,
-                JOptionPane.INFORMATION_MESSAGE);
+        showMessageDialogInternal(message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void showError(String message) {
-        JOptionPane.showMessageDialog(this, message, "Error",
-                JOptionPane.ERROR_MESSAGE);
+        showMessageDialogInternal(message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // NUEVO MÉTODO PROTECTED
+    protected void showMessageDialogInternal(String message, String title, int type) {
+        JOptionPane.showMessageDialog(this, message, title, type);
     }
 
 

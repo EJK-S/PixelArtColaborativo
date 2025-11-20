@@ -9,7 +9,6 @@ import java.awt.event.WindowEvent;
 public class MainFrame extends JFrame {
     private static final long serialVersionUID = 1L;
 
-   
     private JMenuItem connectItem;
     private JMenuItem disconnectItem;
     private JMenuItem exitItem;
@@ -18,7 +17,6 @@ public class MainFrame extends JFrame {
     private JMenuItem toggleGridItem;
     private JMenuItem aboutItem;
 
-   
     private JLabel statusLabel;
     private JLabel userLabel;
 
@@ -38,7 +36,6 @@ public class MainFrame extends JFrame {
         setLayout(new BorderLayout(5, 5));
        
         createMenuBar();
-      
         createStatusBar();
        
         addWindowListener(new WindowAdapter() {
@@ -51,7 +48,6 @@ public class MainFrame extends JFrame {
 
     private void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
-
         
         JMenu fileMenu = new JMenu("Archivo");
         fileMenu.setMnemonic('A');
@@ -69,7 +65,6 @@ public class MainFrame extends JFrame {
         fileMenu.add(disconnectItem);
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
-
         
         JMenu editMenu = new JMenu("Edición");
         editMenu.setMnemonic('E');
@@ -82,7 +77,6 @@ public class MainFrame extends JFrame {
 
         editMenu.add(undoItem);
         editMenu.add(clearItem);
-
         
         JMenu viewMenu = new JMenu("Ver");
         viewMenu.setMnemonic('V');
@@ -91,7 +85,6 @@ public class MainFrame extends JFrame {
         toggleGridItem.setAccelerator(KeyStroke.getKeyStroke("ctrl G"));
 
         viewMenu.add(toggleGridItem);
-
         
         JMenu helpMenu = new JMenu("Ayuda");
         helpMenu.setMnemonic('H');
@@ -100,7 +93,6 @@ public class MainFrame extends JFrame {
         aboutItem.setAccelerator(KeyStroke.getKeyStroke("F1"));
 
         helpMenu.add(aboutItem);
-
        
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
@@ -126,25 +118,38 @@ public class MainFrame extends JFrame {
         add(statusBar, BorderLayout.SOUTH);
     }
 
-    private void handleWindowClosing() {
-        int confirm = JOptionPane.showConfirmDialog(
+    // Quitamos 'private' para poder testearlo directamente
+    void handleWindowClosing() {
+        int confirm = showExitConfirmation();
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+    }
+    
+    // MÉTODO PROTECTED para el Test
+    protected int showExitConfirmation() {
+        return JOptionPane.showConfirmDialog(
                 this,
                 "¿Estás seguro de que quieres salir?",
                 "Confirmar Salida",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE
         );
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            System.exit(0);
-        }
     }
 
+    // --- CORRECCIÓN AQUI: Refactor para poder testear sin abrir ventana ---
     public ConnectionDialog showConnectionDialog() {
         ConnectionDialog dialog = new ConnectionDialog(this);
-        dialog.setVisible(true);
+        openDialog(dialog); // Usamos el método protegido
         return dialog;
     }
+
+    // NUEVO MÉTODO PROTECTED (Evita que el setVisible bloquee el test)
+    protected void openDialog(JDialog dialog) {
+        dialog.setVisible(true);
+    }
+    // ---------------------------------------------------------------------
 
     public void showAboutDialog() {
         String message = """
@@ -157,12 +162,13 @@ public class MainFrame extends JFrame {
                 
                 © 2024 - Equipo de Desarrollo""";
 
-        JOptionPane.showMessageDialog(
-                this,
-                message,
-                "Acerca de",
-                JOptionPane.INFORMATION_MESSAGE
-        );
+        // --- CORRECCIÓN: Borrada la línea duplicada de JOptionPane ---
+        showMessageDialog(message, "Acerca de", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    // MÉTODO PROTECTED para el Test
+    protected void showMessageDialog(String message, String title, int type) {
+        JOptionPane.showMessageDialog(this, message, title, type);
     }
 
     public void updateConnectionStatus(boolean connected, String message) {
@@ -185,17 +191,14 @@ public class MainFrame extends JFrame {
     public void setPanels(ToolboxPanel toolbox, CanvasPanel canvas,
                           ChatPanel chat, UserListPanel userList) {
 
-        
         JPanel leftPanel = new JPanel(new BorderLayout());
         leftPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         leftPanel.add(toolbox, BorderLayout.CENTER);
 
         add(leftPanel, BorderLayout.WEST);
-
         
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
         
         JPanel canvasWrapper = new JPanel();
         canvasWrapper.setBackground(Color.DARK_GRAY);
@@ -206,7 +209,6 @@ public class MainFrame extends JFrame {
         centerPanel.add(canvasScrollPane, BorderLayout.CENTER);
 
         add(centerPanel, BorderLayout.CENTER);
-
         
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
@@ -216,12 +218,10 @@ public class MainFrame extends JFrame {
         rightPanel.add(userList);
 
         add(rightPanel, BorderLayout.EAST);
-
         
         revalidate();
         repaint();
     }
-
 
     public JMenuItem getConnectItem() { return connectItem; }
     public JMenuItem getDisconnectItem() { return disconnectItem; }
@@ -230,6 +230,4 @@ public class MainFrame extends JFrame {
     public JMenuItem getUndoItem() { return undoItem; }
     public JMenuItem getToggleGridItem() { return toggleGridItem; }
     public JMenuItem getAboutItem() { return aboutItem; }
-
-    
 }
