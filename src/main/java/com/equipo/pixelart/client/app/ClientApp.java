@@ -5,6 +5,7 @@ import java.awt.Color;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.equipo.pixelart.client.controller.CanvasController;
 import com.equipo.pixelart.client.controller.ChatController;
@@ -78,20 +79,24 @@ public class ClientApp {
         
         networkController.addNetworkListener(new NetworkListener() {
 
+            @Override
             public void onConnectionStatusChanged(boolean connected, String msg) {
             	mainFrame.updateConnectionStatus(connected, msg);            
                 
             }
 
+            @Override
             public void onAuthResult(boolean ok, String msg) {
                 if (ok) procesarAutenticacionExitosa();
                 else procesarFalloDeAutenticacion(msg);
             }
 
+            @Override
             public void onUserListReceived(String[] u) {
                 userListPanel.setUsers(u);
             }
 
+            @Override
             public void onError(String m) {
                 JOptionPane.showMessageDialog(mainFrame, m, "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -205,7 +210,7 @@ public class ClientApp {
     }
 
     private void sleep(int ms) {
-        try { Thread.sleep(ms); } catch (Exception ignored) {}
+        try { Thread.sleep(ms); } catch (InterruptedException ignored) {}
     }
 
     public void start() {
@@ -218,7 +223,7 @@ public class ClientApp {
 
     public static void main(String[] args) {
         try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
-        catch (Exception ignored) {}
+        catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException ignored) {}
 
         ClientApp app = new ClientApp();
         app.start();
