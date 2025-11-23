@@ -9,6 +9,7 @@ import java.awt.GridLayout;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -16,6 +17,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
+
+import com.equipo.pixelart.client.utils.ResourceLoader;
 
 
 public class ToolboxPanel extends JPanel {
@@ -73,28 +76,40 @@ public class ToolboxPanel extends JPanel {
     }
 
     private JPanel createToolsSection() {
-        JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
-        panel.setBorder(BorderFactory.createTitledBorder("Herramientas"));
+    JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
+    panel.setBorder(BorderFactory.createTitledBorder("Herramientas"));
 
-        pencilButton = createToolButton("✏️ Lápiz", "pencil");
-        eraserButton = createToolButton("🧹 Borrador", "eraser");
-        bucketButton = createToolButton("🪣 Balde", "bucket");
-        eyedropperButton = createToolButton("💧 Gotero", "eyedropper");
+    // AHORA PASAMOS LA RUTA DE LA IMAGEN
+    pencilButton = createToolButton("Lápiz", "pencil", "/images/pencil.png");
+    eraserButton = createToolButton("Borrador", "eraser", "/images/eraser.png");
+    bucketButton = createToolButton("Balde", "bucket", "/images/bucket.png");
+    eyedropperButton = createToolButton("Gotero", "eyedropper", "/images/eyedropper.png");
 
-        panel.add(pencilButton);
-        panel.add(eraserButton);
-        panel.add(bucketButton);
-        panel.add(eyedropperButton);
+    panel.add(pencilButton);
+    panel.add(eraserButton);
+    panel.add(bucketButton);
+    panel.add(eyedropperButton);
 
-        return panel;
+    return panel;
+}
+
+    // Nuevo parámetro iconPath
+private JButton createToolButton(String text, String name, String iconPath) {
+    JButton button = new JButton();
+    button.setName(name);
+
+    // Intentamos cargar el icono (tamaño 32x32 se ve bien)
+    ImageIcon icon = ResourceLoader.loadResizedIcon(iconPath, 32, 32);
+
+    if (icon != null) {
+        button.setIcon(icon);
+        button.setToolTipText(text); // El texto se vuelve un tooltip
+    } else {
+        button.setText(text); // Si no hay imagen, usamos texto de respaldo
     }
 
-    private JButton createToolButton(String text, String name) {
-        JButton button = new JButton(text);
-        button.setName(name);
-        button.setFont(new Font("Arial", Font.PLAIN, 11));
-        button.setFocusPainted(false);
-        return button;
+    button.setFocusPainted(false);
+    return button;
     }
 
     private JPanel createColorSection() {
@@ -167,22 +182,33 @@ public class ToolboxPanel extends JPanel {
     }
 
     private JPanel createActionsSection() {
-        JPanel panel = new JPanel(new GridLayout(4, 1, 5, 5));  // ← Cambiar 3 a 4
+        JPanel panel = new JPanel(new GridLayout(4, 1, 5, 5));
         panel.setBorder(BorderFactory.createTitledBorder("Acciones"));
 
-        undoButton = new JButton("Deshacer (Ctrl+Z)");  // ← NUEVO
-        undoButton.setFont(new Font("Arial", Font.PLAIN, 11));  // ← NUEVO
+        undoButton = new JButton("Deshacer (Ctrl+Z)");
+        undoButton.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        clearButton = new JButton("Limpiar Canvas");
-        clearButton.setFont(new Font("Arial", Font.PLAIN, 11));
+        // --- CAMBIO: Usar iconos para Limpiar y Guardar ---
+        
+        // Botón Limpiar
+        clearButton = new JButton("Limpiar");
+        ImageIcon clearIcon = ResourceLoader.loadResizedIcon("/images/clear.png", 20, 20);
+        if (clearIcon != null) {
+            clearButton.setIcon(clearIcon);
+        }
 
+        // Botón Guardar
         saveButton = new JButton("Guardar");
-        saveButton.setFont(new Font("Arial", Font.PLAIN, 11));
-
+        ImageIcon saveIcon = ResourceLoader.loadResizedIcon("/images/save.png", 20, 20);
+        if (saveIcon != null) {
+            saveButton.setIcon(saveIcon);
+        }
+        
+        // Botón Cargar (si no tienes icono, déjalo con texto)
         loadButton = new JButton("Cargar");
-        loadButton.setFont(new Font("Arial", Font.PLAIN, 11));
+        // --------------------------------------------------
 
-        panel.add(undoButton);  // ← NUEVO (primero)
+        panel.add(undoButton);
         panel.add(clearButton);
         panel.add(saveButton);
         panel.add(loadButton);

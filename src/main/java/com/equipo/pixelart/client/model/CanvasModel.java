@@ -13,13 +13,21 @@ public class CanvasModel {
     private static final int MAX_UNDO_STEPS = 50;
 
     private static final Color DEFAULT_COLOR = Color.WHITE;
+    private static final Color TRANSPARENT_COLOR = new Color(0, 0, 0, 0);
 
     public CanvasModel(int width, int height) {
         this.width = width;
         this.height = height;
         this.pixels = new Color[width][height];
+
         this.undoStack = new Stack<>();
-        clear();
+
+        // Inicializar el canvas TOTALMENTE TRANSPARENTE
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                pixels[x][y] = TRANSPARENT_COLOR; // Antes era Color.WHITE
+            }
+        }
     }
 
     public CanvasModel() {
@@ -29,7 +37,7 @@ public class CanvasModel {
     public void clear() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                pixels[x][y] = DEFAULT_COLOR;
+                pixels[x][y] = TRANSPARENT_COLOR; // Antes era Color.WHITE
             }
         }
     }
@@ -69,9 +77,7 @@ public class CanvasModel {
     public Color[][] getPixels() {
         Color[][] copy = new Color[width][height];
         for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                copy[x][y] = pixels[x][y];
-            }
+            System.arraycopy(pixels[x], 0, copy[x], 0, height);
         }
         return copy;
     }
@@ -88,9 +94,7 @@ public class CanvasModel {
         // Crear copia del canvas actual
         Color[][] copy = new Color[width][height];
         for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                copy[x][y] = pixels[x][y];
-            }
+            System.arraycopy(pixels[x], 0, copy[x], 0, height);
         }
 
         undoStack.push(copy);
@@ -113,9 +117,7 @@ public class CanvasModel {
 
         // Restaurar estado anterior
         for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                pixels[x][y] = previousState[x][y];
-            }
+            System.arraycopy(previousState[x], 0, pixels[x], 0, height);
         }
 
         return true;

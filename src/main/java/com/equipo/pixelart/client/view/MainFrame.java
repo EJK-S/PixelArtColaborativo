@@ -1,4 +1,5 @@
 package com.equipo.pixelart.client.view;
+import com.equipo.pixelart.client.utils.ResourceLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +33,11 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(1200, 800);
         setLocationRelativeTo(null);
+
+        ImageIcon logo = ResourceLoader.loadIcon("/images/app_logo.png");
+        if (logo != null) {
+            this.setIconImage(logo.getImage());
+        }
         
         setLayout(new BorderLayout(5, 5));
        

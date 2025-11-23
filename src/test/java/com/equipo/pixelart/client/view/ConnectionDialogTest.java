@@ -1,19 +1,24 @@
 package com.equipo.pixelart.client.view;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
 import java.lang.reflect.Field;
 
-import static org.junit.jupiter.api.Assertions.*;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class ConnectionDialogTest {
 
     private ConnectionDialog dialog;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
   
         dialog = new ConnectionDialog(null);
     }

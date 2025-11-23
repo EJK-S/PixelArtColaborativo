@@ -1,10 +1,5 @@
 package com.equipo.pixelart.server.network;
 
-import com.equipo.pixelart.server.service.AuthService;
-import com.equipo.pixelart.server.service.CanvasService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,9 +8,24 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.equipo.pixelart.server.service.AuthService;
+import com.equipo.pixelart.server.service.CanvasService;
 
 class ClientHandlerTest {
 
@@ -27,7 +37,7 @@ class ClientHandlerTest {
     private ByteArrayOutputStream outputStreamCaptor;
 
     @BeforeEach
-    void setUp() throws IOException {
+    public void setUp() throws IOException {
         // 1. Mocks principales
         mockSocket = mock(Socket.class);
         mockAuthService = mock(AuthService.class);

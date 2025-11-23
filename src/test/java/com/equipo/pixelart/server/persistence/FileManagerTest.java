@@ -1,10 +1,5 @@
 package com.equipo.pixelart.server.persistence;
 
-import com.equipo.pixelart.server.model.Usuario;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,7 +7,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.equipo.pixelart.server.model.Usuario;
 
 class FileManagerTest {
 
@@ -22,14 +26,14 @@ class FileManagerTest {
     private final String CANVAS_FILE = DATA_DIR + "/canvas.dat";
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
 
         limpiarArchivos();
         fileManager = new FileManager();
     }
 
     @AfterEach
-    void tearDown() {
+    public void tearDown() {
        
     	System.gc(); 
 
@@ -206,17 +210,23 @@ class FileManagerTest {
     
     @Test
     void testConstructorCreaDirectorio() {
-        
+    
         File dataDir = new File(DATA_DIR);
         if(dataDir.exists()) {
             String[] entries = dataDir.list();
-            for(String s: entries){
-                new File(dataDir.getPath(),s).delete();
+            if (entries != null) {
+                for(String s: entries){
+                    new File(dataDir.getPath(), s).delete(); 
+                }
             }
             dataDir.delete();
         }
-        assertFalse(dataDir.exists());
-        new FileManager();      
-        assertTrue(dataDir.exists());
+    assertFalse(dataDir.exists());
+    
+    FileManager fm = new FileManager(); 
+    
+    assertNotNull(fm, "El FileManager debería haberse instanciado correctamente");
+    
+    assertTrue(dataDir.exists());
     }
 }

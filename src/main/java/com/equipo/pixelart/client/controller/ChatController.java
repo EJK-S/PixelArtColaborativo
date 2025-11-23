@@ -1,5 +1,6 @@
 package com.equipo.pixelart.client.controller;
 
+import com.equipo.pixelart.client.utils.ResourceLoader;
 import com.equipo.pixelart.client.view.ChatPanel;
 
 public class ChatController implements NetworkListener {
@@ -41,6 +42,9 @@ public class ChatController implements NetworkListener {
     @Override
     public void onChatMessage(String user, String txt) {
         chatPanel.addMessage(user, txt);
+        
+        // USO 1: Sonido de notificación estándar para mensajes de texto
+        ResourceLoader.playSound("/sounds/message.wav");
     }
 
     @Override
@@ -52,11 +56,17 @@ public class ChatController implements NetworkListener {
     @Override
     public void onUserJoined(String u) {
         chatPanel.addSystemMessage(u + " se ha unido");
+        
+        // USO 2: El sonido "POP" es genial para entradas y salidas rápidas
+        ResourceLoader.playSound("/sounds/chat.wav");
     }
 
     @Override
     public void onUserLeft(String u) {
         chatPanel.addSystemMessage(u + " se ha desconectado");
+        
+        // Usamos el mismo POP para salida
+        ResourceLoader.playSound("/sounds/disconnect.wav");
     }
 
     @Override

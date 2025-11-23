@@ -1,9 +1,5 @@
 package com.equipo.pixelart.server.app;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.Mockito.*;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -12,8 +8,20 @@ import java.net.Socket;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.equipo.pixelart.server.network.ClientHandler;
 import com.equipo.pixelart.server.persistence.FileManager;
@@ -35,7 +43,7 @@ class ServerAppTest {
     private static final int TEST_PORT = 9999;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         System.setOut(new PrintStream(outContent));
 
         mockAuth = mock(AuthService.class);
@@ -54,7 +62,7 @@ class ServerAppTest {
     }
 
     @AfterEach
-    void tearDown() {
+    public void tearDown() {
         System.setOut(originalOut);
         spyServer.stopServer();
     }
@@ -219,19 +227,19 @@ class ServerAppTest {
 
 
     @Test
-    void testSetFieldException() {
-        
-        assertThrows(RuntimeException.class, () -> 
-            setField(spyServer, "campo_imaginario", "valor")
+        void testSetFieldException() {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> 
+        setField(spyServer, "campo_imaginario", "valor")
         );
-    }
+        assertNotNull(exception); 
+}
 
     private void setField(Object target, String name, Object value) {
         try {
             Field field = target.getClass().getDeclaredField(name);
             field.setAccessible(true);
             field.set(target, value);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
             throw new RuntimeException(e);
         }
     }
@@ -260,9 +268,11 @@ class ServerAppTest {
     }
     
     @Test
-    void testInicio_FalloAlIniciarServer() throws IOException {
+        void testInicio_FalloAlIniciarServer() throws IOException {
+
+        try (java.net.ServerSocket socketBloqueador = new java.net.ServerSocket(TEST_PORT)) {
         
-        java.net.ServerSocket socketBloqueador = new java.net.ServerSocket(TEST_PORT);
+        assertFalse(socketBloqueador.isClosed(), "El socket de prueba debe estar activo para bloquear el puerto");
 
         ServerApp badApp = new ServerApp(TEST_PORT);
         ServerApp spyBadApp = spy(badApp);
@@ -271,12 +281,10 @@ class ServerAppTest {
         doNothing().when(spyBadApp).startConsole();
 
         spyBadApp.inicio();
-
-        socketBloqueador.close();
-
-        assertTrue(outContent.toString().contains("No se pudo iniciar el servidor"), 
-            "Debe capturar la excepción si el puerto está ocupado");
-    }
+    } 
+    assertTrue(outContent.toString().contains("No se pudo iniciar el servidor"), 
+        "Debe capturar la excepción si el puerto está ocupado");
+}
     
     @Test
     void testMain_EjecucionCompleta() {

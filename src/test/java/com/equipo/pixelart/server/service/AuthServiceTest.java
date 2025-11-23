@@ -1,15 +1,24 @@
 package com.equipo.pixelart.server.service;
 
-import com.equipo.pixelart.server.model.Usuario;
-import com.equipo.pixelart.server.persistence.FileManager;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.equipo.pixelart.server.model.Usuario;
+import com.equipo.pixelart.server.persistence.FileManager;
 
 class AuthServiceTest {
 
@@ -18,7 +27,7 @@ class AuthServiceTest {
     private Map<String, Usuario> baseDatosSimulada;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         
         mockFileManager = mock(FileManager.class);
 

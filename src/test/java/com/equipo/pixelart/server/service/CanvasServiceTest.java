@@ -1,14 +1,22 @@
 package com.equipo.pixelart.server.service;
 
-import com.equipo.pixelart.server.persistence.FileManager;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import java.awt.Color;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.equipo.pixelart.server.persistence.FileManager;
 
 class CanvasServiceTest {
 
@@ -18,7 +26,7 @@ class CanvasServiceTest {
     private final int TEST_HEIGHT = 5;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         
         mockFileManager = mock(FileManager.class);
 

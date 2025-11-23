@@ -1,20 +1,29 @@
 package com.equipo.pixelart.client.view;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.lang.reflect.Field;
 
-import static org.junit.jupiter.api.Assertions.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class UserListPanelTest {
 
     private UserListPanel userListPanel;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         
         userListPanel = new UserListPanel();
     }
@@ -130,7 +139,7 @@ class UserListPanelTest {
             field.setAccessible(true);
             JLabel label = (JLabel) field.get(userListPanel);
             return label.getText();
-        } catch (Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
             fail("No se pudo acceder al countLabel: " + e.getMessage());
             return null;
         }

@@ -1,15 +1,25 @@
 package com.equipo.pixelart.client.controller;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import java.awt.Color;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 class NetworkControllerTest {
 
@@ -19,7 +29,7 @@ class NetworkControllerTest {
     private Socket mockSocket;
 
     @BeforeEach
-    void setUp() throws Exception {
+    public void setUp() throws Exception {
         networkController = new NetworkController();
         mockListener = mock(NetworkListener.class);
         networkController.addNetworkListener(mockListener);
@@ -203,7 +213,7 @@ class NetworkControllerTest {
             Method method = NetworkController.class.getDeclaredMethod("notifyError", String.class);
             method.setAccessible(true);
             method.invoke(networkController, "Test");
-        } catch(Exception e) {}
+        } catch(IllegalAccessException | NoSuchMethodException | SecurityException | InvocationTargetException e) {}
         
        
         verify(mockListener, never()).onError(anyString());

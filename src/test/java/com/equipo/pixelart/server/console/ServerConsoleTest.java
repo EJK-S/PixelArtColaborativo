@@ -1,18 +1,21 @@
 package com.equipo.pixelart.server.console;
 
-import com.equipo.pixelart.server.app.ServerApp;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+
+import com.equipo.pixelart.server.app.ServerApp;
 
 class ServerConsoleTest {
 
@@ -24,7 +27,7 @@ class ServerConsoleTest {
     private final java.io.InputStream originalIn = System.in;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
     
         mockServer = mock(ServerApp.class);
 
@@ -33,7 +36,7 @@ class ServerConsoleTest {
     }
 
     @AfterEach
-    void tearDown() {
+    public void tearDown() {
        
         System.setOut(originalOut);
         System.setIn(originalIn);

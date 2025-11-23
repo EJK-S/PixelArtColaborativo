@@ -23,9 +23,7 @@ public class CanvasControllerTest {
     private NetworkController network;
     private CanvasController controller;
 
-        @SuppressWarnings("unused")
-
-    @BeforeEach
+        @BeforeEach
     void setUp() {
         
         model = mock(CanvasModel.class);

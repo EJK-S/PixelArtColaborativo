@@ -1,10 +1,12 @@
 package com.equipo.pixelart.client.controller;
 
-import com.equipo.pixelart.client.view.UserListPanel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
-import static org.mockito.Mockito.*;
+import com.equipo.pixelart.client.view.UserListPanel;
 
 class UserListControllerTest {
 
@@ -13,7 +15,7 @@ class UserListControllerTest {
     private NetworkController mockNetwork;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
 
         mockPanel = mock(UserListPanel.class);
         mockNetwork = mock(NetworkController.class);

@@ -1,16 +1,18 @@
 package com.equipo.pixelart.server.command;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class HelpCommandTest {
 
@@ -21,7 +23,7 @@ class HelpCommandTest {
     private final PrintStream originalOut = System.out;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         
         System.setOut(new PrintStream(outContent));
 
@@ -30,7 +32,7 @@ class HelpCommandTest {
     }
 
     @AfterEach
-    void tearDown() {
+    public void tearDown() {
         
         System.setOut(originalOut);
     }

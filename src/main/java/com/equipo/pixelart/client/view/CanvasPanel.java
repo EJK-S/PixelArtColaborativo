@@ -1,8 +1,18 @@
 package com.equipo.pixelart.client.view;
 
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.RenderingHints;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+
 import com.equipo.pixelart.client.model.CanvasModel;
-import javax.swing.*;
-import java.awt.*;
 
 
 public class CanvasPanel extends JPanel {
@@ -42,14 +52,17 @@ public class CanvasPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        // Antialiasing para mejor calidad visual
+        // Antialiasing OFF para que el pixel art se vea nítido (crucial)
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_OFF);
 
-        // Dibujar píxeles
+        // 1. DIBUJAR FONDO DE AJEDREZ (NUEVO)
+        drawCheckerboard(g2d);
+
+        // 2. Dibujar los píxeles del usuario encima
         drawPixels(g2d);
 
-        // Dibujar grid si está activado
+        // 3. Dibujar la rejilla (grid) si está activa
         if (showGrid) {
             drawGrid(g2d);
         }
@@ -59,8 +72,15 @@ public class CanvasPanel extends JPanel {
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
                 Color pixelColor = model.getPixel(x, y);
-                g2d.setColor(pixelColor);
 
+                // Solo ignoramos si es null (por seguridad)
+                if (pixelColor == null) continue;
+
+                // --- BORRAMOS EL IF QUE IGNORABA EL BLANCO ---
+                // Ya no hay "if (pixelColor.equals(Color.WHITE))..."
+                // ---------------------------------------------
+
+                g2d.setColor(pixelColor);
                 int screenX = x * pixelSize;
                 int screenY = y * pixelSize;
 
@@ -149,5 +169,38 @@ public class CanvasPanel extends JPanel {
 
     public int getGridHeight() {
         return gridHeight;
+    }
+
+    public void setToolCursor(String toolName) {
+    Cursor cursor;
+    
+            // Rutas relativas a src/main/resources
+            cursor = switch (toolName) {
+                case "eraser" -> com.equipo.pixelart.client.utils.ResourceLoader.loadCustomCursor("/images/cursor_eraser.png", "Eraser");
+                case "bucket" -> com.equipo.pixelart.client.utils.ResourceLoader.loadCustomCursor("/images/cursor_bucket.png", "Bucket");
+                case "eyedropper" -> Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+                default -> Cursor.getDefaultCursor();
+            }; // Carga el cursor del borrador
+            // Si tienes cursor de gotero, úsalo, si no, usa una mano o cruz
+            // "pencil" y otros
+            // O usa un cursor_pencil.png si lo tienes
+    
+    this.setCursor(cursor);
+}
+private void drawCheckerboard(Graphics2D g2d) {
+        // CAMBIO: Colores muy sutiles y agradables
+        Color c1 = Color.WHITE;
+        Color c2 = new Color(240, 240, 240); // Un gris casi blanco (muy suave)
+
+        for (int x = 0; x < gridWidth; x++) {
+            for (int y = 0; y < gridHeight; y++) {
+                if ((x + y) % 2 == 0) {
+                    g2d.setColor(c1);
+                } else {
+                    g2d.setColor(c2);
+                }
+                g2d.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+            }
+        }
     }
 }

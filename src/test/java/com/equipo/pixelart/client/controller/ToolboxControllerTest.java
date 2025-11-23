@@ -1,19 +1,30 @@
 package com.equipo.pixelart.client.controller;
 
-import com.equipo.pixelart.client.model.CanvasModel;
-import com.equipo.pixelart.client.view.ToolboxPanel;
-import com.equipo.pixelart.server.persistence.FileManager;
+import java.awt.Color;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeListener;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionListener;
-import javax.swing.event.ChangeListener;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import com.equipo.pixelart.client.model.CanvasModel;
+import com.equipo.pixelart.client.view.ToolboxPanel;
+import com.equipo.pixelart.server.persistence.FileManager;
 
 class ToolboxControllerTest {
 
@@ -29,7 +40,7 @@ class ToolboxControllerTest {
     private JButton[] mockColorPresetButtons;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
        
         mockView = mock(ToolboxPanel.class);
         mockCanvasController = mock(CanvasController.class);

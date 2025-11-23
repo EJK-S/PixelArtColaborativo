@@ -1,19 +1,20 @@
 package com.equipo.pixelart.server.app;
 
-import com.equipo.pixelart.server.console.ServerConsole;
-import com.equipo.pixelart.server.network.ClientHandler;
-import com.equipo.pixelart.server.persistence.FileManager;
-import com.equipo.pixelart.server.service.AuthService;
-import com.equipo.pixelart.server.service.CanvasService;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.equipo.pixelart.server.console.ServerConsole;
+import com.equipo.pixelart.server.network.ClientHandler;
+import com.equipo.pixelart.server.persistence.FileManager;
+import com.equipo.pixelart.server.service.AuthService;
+import com.equipo.pixelart.server.service.CanvasService;
 
 public class ServerApp {
 
@@ -75,7 +76,7 @@ public class ServerApp {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (SocketException e) {
             log("No se pudieron obtener IPs: " + e.getMessage());
         }
         return ips;

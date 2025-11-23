@@ -1,7 +1,6 @@
 package com.equipo.pixelart.client.app;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +10,7 @@ public class ClientAppTest{
 	private ClientApp app;
 	
 	@BeforeEach
-	void setUp() {
+	public void setUp() {
 		
 		app = new ClientApp();
 	}
@@ -43,9 +42,9 @@ public class ClientAppTest{
     	canvasField.setAccessible(true);
     	toolboxField.setAccessible(true);
     	
-    	assertNotNull(networkField, "El networkController debe estar incializado");
-    	assertNotNull(canvasField, "El networkController debe estar incializado");
-    	assertNotNull(toolboxField, "El networkController debe estar incializado");
+    	assertNotNull(networkField, "El networkController debe estar inicializado");
+        assertNotNull(canvasField, "El canvasController debe estar inicializado");
+        assertNotNull(toolboxField, "El toolboxController debe estar inicializado");
     	
     }
     

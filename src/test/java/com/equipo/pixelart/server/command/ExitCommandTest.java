@@ -1,11 +1,15 @@
 package com.equipo.pixelart.server.command;
 
-import com.equipo.pixelart.server.app.ServerApp;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import com.equipo.pixelart.server.app.ServerApp;
 
 class ExitCommandTest {
 
@@ -13,7 +17,7 @@ class ExitCommandTest {
     private ServerApp mockServer;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         mockServer = mock(ServerApp.class);
         exitCommand = new ExitCommand(mockServer);
     }

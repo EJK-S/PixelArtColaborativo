@@ -1,18 +1,21 @@
 package com.equipo.pixelart.server.command;
 
-import com.equipo.pixelart.server.app.ServerApp;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.equipo.pixelart.server.app.ServerApp;
 
 class NetworkCommandTest {
 
@@ -23,7 +26,7 @@ class NetworkCommandTest {
     private final PrintStream originalOut = System.out;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         
         System.setOut(new PrintStream(outContent));
 
@@ -32,7 +35,7 @@ class NetworkCommandTest {
     }
 
     @AfterEach
-    void tearDown() {
+    public void tearDown() {
         
         System.setOut(originalOut);
     }

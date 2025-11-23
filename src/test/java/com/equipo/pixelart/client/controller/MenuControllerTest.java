@@ -1,17 +1,24 @@
 package com.equipo.pixelart.client.controller;
 
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.equipo.pixelart.client.app.ClientApp;
 import com.equipo.pixelart.client.view.CanvasPanel;
 import com.equipo.pixelart.client.view.MainFrame;
 import com.equipo.pixelart.client.view.ToolboxPanel;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-
-import javax.swing.*;
-import java.awt.event.ActionListener;
-
-import static org.mockito.Mockito.*;
 
 class MenuControllerTest {
 
@@ -35,7 +42,7 @@ class MenuControllerTest {
     private JButton mockUndoButton;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         
         mockMainFrame = mock(MainFrame.class);
         mockCanvasController = mock(CanvasController.class);

@@ -1,15 +1,28 @@
 package com.equipo.pixelart.client.view;
 
-import com.equipo.pixelart.client.model.CanvasModel;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import javax.swing.JFrame;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.equipo.pixelart.client.model.CanvasModel;
 
 class CanvasPanelTest {
 
@@ -20,7 +33,7 @@ class CanvasPanelTest {
     private final int GRID_H = 5;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
        
         mockModel = mock(CanvasModel.class);
         when(mockModel.getWidth()).thenReturn(GRID_W);
