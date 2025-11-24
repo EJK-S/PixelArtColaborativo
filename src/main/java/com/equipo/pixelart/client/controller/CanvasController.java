@@ -120,26 +120,27 @@ public class CanvasController {
     }
 
     private void drawPixel(Point p) {
-    
-    
-    Color colorToUse = currentTool.equals("eraser") ? TRANSPARENT_COLOR : currentColor;
+        Color colorToUse = currentTool.equals("eraser") ? TRANSPARENT_COLOR : currentColor;
 
-    
-    for (int dx = -brushSize + 1; dx < brushSize; dx++) {
-        for (int dy = -brushSize + 1; dy < brushSize; dy++) {
-            int x = p.x + dx;
-            int y = p.y + dy;
+        for (int dx = -brushSize + 1; dx < brushSize; dx++) {
+            for (int dy = -brushSize + 1; dy < brushSize; dy++) {
+                int x = p.x + dx;
+                int y = p.y + dy;
 
-            if (model.isValidPosition(x, y)) {
-                model.setPixel(x, y, colorToUse);
+                if (model.isValidPosition(x, y)) {
+                    model.setPixel(x, y, colorToUse);
 
-                
-                
-                networkController.sendPixelUpdate(x, y, colorToUse);
+                    try {
+                        if (networkController != null) { 
+                            networkController.sendPixelUpdate(x, y, colorToUse);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Offline mode");
+                    }
+                }
             }
         }
-    }
-    view.repaint();
+        view.repaint();
     }
 
     private void drawLine(Point p1, Point p2) {
