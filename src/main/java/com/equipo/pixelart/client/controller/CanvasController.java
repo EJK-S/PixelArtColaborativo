@@ -233,6 +233,10 @@ public class CanvasController {
      */
     public void undo() {
         if (model.canUndo()) {
+
+            model.undo();
+
+            view.repaint();
             
             networkController.sendUndo();
             System.out.println("Solicitando deshacer al servidor");
