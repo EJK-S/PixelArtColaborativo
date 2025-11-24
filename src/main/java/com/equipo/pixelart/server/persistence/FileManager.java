@@ -23,19 +23,32 @@ public class FileManager {
 
     public Map<String, Usuario> cargarUsuarios() {
         File file = new File(USERS_FILE);
-
-        if (!file.exists()) {
-            System.out.println("Archivo de usuarios no existe, creando nuevo mapa");
-            return new HashMap<>();
-        }
+        if (!file.exists()) return new HashMap<>();
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-        	@SuppressWarnings("unchecked")
-            Map<String, Usuario> usuarios = (Map<String, Usuario>) ois.readObject();
-            System.out.println("Usuarios cargados: " + usuarios.size());
-            return usuarios;
+            Object obj = ois.readObject();
+
+            
+            if (obj instanceof Map) {
+                Map<?, ?> rawMap = (Map<?, ?>) obj;
+                Map<String, Usuario> checkedMap = new HashMap<>();
+
+                
+                for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
+                    if (entry.getKey() instanceof String && entry.getValue() instanceof Usuario) {
+                        checkedMap.put((String) entry.getKey(), (Usuario) entry.getValue());
+                    } else {
+                       
+                        System.err.println("Elemento ignorado por tipo incorrecto");
+                    }
+                }
+                System.out.println("Usuarios cargados: " + checkedMap.size());
+                return checkedMap;
+            }
+            return new HashMap<>();
+
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error cargando usuarios: " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
             return new HashMap<>();
         }
     }
