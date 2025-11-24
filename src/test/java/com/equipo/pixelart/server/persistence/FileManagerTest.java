@@ -189,7 +189,7 @@ class FileManagerTest {
 
     @Test
     void testLimpiarDatos() throws IOException {
-        // Crear archivos dummy
+        
         new File(DATA_DIR).mkdirs();
         new File(USERS_FILE).createNewFile();
         new File(CANVAS_FILE).createNewFile();

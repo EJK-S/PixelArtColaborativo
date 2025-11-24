@@ -45,7 +45,7 @@ public class CanvasService {
             System.err.println("Color nulo");
             return false;
         }
-        // Guardar estado antes del cambio (solo si cambió el color)
+        
         if (!canvas[x][y].equals(color)) {
             saveState();
         }

@@ -1,10 +1,26 @@
 package com.equipo.pixelart.client.view;
-import com.equipo.pixelart.client.utils.ResourceLoader;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+
+import com.equipo.pixelart.client.utils.ResourceLoader;
 
 
 public class MainFrame extends JFrame {
@@ -124,7 +140,7 @@ public class MainFrame extends JFrame {
         add(statusBar, BorderLayout.SOUTH);
     }
 
-    // Quitamos 'private' para poder testearlo directamente
+    
     void handleWindowClosing() {
         int confirm = showExitConfirmation();
 
@@ -133,7 +149,7 @@ public class MainFrame extends JFrame {
         }
     }
     
-    // MÉTODO PROTECTED para el Test
+    
     protected int showExitConfirmation() {
         return JOptionPane.showConfirmDialog(
                 this,
@@ -144,18 +160,18 @@ public class MainFrame extends JFrame {
         );
     }
 
-    // --- CORRECCIÓN AQUI: Refactor para poder testear sin abrir ventana ---
+    
     public ConnectionDialog showConnectionDialog() {
         ConnectionDialog dialog = new ConnectionDialog(this);
-        openDialog(dialog); // Usamos el método protegido
+        openDialog(dialog); 
         return dialog;
     }
 
-    // NUEVO MÉTODO PROTECTED (Evita que el setVisible bloquee el test)
+    
     protected void openDialog(JDialog dialog) {
         dialog.setVisible(true);
     }
-    // ---------------------------------------------------------------------
+    
 
     public void showAboutDialog() {
         String message = """
@@ -168,11 +184,11 @@ public class MainFrame extends JFrame {
                 
                 © 2024 - Equipo de Desarrollo""";
 
-        // --- CORRECCIÓN: Borrada la línea duplicada de JOptionPane ---
+        
         showMessageDialog(message, "Acerca de", JOptionPane.INFORMATION_MESSAGE);
     }
     
-    // MÉTODO PROTECTED para el Test
+    
     protected void showMessageDialog(String message, String title, int type) {
         JOptionPane.showMessageDialog(this, message, title, type);
     }

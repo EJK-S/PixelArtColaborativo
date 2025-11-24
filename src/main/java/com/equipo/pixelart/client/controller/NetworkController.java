@@ -39,7 +39,7 @@ public class NetworkController {
         try {
             System.out.println("🔗 Intentando conectar a " + host + ":" + port);
 
-            // Configurar timeout de conexión (5 segundos)
+            
             socket = new Socket();
             socket.connect(new java.net.InetSocketAddress(host, port), 5000);
 
@@ -191,7 +191,7 @@ public class NetworkController {
         sendMessage("GET_USERS");
     }
 
-    // ==================== MANEJAR RESPUESTAS ====================
+    
 
     private void handleAuthSuccess(String[] parts) {
         
@@ -236,7 +236,7 @@ public class NetworkController {
             int height = Integer.parseInt(parts[2]);
             String pixelData = parts[3];
 
-            // Decodificar pixelData (formato: RRGGBB,RRGGBB,...)
+            
             String[] pixels = pixelData.split(",");
             Color[][] canvas = new Color[width][height];
 

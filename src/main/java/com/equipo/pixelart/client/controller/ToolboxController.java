@@ -1,12 +1,13 @@
 package com.equipo.pixelart.client.controller;
 
-import com.equipo.pixelart.client.view.ToolboxPanel;
-import com.equipo.pixelart.server.persistence.FileManager;
-
 import java.awt.Color;
+
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JSlider;
+
+import com.equipo.pixelart.client.view.ToolboxPanel;
+import com.equipo.pixelart.server.persistence.FileManager;
 
 
 public class ToolboxController {
@@ -24,22 +25,22 @@ public class ToolboxController {
     private static final Color[] PRESET_COLORS = {
             Color.BLACK, Color.WHITE, Color.RED, Color.GREEN, Color.BLUE,
             Color.YELLOW, Color.ORANGE, Color.PINK, Color.MAGENTA, Color.CYAN,
-            new Color(128, 0, 0),      // Marrón oscuro
-            new Color(139, 69, 19),    // Marrón
-            new Color(160, 82, 45),    // Sienna
-            new Color(210, 180, 140),  // Tan
-            new Color(192, 192, 192),  // Plata
-            new Color(128, 128, 128),  // Gris
-            new Color(0, 128, 0),      // Verde oscuro
-            new Color(0, 0, 128),      // Azul marino
-            new Color(128, 0, 128),    // Púrpura
-            new Color(255, 215, 0)     // Dorado
+            new Color(128, 0, 0),      
+            new Color(139, 69, 19),    
+            new Color(160, 82, 45),    
+            new Color(210, 180, 140),  
+            new Color(192, 192, 192),  
+            new Color(128, 128, 128),  
+            new Color(0, 128, 0),      
+            new Color(0, 0, 128),      
+            new Color(128, 0, 128),    
+            new Color(255, 215, 0)     
     };
 
   
     private String currentTool;
     private Color currentColor;
-    private Color secondaryColor; // Para el botón derecho del mouse
+    private Color secondaryColor; 
     private int brushSize;
 
    
@@ -63,22 +64,22 @@ public class ToolboxController {
 
    
     private  void initializeListeners() {
-        // Botones de herramientas
+        
         view.getPencilButton().addActionListener(e -> selectTool(TOOL_PENCIL));
         view.getEraserButton().addActionListener(e -> selectTool(TOOL_ERASER));
         view.getBucketButton().addActionListener(e -> selectTool(TOOL_BUCKET));
         view.getEyedropperButton().addActionListener(e -> selectTool(TOOL_EYEDROPPER));
 
-        // Selector de color primario
+        
         view.getPrimaryColorButton().addActionListener(e -> choosePrimaryColor());
 
-        // Selector de color secundario
+        
         view.getSecondaryColorButton().addActionListener(e -> chooseSecondaryColor());
 
-        // Botón de intercambio de colores
+        
         view.getSwapColorsButton().addActionListener(e -> swapColors());
 
-        // Slider de tamaño de pincel
+        
         view.getBrushSizeSlider().addChangeListener(e -> {
             JSlider slider = (JSlider) e.getSource();
             if (!slider.getValueIsAdjusting()) {
@@ -86,19 +87,19 @@ public class ToolboxController {
             }
         });
 
-        // Botones de colores predefinidos
+        
         initializeColorPresets();
 
-        // Botón de limpiar canvas
+        
         view.getClearButton().addActionListener(e -> clearCanvas());
 
-        // Botón de deshacer
+        
         view.getUndoButton().addActionListener(e -> undo());
 
-        // Botón de guardar
+        
         view.getSaveButton().addActionListener(e -> saveCanvas());
 
-        // Botón de cargar
+        
         view.getLoadButton().addActionListener(e -> loadCanvas());
     }
 
@@ -117,17 +118,17 @@ public class ToolboxController {
     private void selectTool(String tool) {
         currentTool = tool;
 
-        // Actualizar UI
+        
         view.setSelectedTool(tool);
 
-        // Actualizar canvas controller
+        
         canvasController.setCurrentTool(tool);
 
         System.out.println("Herramienta seleccionada: " + tool);
     }
  
     private void choosePrimaryColor() {
-        // CAMBIO: Usamos un método auxiliar en lugar de llamar a JColorChooser directamente
+        
         Color newColor = openColorChooser("Seleccionar Color Primario", currentColor);
         if (newColor != null) {
             setCurrentColor(newColor);
@@ -136,14 +137,14 @@ public class ToolboxController {
 
     
     private void chooseSecondaryColor() {
-        // CAMBIO: Lo mismo aquí
+        
         Color newColor = openColorChooser("Seleccionar Color Secundario", secondaryColor);
         if (newColor != null) {
             setSecondaryColor(newColor);
         }
     }
 
-    // NUEVO MÉTODO PROTECTED (Para poder burlarlo en el test)
+    
     protected Color openColorChooser(String title, Color initialColor) {
         return JColorChooser.showDialog(view, title, initialColor);
     }
@@ -153,10 +154,10 @@ public class ToolboxController {
         currentColor = secondaryColor;
         secondaryColor = temp;
 
-        // Actualizar UI
+        
         view.updateColorDisplay(currentColor, secondaryColor);
 
-        // Actualizar canvas controller
+        
         canvasController.setCurrentColor(currentColor);
 
         System.out.println("Colores intercambiados");
@@ -169,10 +170,10 @@ public class ToolboxController {
     private void changeBrushSize(int size) {
         brushSize = size;
 
-        // Actualizar label en la UI
+        
         view.updateBrushSizeLabel(size);
 
-        // Actualizar canvas controller
+        
         canvasController.setBrushSize(size);
 
         System.out.println("Tamaño de pincel: " + size);
@@ -184,7 +185,7 @@ public class ToolboxController {
                 "Confirmar"
         );
 
-        if (confirm == 0) { // YES_OPTION
+        if (confirm == 0) { 
             canvasController.clearCanvas();
             System.out.println("Canvas limpiado");
         }
@@ -195,11 +196,11 @@ public class ToolboxController {
             String filename = view.showSaveDialog();
             
             if (filename != null) {
-                // CAMBIO: Usamos método factoría en vez de 'new' directo
+                
                 FileManager fileManager = createFileManager(); 
                 
                 Color[][] pixels = canvasController.getModel().getPixels();
-                fileManager.guardarCanvas(pixels); // Asumo que guardas el filename dentro o pasas filename
+                fileManager.guardarCanvas(pixels); 
                 
                 view.showMessage("Canvas guardado exitosamente", "Éxito");
                 System.out.println("Canvas guardado: " + filename);
@@ -219,10 +220,10 @@ public class ToolboxController {
             String filename = view.showLoadDialog();
 
             if (filename != null) {
-                // Cargar desde archivo (implementar FileManager)
-                // Color[][] pixels = fileManager.loadCanvas(filename);
+                
+                
 
-                // Por ahora, mostrar mensaje
+                
                 view.showMessage("Función de carga en desarrollo", "Info");
                 System.out.println("Cargando canvas: " + filename);
             }
@@ -235,10 +236,10 @@ public class ToolboxController {
     public void setCurrentColor(Color color) {
         this.currentColor = color;
 
-        // Actualizar UI
+        
         view.updateColorDisplay(currentColor, secondaryColor);
 
-        // Actualizar canvas controller
+        
         canvasController.setCurrentColor(color);
 
         System.out.println("Color seleccionado: " + colorToString(color));
@@ -247,7 +248,7 @@ public class ToolboxController {
     public void setSecondaryColor(Color color) {
         this.secondaryColor = color;
 
-        // Actualizar UI
+        
         view.updateColorDisplay(currentColor, secondaryColor);
     }
 

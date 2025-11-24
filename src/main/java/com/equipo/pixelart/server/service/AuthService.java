@@ -25,7 +25,7 @@ public class AuthService {
 
   
     public synchronized boolean registrarUsuario(String username, String password) {
-        // Validaciones
+        
         if (username == null || username.trim().isEmpty()) {
             System.out.println("Registro fallido: username vacio");
             return false;

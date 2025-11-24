@@ -15,7 +15,7 @@ class CanvasModelTest {
     private final int TEST_WIDTH = 10;
     private final int TEST_HEIGHT = 10;
 
-    // 1. DEFINIMOS EL COLOR TRANSPARENTE QUE ESPERAMOS AHORA
+    
     private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
     @BeforeEach
@@ -31,7 +31,7 @@ class CanvasModelTest {
         CanvasModel defaultModel = new CanvasModel();
         assertEquals(48, defaultModel.getWidth());
         assertEquals(48, defaultModel.getHeight());
-        // El color por defecto (fallback) sigue siendo blanco si te sales del mapa, eso está bien.
+        
         assertEquals(Color.WHITE, defaultModel.getDefaultColor());
     }
 
@@ -40,8 +40,8 @@ class CanvasModelTest {
         canvasModel.setPixel(5, 5, Color.RED);
         assertEquals(Color.RED, canvasModel.getPixel(5, 5));
 
-        // Estos devuelven Color.WHITE porque getDefaultColor() sigue siendo blanco
-        // para cuando te sales de los límites. Esto está bien.
+        
+        
         canvasModel.setPixel(-1, 0, Color.BLUE);
         assertEquals(Color.WHITE, canvasModel.getPixel(-1, 0), "No debe permitir pintar fuera (negativo)");
 
@@ -56,7 +56,7 @@ class CanvasModelTest {
 
         canvasModel.clear();
 
-        // CAMBIO: Ahora al limpiar esperamos TRANSPARENTE, no BLANCO
+        
         assertEquals(TRANSPARENT, canvasModel.getPixel(0, 0));
         assertEquals(TRANSPARENT, canvasModel.getPixel(1, 1));
     }
@@ -73,7 +73,7 @@ class CanvasModelTest {
         
         assertEquals(Color.RED, canvasModel.getPixel(0, 0));
         
-        // CAMBIO: El original ahora es TRANSPARENTE, así que si mandas null, se queda TRANSPARENTE
+        
         assertEquals(TRANSPARENT, canvasModel.getPixel(1, 1), "Si es null en la entrada, no debe cambiar el original");
 
         Color[][] bigMatrix = new Color[TEST_WIDTH + 5][TEST_HEIGHT + 5];
@@ -106,7 +106,7 @@ class CanvasModelTest {
 
     @Test
     void testUndoBasic() {
-        // Guardamos el estado inicial (que es todo TRANSPARENTE)
+        
         canvasModel.saveState();
 
         canvasModel.setPixel(0, 0, Color.RED);
@@ -117,7 +117,7 @@ class CanvasModelTest {
 
         assertTrue(result);
         
-        // CAMBIO: Al deshacer, volvemos al estado inicial, que es TRANSPARENTE
+        
         assertEquals(TRANSPARENT, canvasModel.getPixel(0, 0), "Debe volver a transparente");
     }
 

@@ -22,14 +22,14 @@ class UserListPanelTest {
 
     @Test
     void testInitialization() {
-        // Verificamos que la tabla y el modelo existan
+        
         assertNotNull(userListPanel.getUserTable(), "La tabla no debe ser null");
         assertNotNull(userListPanel.getTableModel(), "El modelo no debe ser null");
         
-        // Verificamos que empiece vacía
+        
         assertEquals(0, userListPanel.getUserCount());
         
-        // Verificamos la estructura de columnas: {"", "Usuario", "Estado"} -> Total 3 columnas
+        
         assertEquals(3, userListPanel.getTableModel().getColumnCount());
         assertEquals("Usuario", userListPanel.getTableModel().getColumnName(1));
     }
@@ -41,7 +41,7 @@ class UserListPanelTest {
         assertEquals(1, userListPanel.getUserCount());
         assertTrue(userListPanel.containsUser("Anthony"));
         
-        // Verificamos que los datos se guarden en las columnas correctas (Col 1: Nombre)
+        
         DefaultTableModel model = userListPanel.getTableModel();
         assertEquals("Anthony", model.getValueAt(0, 1)); 
         assertEquals("Activo", model.getValueAt(0, 2), "El estado por defecto debe ser Activo");
@@ -74,7 +74,7 @@ class UserListPanelTest {
         assertTrue(userListPanel.containsUser("Anthony"));
         assertTrue(userListPanel.containsUser("Maria"));
         
-        // Verificamos que se limpien los anteriores al setear nuevos
+        
         userListPanel.setUsers(new String[]{"Pedro"});
         assertEquals(1, userListPanel.getUserCount());
         assertTrue(userListPanel.containsUser("Pedro"));
@@ -94,7 +94,7 @@ class UserListPanelTest {
         userListPanel.addUser("Pedro");
         JTable table = userListPanel.getUserTable();
 
-        // Seleccionamos la fila 0 programáticamente
+        
         table.setRowSelectionInterval(0, 0);
 
         assertEquals("Pedro", userListPanel.getSelectedUser());
@@ -109,7 +109,7 @@ class UserListPanelTest {
     void testUpdateUserStatus() {
         userListPanel.addUser("Mario", "Activo");
         
-        // Cambiamos el estado
+        
         userListPanel.updateUserStatus("Mario", "Dibujando");
         
         DefaultTableModel model = userListPanel.getTableModel();

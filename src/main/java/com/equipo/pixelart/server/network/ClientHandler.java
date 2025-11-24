@@ -120,7 +120,7 @@ public class ClientHandler implements Runnable {
 
             sendMessage("AUTH_SUCCESS|" + user);
 
-            // Notificar a todos que un usuario se unió
+            
             broadcastMessage("USER_JOINED|" + user, this);
 
             System.out.println("Usuario autenticado: " + user);
@@ -164,7 +164,7 @@ public class ClientHandler implements Runnable {
             Color color = Color.decode("#" + parts[3]);
 
             if (canvasService.setPixel(x, y, color)) {
-                // Broadcast a todos los clientes
+                
                 String updateMsg = "PIXEL_UPDATE|" + x + "|" + y + "|" + parts[3];
                 broadcastMessage(updateMsg, null);
             } else {
@@ -249,14 +249,14 @@ public class ClientHandler implements Runnable {
      * Maneja el comando UNDO
      */
     private void handleUndo() {
-        // El servidor también debe mantener historial
+        
         if (canvasService.undo()) {
-            // Obtener el estado actual después del undo
+            
             String canvasData = canvasService.getCanvasAsString();
             int width = canvasService.getWidth();
             int height = canvasService.getHeight();
 
-            // Enviar el canvas completo a TODOS los clientes
+            
             String msg = "CANVAS_STATE|" + width + "|" + height + "|" + canvasData;
 
             for (ClientHandler client : allClients) {

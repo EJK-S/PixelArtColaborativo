@@ -334,7 +334,7 @@ public  class ConnectionDialog extends JDialog {
         isRegister = true;
         accepted = true;
 
-        // Cerrar el diálogo para que el ClientApp procese el registro
+        
         setVisible(false);
     }
 

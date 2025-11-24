@@ -119,7 +119,7 @@ public class ServerApp {
                 aceptarCliente(serverSocket.accept());
             } catch (IOException e) {
                 if (running) log("Error aceptando cliente: " + e.getMessage());
-                // Opcional: Romper el bucle en el test para que no sea infinito
+                
                 if (e.getMessage().contains("TEST_EXIT")) running = false; 
             }
         }

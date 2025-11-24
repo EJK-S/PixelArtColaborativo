@@ -1,10 +1,16 @@
 package com.equipo.pixelart.server.persistence;
 
-import com.equipo.pixelart.server.model.Usuario;
 import java.awt.Color;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.equipo.pixelart.server.model.Usuario;
 
 public class FileManager {
 
@@ -61,7 +67,7 @@ public class FileManager {
             Color[][] canvas = (Color[][]) ois.readObject();
             System.out.println("Canvas cargado: " + canvas.length + "x" + canvas[0].length);
 
-            // Verificar dimensiones
+            
             if (canvas.length != width || canvas[0].length != height) {
                 System.out.println("Dimensiones no coinciden, creando nuevo canvas");
                 return crearCanvasVacio(width, height);

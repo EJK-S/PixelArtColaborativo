@@ -38,7 +38,7 @@ class ClientHandlerTest {
 
     @BeforeEach
     public void setUp() throws IOException {
-        // 1. Mocks principales
+        
         mockSocket = mock(Socket.class);
         mockAuthService = mock(AuthService.class);
         mockCanvasService = mock(CanvasService.class);

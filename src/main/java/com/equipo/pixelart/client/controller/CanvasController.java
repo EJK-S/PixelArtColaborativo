@@ -69,9 +69,9 @@ public class CanvasController {
     private void handleMousePressed(MouseEvent e) {
         Point gridPoint = view.pixelToGrid(e.getPoint());
 
-        if (gridPoint == null) return; // Fuera del canvas
+        if (gridPoint == null) return; 
 
-        // Guardar estado antes de dibujar
+        
         model.saveState();
 
         isDragging = true;
@@ -86,9 +86,9 @@ public class CanvasController {
         isDragging = false;
         lastPoint = null;
 
-        // Si estábamos usando lápiz o borrador, reproducir sonido suave
+        
         if (currentTool.equals("pencil") || currentTool.equals("eraser")) {
-            // Usamos draw.wav para ambos (o click.wav si prefieres para el borrador)
+            
             ResourceLoader.playSound("/sounds/draw.wav");
         }
     }
@@ -111,7 +111,7 @@ public class CanvasController {
 
         if (gridPoint == null) return;
 
-        // Dibujar línea desde el último punto (para evitar huecos)
+        
         if (lastPoint != null && (currentTool.equals("pencil") || currentTool.equals("eraser"))) {
             drawLine(lastPoint, gridPoint);
         }
@@ -120,11 +120,11 @@ public class CanvasController {
     }
 
     private void drawPixel(Point p) {
-    // SI ES BORRADOR: Usamos el color transparente.
-    // SI ES LÁPIZ: Usamos el color seleccionado (que puede ser blanco).
+    
+    
     Color colorToUse = currentTool.equals("eraser") ? TRANSPARENT_COLOR : currentColor;
 
-    // Aplicar brush size
+    
     for (int dx = -brushSize + 1; dx < brushSize; dx++) {
         for (int dy = -brushSize + 1; dy < brushSize; dy++) {
             int x = p.x + dx;
@@ -133,8 +133,8 @@ public class CanvasController {
             if (model.isValidPosition(x, y)) {
                 model.setPixel(x, y, colorToUse);
 
-                // IMPORTANTE: Esto enviará el color transparente al servidor.
-                // Si tu NetworkController usa getRGB(), funcionará perfecto.
+                
+                
                 networkController.sendPixelUpdate(x, y, colorToUse);
             }
         }
@@ -174,9 +174,9 @@ public class CanvasController {
         Color targetColor = model.getPixel(start.x, start.y);
         if (targetColor.equals(currentColor)) return;
 
-        // --- SONIDO NUEVO ---
+        
         ResourceLoader.playSound("/sounds/bucket.wav");
-        // --------------------
+        
 
         floodFillRecursive(start.x, start.y, targetColor);
         view.repaint();
@@ -186,7 +186,7 @@ public class CanvasController {
         if (!model.isValidPosition(x, y)) return;
         if (!model.getPixel(x, y).equals(targetColor)) return;
 
-        // Establecer nuevo color
+        
         model.setPixel(x, y, currentColor);
         networkController.sendPixelUpdate(x, y, currentColor);
 
@@ -203,7 +203,7 @@ public class CanvasController {
         Color pickedColor = model.getPixel(p.x, p.y);
         setCurrentColor(pickedColor);
 
-        // Cambiar de vuelta a pencil después de tomar el color
+        
         setCurrentTool("pencil");
     }
 
@@ -220,9 +220,9 @@ public class CanvasController {
     }
 
     public void clearCanvas() {
-        // --- SONIDO NUEVO ---
+        
         ResourceLoader.playSound("/sounds/clear.wav");
-        // --------------------
+        
         
         model.clear();
         networkController.sendClearCanvas();
@@ -233,7 +233,7 @@ public class CanvasController {
      */
     public void undo() {
         if (model.canUndo()) {
-            // Enviar comando UNDO al servidor
+            
             networkController.sendUndo();
             System.out.println("Solicitando deshacer al servidor");
         } else {
@@ -253,17 +253,17 @@ public class CanvasController {
     }
 
     public void setCurrentTool(String tool) {
-        // Evitar que suene si seleccionamos la misma herramienta que ya tenemos
+        
         if (this.currentTool != null && this.currentTool.equals(tool)) {
             return;
         }
 
         this.currentTool = tool;
         
-        // Actualizar cursor (lo que hicimos antes)
+        
         view.setToolCursor(tool);
         
-        // SONIDO DE CLICK: Solo para herramientas
+        
         ResourceLoader.playSound("/sounds/click.wav");
     }
 

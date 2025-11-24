@@ -52,17 +52,17 @@ public class CanvasPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        // Antialiasing OFF para que el pixel art se vea nítido (crucial)
+        
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_OFF);
 
-        // 1. DIBUJAR FONDO DE AJEDREZ (NUEVO)
+        
         drawCheckerboard(g2d);
 
-        // 2. Dibujar los píxeles del usuario encima
+        
         drawPixels(g2d);
 
-        // 3. Dibujar la rejilla (grid) si está activa
+        
         if (showGrid) {
             drawGrid(g2d);
         }
@@ -73,12 +73,12 @@ public class CanvasPanel extends JPanel {
             for (int y = 0; y < gridHeight; y++) {
                 Color pixelColor = model.getPixel(x, y);
 
-                // Solo ignoramos si es null (por seguridad)
+                
                 if (pixelColor == null) continue;
 
-                // --- BORRAMOS EL IF QUE IGNORABA EL BLANCO ---
-                // Ya no hay "if (pixelColor.equals(Color.WHITE))..."
-                // ---------------------------------------------
+                
+                
+                
 
                 g2d.setColor(pixelColor);
                 int screenX = x * pixelSize;
@@ -90,7 +90,7 @@ public class CanvasPanel extends JPanel {
     }
 
     private void drawGrid(Graphics2D g2d) {
-        g2d.setColor(new Color(200, 200, 200, 100)); // Gris semi-transparente
+        g2d.setColor(new Color(200, 200, 200, 100)); 
 
         
         for (int x = 0; x <= gridWidth; x++) {
@@ -105,22 +105,22 @@ public class CanvasPanel extends JPanel {
         }
     }
 
- // En CanvasPanel.java
+ 
 
     public Point pixelToGrid(Point screenPoint) {
         if (screenPoint == null) return null;
 
-        // --- FIX: Validar negativos ANTES de dividir ---
-        // Esto evita que -5 se convierta en 0
+        
+        
         if (screenPoint.x < 0 || screenPoint.y < 0) {
             return null;
         }
-        // -----------------------------------------------
+        
 
         int gridX = screenPoint.x / pixelSize;
         int gridY = screenPoint.y / pixelSize;
 
-        // Validar que está dentro del canvas (Límite derecho e inferior)
+        
         if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
             return new Point(gridX, gridY);
         }
@@ -174,23 +174,23 @@ public class CanvasPanel extends JPanel {
     public void setToolCursor(String toolName) {
     Cursor cursor;
     
-            // Rutas relativas a src/main/resources
+            
             cursor = switch (toolName) {
                 case "eraser" -> com.equipo.pixelart.client.utils.ResourceLoader.loadCustomCursor("/images/cursor_eraser.png", "Eraser");
                 case "bucket" -> com.equipo.pixelart.client.utils.ResourceLoader.loadCustomCursor("/images/cursor_bucket.png", "Bucket");
                 case "eyedropper" -> Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
                 default -> Cursor.getDefaultCursor();
-            }; // Carga el cursor del borrador
-            // Si tienes cursor de gotero, úsalo, si no, usa una mano o cruz
-            // "pencil" y otros
-            // O usa un cursor_pencil.png si lo tienes
+            }; 
+            
+            
+            
     
     this.setCursor(cursor);
 }
 private void drawCheckerboard(Graphics2D g2d) {
-        // CAMBIO: Colores muy sutiles y agradables
+        
         Color c1 = Color.WHITE;
-        Color c2 = new Color(240, 240, 240); // Un gris casi blanco (muy suave)
+        Color c2 = new Color(240, 240, 240); 
 
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {

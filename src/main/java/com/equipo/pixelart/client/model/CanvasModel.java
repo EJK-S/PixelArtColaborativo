@@ -22,10 +22,10 @@ public class CanvasModel {
 
         this.undoStack = new Stack<>();
 
-        // Inicializar el canvas TOTALMENTE TRANSPARENTE
+        
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                pixels[x][y] = TRANSPARENT_COLOR; // Antes era Color.WHITE
+                pixels[x][y] = TRANSPARENT_COLOR; 
             }
         }
     }
@@ -37,7 +37,7 @@ public class CanvasModel {
     public void clear() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                pixels[x][y] = TRANSPARENT_COLOR; // Antes era Color.WHITE
+                pixels[x][y] = TRANSPARENT_COLOR; 
             }
         }
     }
@@ -91,7 +91,7 @@ public class CanvasModel {
      * Guarda el estado actual en el historial
      */
     public void saveState() {
-        // Crear copia del canvas actual
+        
         Color[][] copy = new Color[width][height];
         for (int x = 0; x < width; x++) {
             System.arraycopy(pixels[x], 0, copy[x], 0, height);
@@ -99,7 +99,7 @@ public class CanvasModel {
 
         undoStack.push(copy);
 
-        // Limitar el tamaño del historial
+        
         if (undoStack.size() > MAX_UNDO_STEPS) {
             undoStack.remove(0);
         }
@@ -115,7 +115,7 @@ public class CanvasModel {
 
         Color[][] previousState = undoStack.pop();
 
-        // Restaurar estado anterior
+        
         for (int x = 0; x < width; x++) {
             System.arraycopy(previousState[x], 0, pixels[x], 0, height);
         }

@@ -77,7 +77,7 @@ public class ChatPanel extends JPanel {
 
         chatArea.append(formattedMessage);
 
-        // Auto-scroll hacia abajo
+        
         chatArea.setCaretPosition(chatArea.getDocument().getLength());
     }
 
