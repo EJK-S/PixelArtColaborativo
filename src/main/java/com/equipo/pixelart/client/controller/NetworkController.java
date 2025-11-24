@@ -1,11 +1,19 @@
 package com.equipo.pixelart.client.controller;
 
 import java.awt.Color;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.SwingUtilities;
+
+import com.equipo.pixelart.client.app.ClientApp;
 
 public class NetworkController {
 
@@ -14,11 +22,13 @@ public class NetworkController {
     private BufferedReader in;
     private boolean connected;
 
-    private List<NetworkListener> listeners;
+    private final List<NetworkListener> listeners;
 
     private Thread receiverThread;
 
     private String username;
+
+    private static final Logger LOGGER = Logger.getLogger(ClientApp.class.getName());
 
     public NetworkController() {
         this.connected = false;
@@ -112,52 +122,30 @@ public class NetworkController {
         SwingUtilities.invokeLater(() -> {
             try {
                 switch (command) {
-                    case "AUTH_SUCCESS":
-                        handleAuthSuccess(parts);
-                        break;
+                    case "AUTH_SUCCESS" -> handleAuthSuccess(parts);
 
-                    case "AUTH_FAILED":
-                        handleAuthFailed(parts);
-                        break;
+                    case "AUTH_FAILED" -> handleAuthFailed(parts);
 
-                    case "PIXEL_UPDATE":
-                        handlePixelUpdate(parts);
-                        break;
+                    case "PIXEL_UPDATE" -> handlePixelUpdate(parts);
 
-                    case "CANVAS_STATE":
-                        handleCanvasState(parts);
-                        break;
+                    case "CANVAS_STATE" -> handleCanvasState(parts);
 
-                    case "CLEAR_CANVAS":
-                        handleClearCanvas();
-                        break;
+                    case "CLEAR_CANVAS" -> handleClearCanvas();
 
-                    case "CHAT_MESSAGE":
-                        handleChatMessage(parts);
-                        break;
+                    case "CHAT_MESSAGE" -> handleChatMessage(parts);
 
-                    case "USER_JOINED":
-                        handleUserJoined(parts);
-                        break;
+                    case "USER_JOINED" -> handleUserJoined(parts);
 
-                    case "USER_LEFT":
-                        handleUserLeft(parts);
-                        break;
+                    case "USER_LEFT" -> handleUserLeft(parts);
 
-                    case "USER_LIST":
-                        handleUserList(parts);
-                        break;
+                    case "USER_LIST" -> handleUserList(parts);
 
-                    case "ERROR":
-                        handleError(parts);
-                        break;
+                    case "ERROR" -> handleError(parts);
 
-                    default:
-                        System.out.println("Comando desconocido: " + command);
+                    default -> System.out.println("Comando desconocido: " + command);
                 }
             } catch (Exception e) {
-                System.err.println("Error procesando mensaje: " + e.getMessage());
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Error procesando mensaje: " + command, e);
             }
         });
     }
@@ -234,7 +222,7 @@ public class NetworkController {
             for (NetworkListener listener : listeners) {
                 listener.onPixelUpdateReceived(x, y, color);
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.err.println("Error en PIXEL_UPDATE: " + e.getMessage());
         }
     }
@@ -257,7 +245,7 @@ public class NetworkController {
                 for (int y = 0; y < height && index < pixels.length; y++) {
                     try {
                         canvas[x][y] = Color.decode("#" + pixels[index]);
-                    } catch (Exception e) {
+                    } catch (NumberFormatException e) {
                         canvas[x][y] = Color.WHITE;
                     }
                     index++;
@@ -267,7 +255,7 @@ public class NetworkController {
             for (NetworkListener listener : listeners) {
                 listener.onCanvasStateReceived(canvas);
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.err.println("Error en CANVAS_STATE: " + e.getMessage());
         }
     }

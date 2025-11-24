@@ -24,7 +24,7 @@ public class CanvasControllerTest {
     private CanvasController controller;
 
         @BeforeEach
-    void setUp() {
+    public void setUp() {
         
         model = mock(CanvasModel.class);
         view = mock(CanvasPanel.class);

@@ -1,11 +1,20 @@
 package com.equipo.pixelart.client.view;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.io.Serial;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 
 public class ChatPanel extends JPanel {
@@ -98,6 +107,8 @@ public class ChatPanel extends JPanel {
         sendButton.addActionListener(listener);
     }
 
+    
+    @Override
     public void setEnabled(boolean enabled) {
         messageField.setEnabled(enabled);
         sendButton.setEnabled(enabled);

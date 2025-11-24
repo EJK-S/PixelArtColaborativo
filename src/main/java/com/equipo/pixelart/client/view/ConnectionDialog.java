@@ -23,8 +23,8 @@ import javax.swing.SwingConstants;
 public  class ConnectionDialog extends JDialog {
     private static final long serialVersionUID = 1L;
 
-    private JTextField serverField;
-    private JTextField portField;
+    private final JTextField serverField;
+    private final JTextField portField;
   
     private JPanel loginPanel;
     private JTextField loginUsernameField;
@@ -39,7 +39,7 @@ public  class ConnectionDialog extends JDialog {
     private JButton goToRegisterButton;
     private JButton registerButton;
     private JButton backToLoginButton;
-    private JLabel statusLabel;
+    private final JLabel statusLabel;
 
     private boolean accepted = false;
     private boolean isRegister = false;

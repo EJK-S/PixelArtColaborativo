@@ -1,11 +1,11 @@
 package com.equipo.pixelart.server.service;
 
-import com.equipo.pixelart.server.model.Usuario;
-import com.equipo.pixelart.server.persistence.FileManager;
-
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
+
+import com.equipo.pixelart.server.model.Usuario;
+import com.equipo.pixelart.server.persistence.FileManager;
 
 
 public class AuthService {
@@ -89,7 +89,7 @@ public class AuthService {
 
   
     public synchronized String[] obtenerUsuariosConectados() {
-        return usuariosConectados.toArray(new String[0]);
+        return usuariosConectados.toArray(String[]::new);
     }
 
    

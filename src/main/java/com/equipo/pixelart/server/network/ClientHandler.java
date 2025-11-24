@@ -1,12 +1,15 @@
 package com.equipo.pixelart.server.network;
 
-import com.equipo.pixelart.server.service.AuthService;
-import com.equipo.pixelart.server.service.CanvasService;
-
 import java.awt.Color;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
+
+import com.equipo.pixelart.server.service.AuthService;
+import com.equipo.pixelart.server.service.CanvasService;
 
 public class ClientHandler implements Runnable {
 
@@ -63,44 +66,37 @@ public class ClientHandler implements Runnable {
 
         try {
             switch (command) {
-                case "LOGIN":
-                    handleLogin(parts);
-                    break;
+                case "LOGIN" -> handleLogin(parts);
 
-                case "REGISTER":
-                    handleRegister(parts);
-                    break;
+                case "REGISTER" -> handleRegister(parts);
 
-                case "PIXEL":
+                case "PIXEL" -> {
                     if (authenticated) handlePixel(parts);
-                    break;
+                }
 
-                case "GET_CANVAS":
+                case "GET_CANVAS" -> {
                     if (authenticated) handleGetCanvas();
-                    break;
+                }
 
-                case "CLEAR":
+                case "CLEAR" -> {
                     if (authenticated) handleClear();
-                    break;
+                }
 
-                case "CHAT":
+                case "CHAT" -> {
                     if (authenticated) handleChat(parts);
-                    break;
+                }
 
-                case "GET_USERS":
+                case "GET_USERS" -> {
                     if (authenticated) handleGetUsers();
-                    break;
+                }
 
-                case "DISCONNECT":
-                    running = false;
-                    break;
+                case "DISCONNECT" -> running = false;
 
-                case "UNDO":
+                case "UNDO" -> {
                     if (authenticated) handleUndo();
-                    break;
+                }
 
-                default:
-                    sendMessage("ERROR|Comando desconocido: " + command);
+                default -> sendMessage("ERROR|Comando desconocido: " + command);
             }
         } catch (Exception e) {
             System.err.println("Error procesando mensaje: " + e.getMessage());
@@ -175,7 +171,7 @@ public class ClientHandler implements Runnable {
                 sendMessage("ERROR|No se pudo actualizar el píxel");
             }
 
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             sendMessage("ERROR|Error en formato de píxel");
         }
     }

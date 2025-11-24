@@ -1,12 +1,20 @@
 package com.equipo.pixelart.server.console;
 
-import com.equipo.pixelart.server.app.ServerApp;
-import com.equipo.pixelart.server.command.*;
-
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import com.equipo.pixelart.server.app.ServerApp;
+import com.equipo.pixelart.server.command.ClearCommand;
+import com.equipo.pixelart.server.command.ExitCommand;
+import com.equipo.pixelart.server.command.HelpCommand;
+import com.equipo.pixelart.server.command.NetworkCommand;
+import com.equipo.pixelart.server.command.SaveCommand;
+import com.equipo.pixelart.server.command.ServerCommand;
+import com.equipo.pixelart.server.command.StatsCommand;
+import com.equipo.pixelart.server.command.UsersCommand;
 
 public class ServerConsole {
 
@@ -40,7 +48,7 @@ public class ServerConsole {
                     ServerCommand cmd = commands.get(line.trim());
                     if (cmd != null) cmd.execute();
                     else System.out.println("Comando no encontrado.");
-                } catch (Exception ignored) {}
+                } catch (IOException ignored) {}
             }
         });
 

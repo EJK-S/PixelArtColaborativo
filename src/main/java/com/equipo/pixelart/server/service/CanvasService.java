@@ -1,8 +1,12 @@
 package com.equipo.pixelart.server.service;
 
-import com.equipo.pixelart.server.persistence.FileManager;
 import java.awt.Color;
 import java.util.Stack;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import com.equipo.pixelart.server.persistence.FileManager;
 
 
 public class CanvasService {
@@ -75,9 +79,7 @@ public class CanvasService {
     public synchronized Color[][] getCanvasCopy() {
         Color[][] copy = new Color[width][height];
         for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                copy[x][y] = canvas[x][y];
-            }
+            System.arraycopy(canvas[x], 0, copy[x], 0, height);
         }
         return copy;
     }
@@ -109,20 +111,24 @@ public class CanvasService {
     }
 
     public void iniciarAutoGuardado(int intervalSegundos) {
-        Thread autoSaveThread = new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(intervalSegundos * 1000L);
-                    guardarCanvas();
-                } catch (InterruptedException e) {
-                    System.out.println("Auto-guardado interrumpido");
-                    break;
-                }
-            }
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r);
+            t.setDaemon(true); 
+            return t;
         });
 
-        autoSaveThread.setDaemon(true);
-        autoSaveThread.start();
+        scheduler.scheduleAtFixedRate(
+            () -> {
+                try {
+                    guardarCanvas();
+                } catch (Exception e) {
+                    System.err.println("Error en auto-guardado: " + e.getMessage());
+                }
+            },
+            intervalSegundos,  
+            intervalSegundos,  
+            TimeUnit.SECONDS   
+        );
 
         System.out.println("Auto-guardado iniciado cada " + intervalSegundos + " segundos");
     }
@@ -137,9 +143,7 @@ public class CanvasService {
     private synchronized void saveState() {
         Color[][] copy = new Color[width][height];
         for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                copy[x][y] = canvas[x][y];
-            }
+            System.arraycopy(canvas[x], 0, copy[x], 0, height);
         }
 
         undoStack.push(copy);
@@ -160,9 +164,7 @@ public class CanvasService {
         Color[][] previousState = undoStack.pop();
 
         for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                canvas[x][y] = previousState[x][y];
-            }
+            System.arraycopy(previousState[x], 0, canvas[x], 0, height);
         }
 
         return true;
