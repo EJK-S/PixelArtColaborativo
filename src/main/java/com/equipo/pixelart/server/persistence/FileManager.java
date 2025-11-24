@@ -28,18 +28,31 @@ public class FileManager {
     }
 
     public Map<String, Usuario> cargarUsuarios() {
-        File file = new File(USERS_FILE);
+    File file = new File(USERS_FILE);
 
-        if (!file.exists()) {
-            System.out.println("Archivo de usuarios no existe, creando nuevo mapa");
-            return new HashMap<>();
-        }
+    if (!file.exists()) {
+        System.out.println("Archivo no existe, creando nuevo mapa");
+        return new HashMap<>();
+    }
 
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-        	@SuppressWarnings("unchecked")
-            Map<String, Usuario> usuarios = (Map<String, Usuario>) ois.readObject();
+    try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+        
+        Object obj = ois.readObject();
+
+        Map<String, Usuario> usuarios = new HashMap<>();
+
+            if (obj instanceof Map<?, ?> rawMap) {
+
+                for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
+                    if (entry.getKey() instanceof String && entry.getValue() instanceof Usuario) {
+                        usuarios.put((String) entry.getKey(), (Usuario) entry.getValue());
+                    }
+                }
+            }
+            
             System.out.println("Usuarios cargados: " + usuarios.size());
             return usuarios;
+
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error cargando usuarios: " + e.getMessage());
             return new HashMap<>();

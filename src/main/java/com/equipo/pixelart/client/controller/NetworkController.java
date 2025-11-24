@@ -171,9 +171,15 @@ public class NetworkController {
     }
 
     public void sendPixelUpdate(int x, int y, Color color) {
-        String colorHex = String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
-        sendMessage("PIXEL|" + x + "|" + y + "|" + colorHex);
-    }
+    String colorHex = String.format("%02x%02x%02x%02x", 
+        color.getRed(), 
+        color.getGreen(), 
+        color.getBlue(), 
+        color.getAlpha()
+    );
+    
+    sendMessage("PIXEL|" + x + "|" + y + "|" + colorHex);
+}
 
     public void requestCanvasState() {
         sendMessage("GET_CANVAS");
@@ -211,13 +217,13 @@ public class NetworkController {
     }
 
     private void handlePixelUpdate(String[] parts) {
-       
         if (parts.length < 4) return;
 
         try {
             int x = Integer.parseInt(parts[1]);
             int y = Integer.parseInt(parts[2]);
-            Color color = Color.decode("#" + parts[3]);
+            
+            Color color = parseColor(parts[3]); 
 
             for (NetworkListener listener : listeners) {
                 listener.onPixelUpdateReceived(x, y, color);
@@ -228,7 +234,6 @@ public class NetworkController {
     }
 
     private void handleCanvasState(String[] parts) {
-        
         if (parts.length < 4) return;
 
         try {
@@ -236,7 +241,6 @@ public class NetworkController {
             int height = Integer.parseInt(parts[2]);
             String pixelData = parts[3];
 
-            
             String[] pixels = pixelData.split(",");
             Color[][] canvas = new Color[width][height];
 
@@ -244,8 +248,9 @@ public class NetworkController {
             for (int x = 0; x < width && index < pixels.length; x++) {
                 for (int y = 0; y < height && index < pixels.length; y++) {
                     try {
-                        canvas[x][y] = Color.decode("#" + pixels[index]);
-                    } catch (NumberFormatException e) {
+                        // CORRECCIÓN: Usamos parseColor aquí también
+                        canvas[x][y] = parseColor(pixels[index]);
+                    } catch (Exception e) {
                         canvas[x][y] = Color.WHITE;
                     }
                     index++;
@@ -259,7 +264,7 @@ public class NetworkController {
             System.err.println("Error en CANVAS_STATE: " + e.getMessage());
         }
     }
-
+    
     private void handleClearCanvas() {
     	for (NetworkListener listener : listeners) {
             listener.onCanvasCleared();
@@ -356,9 +361,7 @@ public class NetworkController {
         }
     }
 
-    /**
-     * Solicita deshacer al servidor
-     */
+    
     public void sendUndo() {
         sendMessage("UNDO");
     }
@@ -372,5 +375,23 @@ public class NetworkController {
         return username;
     }
 
+    private Color parseColor(String hex) {
+        try {
+            if (hex.length() == 8) {
+                
+                int r = Integer.parseInt(hex.substring(0, 2), 16);
+                int g = Integer.parseInt(hex.substring(2, 4), 16);
+                int b = Integer.parseInt(hex.substring(4, 6), 16);
+                int a = Integer.parseInt(hex.substring(6, 8), 16);
+                
+                return new Color(r, g, b, a);
+            } else {
+                return Color.decode("#" + hex);
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("Error parseando color: " + hex);
+            return Color.BLACK;
+        }
+    }
  
 }
