@@ -1,20 +1,13 @@
 package com.equipo.pixelart.client.view;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.lang.reflect.Field;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,17 +17,21 @@ class UserListPanelTest {
 
     @BeforeEach
     public void setUp() {
-        
         userListPanel = new UserListPanel();
     }
 
     @Test
     void testInitialization() {
-        assertNotNull(userListPanel.getUserList());
-        assertNotNull(userListPanel.getListModel());
+        // Verificamos que la tabla y el modelo existan
+        assertNotNull(userListPanel.getUserTable(), "La tabla no debe ser null");
+        assertNotNull(userListPanel.getTableModel(), "El modelo no debe ser null");
+        
+        // Verificamos que empiece vacía
         assertEquals(0, userListPanel.getUserCount());
-
-        assertEquals("0 usuarios", getCountLabelText());
+        
+        // Verificamos la estructura de columnas: {"", "Usuario", "Estado"} -> Total 3 columnas
+        assertEquals(3, userListPanel.getTableModel().getColumnCount());
+        assertEquals("Usuario", userListPanel.getTableModel().getColumnName(1));
     }
 
     @Test
@@ -43,8 +40,11 @@ class UserListPanelTest {
 
         assertEquals(1, userListPanel.getUserCount());
         assertTrue(userListPanel.containsUser("Anthony"));
-
-        assertEquals("1 usuario", getCountLabelText());
+        
+        // Verificamos que los datos se guarden en las columnas correctas (Col 1: Nombre)
+        DefaultTableModel model = userListPanel.getTableModel();
+        assertEquals("Anthony", model.getValueAt(0, 1)); 
+        assertEquals("Activo", model.getValueAt(0, 2), "El estado por defecto debe ser Activo");
     }
 
     @Test
@@ -52,7 +52,7 @@ class UserListPanelTest {
         userListPanel.addUser("Anthony");
         userListPanel.addUser("Anthony"); 
 
-        assertEquals(1, userListPanel.getUserCount(), "No debe permitir duplicados");
+        assertEquals(1, userListPanel.getUserCount(), "No debe permitir usuarios duplicados");
     }
 
     @Test
@@ -62,20 +62,23 @@ class UserListPanelTest {
 
         assertEquals(0, userListPanel.getUserCount());
         assertFalse(userListPanel.containsUser("Anthony"));
-        assertEquals("0 usuarios", getCountLabelText());
     }
 
     @Test
     void testSetUsers() {
-        
         String[] users = {"Anthony", "", null, "Maria"};
 
         userListPanel.setUsers(users);
 
-        assertEquals(2, userListPanel.getUserCount()); 
+        assertEquals(2, userListPanel.getUserCount(), "Debe ignorar nulos y vacíos"); 
         assertTrue(userListPanel.containsUser("Anthony"));
         assertTrue(userListPanel.containsUser("Maria"));
-        assertEquals("2 usuarios", getCountLabelText());
+        
+        // Verificamos que se limpien los anteriores al setear nuevos
+        userListPanel.setUsers(new String[]{"Pedro"});
+        assertEquals(1, userListPanel.getUserCount());
+        assertTrue(userListPanel.containsUser("Pedro"));
+        assertFalse(userListPanel.containsUser("Anthony"));
     }
 
     @Test
@@ -89,8 +92,10 @@ class UserListPanelTest {
     @Test
     void testGetSelectedUser() {
         userListPanel.addUser("Pedro");
+        JTable table = userListPanel.getUserTable();
 
-        userListPanel.getUserList().setSelectedIndex(0);
+        // Seleccionamos la fila 0 programáticamente
+        table.setRowSelectionInterval(0, 0);
 
         assertEquals("Pedro", userListPanel.getSelectedUser());
     }
@@ -101,47 +106,13 @@ class UserListPanelTest {
     }
 
     @Test
-    void testGetListModel() {
-        assertNotNull(userListPanel.getListModel());
-        assertTrue(userListPanel.getListModel() instanceof DefaultListModel);
-    }
-
-    @Test
-    void testCellRenderer() {
-        JList<String> list = userListPanel.getUserList();
-        ListCellRenderer<? super String> renderer = list.getCellRenderer();
-
-        Component cNormal = renderer.getListCellRendererComponent(
-                list, "UsuarioTest", 0, false, false
-        );
+    void testUpdateUserStatus() {
+        userListPanel.addUser("Mario", "Activo");
         
-        assertTrue(cNormal instanceof JLabel);
-        JLabel labelNormal = (JLabel) cNormal;
-
-        assertEquals("👤 UsuarioTest", labelNormal.getText());
-       
-        assertEquals(Color.WHITE, labelNormal.getBackground());
-        assertEquals(Color.BLACK, labelNormal.getForeground());
-
-        Component cSelected = renderer.getListCellRendererComponent(
-                list, "UsuarioTest", 0, true, false
-        );
+        // Cambiamos el estado
+        userListPanel.updateUserStatus("Mario", "Dibujando");
         
-        JLabel labelSelected = (JLabel) cSelected;
-        
-        assertEquals(new Color(100, 149, 237), labelSelected.getBackground());
-        assertEquals(Color.WHITE, labelSelected.getForeground());
-    }
-
-    private String getCountLabelText() {
-        try {
-            Field field = UserListPanel.class.getDeclaredField("countLabel");
-            field.setAccessible(true);
-            JLabel label = (JLabel) field.get(userListPanel);
-            return label.getText();
-        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
-            fail("No se pudo acceder al countLabel: " + e.getMessage());
-            return null;
-        }
+        DefaultTableModel model = userListPanel.getTableModel();
+        assertEquals("Dibujando", model.getValueAt(0, 2), "El estado debería actualizarse en la columna 2");
     }
 }
