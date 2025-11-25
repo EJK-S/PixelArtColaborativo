@@ -396,6 +396,10 @@ public class NetworkController {
             System.err.println("Color corrupto recibido: " + hex); 
             return Color.BLACK; 
         }
-    }   
+    }
+
+    public void sendCheckpoint() {
+        sendMessage("CHECKPOINT");
+    }
  
 }

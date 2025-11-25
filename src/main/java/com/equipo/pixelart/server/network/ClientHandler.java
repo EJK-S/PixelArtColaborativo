@@ -72,6 +72,8 @@ public class ClientHandler implements Runnable {
                 case "GET_USERS" -> { if (authenticated) handleGetUsers(); }
                 case "DISCONNECT" -> running = false;
                 case "UNDO" -> { if (authenticated) handleUndo(); }
+                case "CHECKPOINT" -> { if (authenticated) { canvasService.saveState(); }
+            }
                 default -> sendMessage("ERROR|Comando desconocido: " + command);
             }
         } catch (Exception e) {

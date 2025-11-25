@@ -52,11 +52,6 @@ public final class CanvasService {
         if (!isValidPosition(x, y)) return false;
         if (color == null) return false;
         
-        
-        if (!canvas[x][y].equals(color)) {
-            saveState();
-        }
-        
         canvas[x][y] = color;
         pixelsModificados++;
 
@@ -125,7 +120,7 @@ public final class CanvasService {
     }
     
     
-    private void saveState() {
+    public void saveState() {
         Color[][] copy = new Color[width][height];
         for (int x = 0; x < width; x++) {
             System.arraycopy(canvas[x], 0, copy[x], 0, height);

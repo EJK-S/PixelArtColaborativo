@@ -68,11 +68,13 @@ public class CanvasController {
 
     private void handleMousePressed(MouseEvent e) {
         Point gridPoint = view.pixelToGrid(e.getPoint());
+        if (gridPoint == null) return;
 
-        if (gridPoint == null) return; 
-
-        
         model.saveState();
+        
+        if (networkController != null) {
+            networkController.sendCheckpoint();
+        }
 
         isDragging = true;
         lastPoint = gridPoint;
@@ -246,9 +248,7 @@ public class CanvasController {
         }
     }
 
-    /**
-     * Verifica si se puede deshacer
-     */
+    
     public boolean canUndo() {
         return model.canUndo();
     }
