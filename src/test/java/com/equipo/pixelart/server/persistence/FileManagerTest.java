@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,12 +22,18 @@ import com.equipo.pixelart.server.model.Usuario;
 class FileManagerTest {
 
     private FileManager fileManager;
-    private final String DATA_DIR = "data";
-    private final String USERS_FILE = DATA_DIR + "/users.dat";
-    private final String CANVAS_FILE = DATA_DIR + "/canvas.dat";
+    
+    // Ya no hardcodeamos "data", lo leeremos dinámicamente
+    private String realDataDir;
+    private String realUsersFile;
+    private String realCanvasFile;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
+        // Leemos las rutas reales usando Reflexión (porque son privadas en FileManager)
+        realDataDir = getPrivateConstant("DATA_DIR");
+        realUsersFile = getPrivateConstant("USERS_FILE");
+        realCanvasFile = getPrivateConstant("CANVAS_FILE");
 
         limpiarArchivos();
         fileManager = new FileManager();
@@ -34,27 +41,26 @@ class FileManagerTest {
 
     @AfterEach
     public void tearDown() {
-       
-    	System.gc(); 
-
+        System.gc(); 
         try { Thread.sleep(50); } catch (InterruptedException e) {}
         limpiarArchivos();
     }
 
     private void limpiarArchivos() {
-    	borrarConReintentos(new File(USERS_FILE));
-        borrarConReintentos(new File(CANVAS_FILE));
+        if (realUsersFile != null) borrarConReintentos(new File(realUsersFile));
+        if (realCanvasFile != null) borrarConReintentos(new File(realCanvasFile));
         
-        File dir = new File(DATA_DIR);
-        if (dir.exists() && dir.list().length == 0) {
-            dir.delete();
+        if (realDataDir != null) {
+            File dir = new File(realDataDir);
+            if (dir.exists() && dir.list() != null && dir.list().length == 0) {
+                dir.delete();
+            }
         }
     }
 
     private void borrarConReintentos(File file) {
         if (file.exists()) {
             boolean deleted = file.delete();
-           
             if (!deleted) {
                 try { Thread.sleep(100); } catch (InterruptedException e) {}
                 file.delete();
@@ -64,9 +70,7 @@ class FileManagerTest {
 
     @Test
     void testGuardarYCargarUsuariosExitoso() {
-       
         Map<String, Usuario> usuarios = new HashMap<>();
- 
         usuarios.put("Anthony", new Usuario("Anthony", "hash123"));
 
         fileManager.guardarUsuarios(usuarios);
@@ -80,8 +84,7 @@ class FileManagerTest {
 
     @Test
     void testCargarUsuariosArchivoNoExiste() {
-        
-        new File(USERS_FILE).delete();
+        new File(realUsersFile).delete();
 
         Map<String, Usuario> result = fileManager.cargarUsuarios();
 
@@ -91,8 +94,7 @@ class FileManagerTest {
 
     @Test
     void testCargarUsuariosArchivoCorrupto() throws IOException {
-        
-        File file = new File(USERS_FILE);
+        File file = new File(realUsersFile);
         file.getParentFile().mkdirs();
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write("ESTO NO ES UN OBJETO".getBytes());
@@ -106,9 +108,8 @@ class FileManagerTest {
 
     @Test
     void testGuardarUsuariosFalloIO() {
-
-        File file = new File(USERS_FILE);
-        file.mkdir(); 
+        File file = new File(realUsersFile);
+        file.mkdir(); // Convertimos el archivo en carpeta para provocar error
 
         Map<String, Usuario> map = new HashMap<>();
 
@@ -119,10 +120,9 @@ class FileManagerTest {
 
     @Test
     void testGuardarYCargarCanvasExitoso() {
-      
         Color[][] canvas = new Color[2][2];
         canvas[0][0] = Color.RED;
-        canvas[0][1] = Color.WHITE;
+        canvas[0][1] = new Color(0,0,0,0); // Transparente
         canvas[1][0] = Color.BLUE;
         canvas[1][1] = Color.BLACK;
 
@@ -132,23 +132,23 @@ class FileManagerTest {
 
         assertNotNull(cargado);
         assertEquals(Color.RED, cargado[0][0]);
-        assertEquals(Color.BLACK, cargado[1][1]);
+        assertEquals(0, cargado[0][1].getAlpha()); // Verificamos transparencia
     }
 
     @Test
     void testCargarCanvasNoExiste() {
-        new File(CANVAS_FILE).delete();
+        new File(realCanvasFile).delete();
 
         Color[][] result = fileManager.cargarCanvas(5, 5);
 
         assertNotNull(result);
         assertEquals(5, result.length);
-        assertEquals(Color.WHITE, result[0][0]);
+        // CAMBIO: Ahora esperamos Transparente (Alpha 0), no WHITE
+        assertEquals(0, result[0][0].getAlpha(), "Debe iniciar transparente");
     }
 
     @Test
     void testCargarCanvasDimensionesIncorrectas() {
-      
         Color[][] peque = new Color[2][2];
         fileManager.guardarCanvas(peque);
 
@@ -156,13 +156,13 @@ class FileManagerTest {
 
         assertEquals(10, result.length);
         assertEquals(10, result[0].length);
-        assertEquals(Color.WHITE, result[0][0]); 
+        // CAMBIO: Esperamos Transparente
+        assertEquals(0, result[0][0].getAlpha()); 
     }
 
     @Test
     void testCargarCanvasCorrupto() throws IOException {
-       
-        File file = new File(CANVAS_FILE);
+        File file = new File(realCanvasFile);
         file.getParentFile().mkdirs();
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write("BASURA".getBytes());
@@ -172,13 +172,13 @@ class FileManagerTest {
 
         assertNotNull(result);
         assertEquals(3, result.length);
-        assertEquals(Color.WHITE, result[0][0]);
+        // CAMBIO: Esperamos Transparente
+        assertEquals(0, result[0][0].getAlpha());
     }
     
     @Test
     void testGuardarCanvasFalloIO() {
-        
-        File file = new File(CANVAS_FILE);
+        File file = new File(realCanvasFile);
         file.mkdir();
 
         Color[][] canvas = new Color[2][2];
@@ -189,29 +189,26 @@ class FileManagerTest {
 
     @Test
     void testLimpiarDatos() throws IOException {
-        
-        new File(DATA_DIR).mkdirs();
-        new File(USERS_FILE).createNewFile();
-        new File(CANVAS_FILE).createNewFile();
+        // Usamos las rutas reales
+        new File(realDataDir).mkdirs();
+        new File(realUsersFile).createNewFile();
+        new File(realCanvasFile).createNewFile();
 
-        assertTrue(new File(USERS_FILE).exists());
+        assertTrue(new File(realUsersFile).exists());
 
         fileManager.limpiarDatos();
 
-        assertFalse(new File(USERS_FILE).exists());
-        assertFalse(new File(CANVAS_FILE).exists());
+        assertFalse(new File(realUsersFile).exists());
+        assertFalse(new File(realCanvasFile).exists());
     }
 
-    @Test
-    void testExportarCanvasPNG() {
-        
-        assertDoesNotThrow(() -> fileManager.exportarCanvasPNG(new Color[2][2], "test.png"));
-    }
-    
+    // Eliminado testExportarCanvasPNG porque el método ya no existe
+
     @Test
     void testConstructorCreaDirectorio() {
-    
-        File dataDir = new File(DATA_DIR);
+        File dataDir = new File(realDataDir);
+        
+        // Limpieza previa manual para el test
         if(dataDir.exists()) {
             String[] entries = dataDir.list();
             if (entries != null) {
@@ -221,12 +218,18 @@ class FileManagerTest {
             }
             dataDir.delete();
         }
-    assertFalse(dataDir.exists());
-    
-    FileManager fm = new FileManager(); 
-    
-    assertNotNull(fm, "El FileManager debería haberse instanciado correctamente");
-    
-    assertTrue(dataDir.exists());
+        assertFalse(dataDir.exists());
+        
+        FileManager fm = new FileManager(); 
+        assertNotNull(fm, "El FileManager debería haberse instanciado correctamente");
+        
+        assertTrue(dataDir.exists());
+    }
+
+    // --- MÉTODO DE AYUDA PARA LEER CONSTANTES PRIVADAS ---
+    private String getPrivateConstant(String fieldName) throws Exception {
+        Field field = FileManager.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return (String) field.get(null);
     }
 }

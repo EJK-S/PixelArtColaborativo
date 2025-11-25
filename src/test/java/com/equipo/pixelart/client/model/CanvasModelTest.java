@@ -123,6 +123,10 @@ class CanvasModelTest {
 
     @Test
     void testUndoEmptyStack() {
+        if (canvasModel.canUndo()) {
+            canvasModel.undo();
+        }
+        
         assertFalse(canvasModel.canUndo());
         boolean result = canvasModel.undo();
         

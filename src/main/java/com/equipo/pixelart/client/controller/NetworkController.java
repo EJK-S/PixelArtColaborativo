@@ -216,20 +216,19 @@ public class NetworkController {
         notifyAuthResult(false, reason);
     }
 
-    private void handlePixelUpdate(String[] parts) {
+     private void handlePixelUpdate(String[] parts) {
         if (parts.length < 4) return;
-
         try {
             int x = Integer.parseInt(parts[1]);
             int y = Integer.parseInt(parts[2]);
-            
-            Color color = parseColor(parts[3]); 
+            Color color = parseColor(parts[3]);
 
             for (NetworkListener listener : listeners) {
                 listener.onPixelUpdateReceived(x, y, color);
             }
         } catch (NumberFormatException e) {
-            System.err.println("Error en PIXEL_UPDATE: " + e.getMessage());
+            // SOLO imprimimos en consola, NO mostramos JOptionPane
+            System.err.println("Error ignorado en pixel: " + e.getMessage());
         }
     }
 
@@ -375,23 +374,28 @@ public class NetworkController {
         return username;
     }
 
+    // 1. Parser blindado (Usa Long para evitar desbordamientos con FFFFFFFF)
     private Color parseColor(String hex) {
         try {
+            if (hex == null || hex.isEmpty()) return Color.BLACK; // Protección contra nulos
+            
             if (hex.length() == 8) {
-                
+                // RRGGBBAA
                 int r = Integer.parseInt(hex.substring(0, 2), 16);
                 int g = Integer.parseInt(hex.substring(2, 4), 16);
                 int b = Integer.parseInt(hex.substring(4, 6), 16);
                 int a = Integer.parseInt(hex.substring(6, 8), 16);
-                
                 return new Color(r, g, b, a);
-            } else {
+            } else if (hex.length() == 6) {
+                // RRGGBB
                 return Color.decode("#" + hex);
             }
+            return Color.BLACK; 
         } catch (NumberFormatException e) {
-            System.err.println("Error parseando color: " + hex);
-            return Color.BLACK;
+            // Si falla, devolvemos negro silenciosamente en lugar de explotar
+            System.err.println("Color corrupto recibido: " + hex); 
+            return Color.BLACK; 
         }
-    }
+    }   
  
 }

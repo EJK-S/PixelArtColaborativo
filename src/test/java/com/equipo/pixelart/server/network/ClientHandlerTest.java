@@ -92,6 +92,8 @@ class ClientHandlerTest {
     void testRegisterExitoso() throws IOException {
         when(mockAuthService.registrarUsuario("Nuevo", "pass")).thenReturn(true);
 
+        when(mockAuthService.autenticar("Nuevo", "pass")).thenReturn(true);
+
         ejecutarHandlerConComandos("REGISTER|Nuevo|pass\nDISCONNECT");
 
         assertTrue(outputStreamCaptor.toString().contains("AUTH_SUCCESS"));
