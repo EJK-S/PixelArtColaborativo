@@ -90,11 +90,11 @@ public class FileManager {
 
     private Color[][] crearCanvasVacio(int width, int height) {
         Color[][] canvas = new Color[width][height];
-        Color transparent = new Color(0, 0, 0, 0); // Color Transparente
+        Color transparent = new Color(0, 0, 0, 0); 
         
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                // CAMBIO: Usamos transparente por defecto
+                
                 canvas[x][y] = transparent; 
             }
         }

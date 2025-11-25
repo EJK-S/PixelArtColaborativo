@@ -23,14 +23,14 @@ class FileManagerTest {
 
     private FileManager fileManager;
     
-    // Ya no hardcodeamos "data", lo leeremos dinámicamente
+    
     private String realDataDir;
     private String realUsersFile;
     private String realCanvasFile;
 
     @BeforeEach
     public void setUp() throws Exception {
-        // Leemos las rutas reales usando Reflexión (porque son privadas en FileManager)
+        
         realDataDir = getPrivateConstant("DATA_DIR");
         realUsersFile = getPrivateConstant("USERS_FILE");
         realCanvasFile = getPrivateConstant("CANVAS_FILE");
@@ -109,7 +109,7 @@ class FileManagerTest {
     @Test
     void testGuardarUsuariosFalloIO() {
         File file = new File(realUsersFile);
-        file.mkdir(); // Convertimos el archivo en carpeta para provocar error
+        file.mkdir(); 
 
         Map<String, Usuario> map = new HashMap<>();
 
@@ -122,7 +122,7 @@ class FileManagerTest {
     void testGuardarYCargarCanvasExitoso() {
         Color[][] canvas = new Color[2][2];
         canvas[0][0] = Color.RED;
-        canvas[0][1] = new Color(0,0,0,0); // Transparente
+        canvas[0][1] = new Color(0,0,0,0); 
         canvas[1][0] = Color.BLUE;
         canvas[1][1] = Color.BLACK;
 
@@ -132,7 +132,7 @@ class FileManagerTest {
 
         assertNotNull(cargado);
         assertEquals(Color.RED, cargado[0][0]);
-        assertEquals(0, cargado[0][1].getAlpha()); // Verificamos transparencia
+        assertEquals(0, cargado[0][1].getAlpha()); 
     }
 
     @Test
@@ -143,7 +143,7 @@ class FileManagerTest {
 
         assertNotNull(result);
         assertEquals(5, result.length);
-        // CAMBIO: Ahora esperamos Transparente (Alpha 0), no WHITE
+        
         assertEquals(0, result[0][0].getAlpha(), "Debe iniciar transparente");
     }
 
@@ -156,7 +156,7 @@ class FileManagerTest {
 
         assertEquals(10, result.length);
         assertEquals(10, result[0].length);
-        // CAMBIO: Esperamos Transparente
+        
         assertEquals(0, result[0][0].getAlpha()); 
     }
 
@@ -172,7 +172,7 @@ class FileManagerTest {
 
         assertNotNull(result);
         assertEquals(3, result.length);
-        // CAMBIO: Esperamos Transparente
+        
         assertEquals(0, result[0][0].getAlpha());
     }
     
@@ -189,7 +189,7 @@ class FileManagerTest {
 
     @Test
     void testLimpiarDatos() throws IOException {
-        // Usamos las rutas reales
+        
         new File(realDataDir).mkdirs();
         new File(realUsersFile).createNewFile();
         new File(realCanvasFile).createNewFile();
@@ -202,13 +202,13 @@ class FileManagerTest {
         assertFalse(new File(realCanvasFile).exists());
     }
 
-    // Eliminado testExportarCanvasPNG porque el método ya no existe
+    
 
     @Test
     void testConstructorCreaDirectorio() {
         File dataDir = new File(realDataDir);
         
-        // Limpieza previa manual para el test
+        
         if(dataDir.exists()) {
             String[] entries = dataDir.list();
             if (entries != null) {
@@ -226,7 +226,7 @@ class FileManagerTest {
         assertTrue(dataDir.exists());
     }
 
-    // --- MÉTODO DE AYUDA PARA LEER CONSTANTES PRIVADAS ---
+    
     private String getPrivateConstant(String fieldName) throws Exception {
         Field field = FileManager.class.getDeclaredField(fieldName);
         field.setAccessible(true);

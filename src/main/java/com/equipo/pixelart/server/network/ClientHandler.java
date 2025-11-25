@@ -136,11 +136,11 @@ public class ClientHandler implements Runnable {
             int x = Integer.parseInt(parts[1]);
             int y = Integer.parseInt(parts[2]);
             
-            // CORRECCIÓN: Usamos parseColor en vez de Color.decode para soportar transparencia
+            
             Color color = parseColor(parts[3]);
 
             if (canvasService.setPixel(x, y, color)) {
-                // Reenviamos el mensaje tal cual llegó (con los 8 dígitos)
+                
                 String updateMsg = "PIXEL_UPDATE|" + x + "|" + y + "|" + parts[3];
                 broadcastMessage(updateMsg, null);
             } else {
@@ -156,7 +156,7 @@ public class ClientHandler implements Runnable {
     private void handleGetCanvas() {
         int width = canvasService.getWidth();
         int height = canvasService.getHeight();
-        // Esto ahora devuelve Strings de 8 dígitos, ¡perfecto!
+        
         String pixelData = canvasService.getCanvasAsString(); 
         sendMessage("CANVAS_STATE|" + width + "|" + height + "|" + pixelData);
     }
@@ -187,7 +187,7 @@ public class ClientHandler implements Runnable {
             int height = canvasService.getHeight();
             String msg = "CANVAS_STATE|" + width + "|" + height + "|" + canvasData;
             
-            // Enviamos el estado nuevo a TODOS los clientes
+            
             broadcastMessage(msg, null); 
             System.out.println("UNDO aplicado por: " + username);
         }
@@ -231,11 +231,11 @@ public class ClientHandler implements Runnable {
     public String getUsername() { return username; }
     public boolean isAuthenticated() { return authenticated; }
 
-    // --- MÉTODO NUEVO PARA LEER COLORES DE 8 DÍGITOS ---
+    
     private Color parseColor(String hex) {
         try {
             if (hex.length() == 8) {
-                // RRGGBBAA (Con Transparencia)
+                
                 int r = Integer.parseInt(hex.substring(0, 2), 16);
                 int g = Integer.parseInt(hex.substring(2, 4), 16);
                 int b = Integer.parseInt(hex.substring(4, 6), 16);

@@ -16,10 +16,10 @@ public final class CanvasService {
     private final int height;
     private Stack<Color[][]> undoStack;
     
-    // Constante que daba warning (ahora la usaremos)
+    
     private static final int MAX_UNDO_STEPS = 50;
 
-    // Color Transparente por defecto
+    
     private static final Color DEFAULT_BG = new Color(0, 0, 0, 0); 
 
     private long pixelsModificados = 0;
@@ -38,7 +38,7 @@ public final class CanvasService {
             clear(); 
         }
         
-        // Guardamos estado inicial
+        
         saveState();
 
         System.out.println("CanvasService inicializado: " + width + "x" + height);
@@ -52,7 +52,7 @@ public final class CanvasService {
         if (!isValidPosition(x, y)) return false;
         if (color == null) return false;
         
-        // Si el color es diferente, guardamos el estado antes de cambiarlo
+        
         if (!canvas[x][y].equals(color)) {
             saveState();
         }
@@ -75,7 +75,7 @@ public final class CanvasService {
     }
 
     public synchronized void clear() {
-        // Guardar estado antes de borrar todo para poder deshacer el "Limpiar"
+        
         saveState();
         
         for (int x = 0; x < width; x++) {
@@ -124,7 +124,7 @@ public final class CanvasService {
                 width, height, pixelsModificados);
     }
     
-    // --- MÉTODO NUEVO: Usa MAX_UNDO_STEPS para eliminar el warning ---
+    
     private void saveState() {
         Color[][] copy = new Color[width][height];
         for (int x = 0; x < width; x++) {
@@ -133,7 +133,7 @@ public final class CanvasService {
         
         undoStack.push(copy);
         
-        // AQUÍ USAMOS LA VARIABLE QUE DABA WARNING
+        
         if (undoStack.size() > MAX_UNDO_STEPS) {
             undoStack.remove(0);
         }

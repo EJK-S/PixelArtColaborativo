@@ -24,18 +24,18 @@ class CanvasServiceTest {
     private final int TEST_WIDTH = 5;
     private final int TEST_HEIGHT = 5;
     
-    // Constante para validaciones (Transparente)
+    
     private final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
     @BeforeEach
     public void setUp() {
         mockFileManager = mock(FileManager.class);
 
-        // Simulamos que el archivo carga un lienzo VACÍO (Transparente)
+        
         Color[][] lienzoVacio = new Color[TEST_WIDTH][TEST_HEIGHT];
         for(int x=0; x<TEST_WIDTH; x++) {
             for(int y=0; y<TEST_HEIGHT; y++) {
-                lienzoVacio[x][y] = TRANSPARENT; // CAMBIO: Iniciar transparente
+                lienzoVacio[x][y] = TRANSPARENT; 
             }
         }
 
@@ -78,7 +78,7 @@ class CanvasServiceTest {
         canvasService.setPixel(1, 1, Color.BLUE);
         
         assertEquals(Color.BLUE, canvasService.getPixel(1, 1));
-        // CAMBIO: Fuera de límites devuelve TRANSPARENT, no WHITE
+        
         assertEquals(TRANSPARENT, canvasService.getPixel(99, 99));
     }
 
@@ -89,7 +89,7 @@ class CanvasServiceTest {
 
         canvasService.clear();
 
-        // CAMBIO: Al limpiar queda TRANSPARENT
+        
         assertEquals(TRANSPARENT, canvasService.getPixel(0, 0));
         assertEquals(TRANSPARENT, canvasService.getPixel(1, 1));
     }
@@ -115,19 +115,19 @@ class CanvasServiceTest {
     
     @Test
     void testGetCanvasAsString() {
-        // Testeamos la conversión a String con Transparencia (8 dígitos)
+        
         Color[][] matrizPeque = new Color[2][2];
       
-        // [0][0] Blanco Opaco -> ffffffff
+        
         matrizPeque[0][0] = Color.WHITE; 
         
-        // [0][1] Rojo Opaco -> ff0000ff
+        
         matrizPeque[0][1] = Color.RED;   
     
-        // [1][0] Azul Opaco -> 0000ffff
+        
         matrizPeque[1][0] = Color.BLUE;  
         
-        // [1][1] Transparente -> 00000000
+        
         matrizPeque[1][1] = new Color(0,0,0,0); 
         
         when(mockFileManager.cargarCanvas(2, 2)).thenReturn(matrizPeque);
@@ -135,7 +135,7 @@ class CanvasServiceTest {
         
         String resultado = miniService.getCanvasAsString();
 
-        // CAMBIO: Esperamos formato de 8 dígitos (RRGGBBAA)
+        
         String esperado = "ffffffff,ff0000ff,0000ffff,00000000";
         assertEquals(esperado, resultado);
     }
@@ -151,18 +151,18 @@ class CanvasServiceTest {
     
     @Test
     void testUndoBasico() {
-        // 1. Estado inicial es Transparente
+        
         assertEquals(TRANSPARENT, canvasService.getPixel(0, 0));
 
-        // 2. Pintamos Rojo (Esto debería guardar el estado previo TRANSPARENT)
+        
         canvasService.setPixel(0, 0, Color.RED);
         assertEquals(Color.RED, canvasService.getPixel(0, 0));
 
-        // 3. Deshacemos
+        
         boolean undoResult = canvasService.undo();
 
         assertTrue(undoResult);
-        // CAMBIO: Debe volver a TRANSPARENT
+        
         assertEquals(TRANSPARENT, canvasService.getPixel(0, 0));
     }
 
@@ -185,9 +185,9 @@ class CanvasServiceTest {
 
     @Test
     void testUndoLimiteMaximo() {
-        // Llenamos el historial
+        
         for (int i = 0; i < 55; i++) {
-            // Usamos colores distintos para forzar el guardado
+            
             canvasService.setPixel(0, 0, new Color(i, i, i));
         }
 

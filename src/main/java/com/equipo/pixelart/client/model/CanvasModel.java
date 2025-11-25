@@ -10,12 +10,12 @@ public final class CanvasModel {
     private Color[][] pixels;
     private Stack<Color[][]> undoStack;
     
-    // 50 pasos es un buen historial
+    
     private static final int MAX_UNDO_STEPS = 50;
 
     private static final Color DEFAULT_COLOR = Color.WHITE;
     
-    // Mantenemos tu transparencia (Ajedrez)
+    
     private static final Color TRANSPARENT_COLOR = new Color(0, 0, 0, 0);
 
     public CanvasModel(int width, int height) {
@@ -24,15 +24,15 @@ public final class CanvasModel {
         this.pixels = new Color[width][height];
         this.undoStack = new Stack<>();
 
-        // 1. Inicializar con TRANSPARENTE (Para ver el ajedrez)
+        
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 pixels[x][y] = TRANSPARENT_COLOR; 
             }
         }
         
-        // 2. CORRECCIÓN VITAL: Guardar este estado inicial ("Hoja Limpia")
-        // Sin esto, el primer "Deshacer" falla o hace cosas raras.
+        
+        
         saveState();
     }
 
@@ -41,13 +41,13 @@ public final class CanvasModel {
     }
 
     public void clear() {
-        // Al limpiar, volvemos a transparencia
+        
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 pixels[x][y] = TRANSPARENT_COLOR; 
             }
         }
-        // Guardamos el estado después de limpiar
+        
         saveState();
     }
 
@@ -60,7 +60,7 @@ public final class CanvasModel {
     public Color getPixel(int x, int y) {
         if (isValidPosition(x, y)) {
             Color c = pixels[x][y];
-            // Si hay un error de memoria y es null, devolver transparente
+            
             return c == null ? TRANSPARENT_COLOR : c;
         }
         return DEFAULT_COLOR;
@@ -103,7 +103,7 @@ public final class CanvasModel {
      * Guarda el estado actual en el historial
      */
     public void saveState() {
-        // COPIA PROFUNDA (CORRECTO)
+        
         Color[][] copy = new Color[width][height];
         for (int x = 0; x < width; x++) {
             System.arraycopy(pixels[x], 0, copy[x], 0, height);
@@ -126,7 +126,7 @@ public final class CanvasModel {
 
         Color[][] previousState = undoStack.pop();
 
-        // Restaurar estado anterior
+        
         for (int x = 0; x < width; x++) {
             System.arraycopy(previousState[x], 0, pixels[x], 0, height);
         }

@@ -188,15 +188,15 @@ public class ServerApp {
     }
 
     public void stopServer() {
-        if (!running) return; // Evitar doble cierre
+        if (!running) return; 
         log("Deteniendo servidor...");
 
         running = false;
         
-        // 1. Guardar Canvas
+        
         if (canvasService != null) saveCanvas();
 
-        // 2. Cerrar socket principal para desbloquear el accept()
+        
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
@@ -205,20 +205,20 @@ public class ServerApp {
             log("Error cerrando socket servidor: " + e.getMessage());
         }
 
-        // 3. Desconectar clientes
+        
         for (ClientHandler c : clients) {
             try {
                 c.sendMessage("ERROR|Servidor detenido");
-                // Dar un momento para que el mensaje salga
+                
                 c.getSocket().close();
             } catch (IOException e) {
-                // Ignorar
+                
             }
         }
         
         log("Servidor detenido.");
-        // No llamamos a exitSystem() aquí si viene del ShutdownHook
-        // porque Java ya se está cerrando.
+        
+        
     }
     
     protected void exitSystem() {
