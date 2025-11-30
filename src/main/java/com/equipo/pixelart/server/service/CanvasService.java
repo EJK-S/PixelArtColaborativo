@@ -8,15 +8,19 @@ import java.util.concurrent.TimeUnit;
 
 import com.equipo.pixelart.server.persistence.FileManager;
 
-
-public class CanvasService {
+public final class CanvasService {
 
     private final FileManager fileManager;
     private final Color[][] canvas;
     private final int width;
     private final int height;
     private Stack<Color[][]> undoStack;
+    
+    
     private static final int MAX_UNDO_STEPS = 50;
+
+    
+    private static final Color DEFAULT_BG = new Color(0, 0, 0, 0); 
 
     private long pixelsModificados = 0;
 
@@ -26,7 +30,16 @@ public class CanvasService {
         this.height = height;
         this.undoStack = new Stack<>();
 
-        this.canvas = fileManager.cargarCanvas(width, height);
+        Color[][] loaded = fileManager.cargarCanvas(width, height);
+        if (loaded != null) {
+            this.canvas = loaded;
+        } else {
+            this.canvas = new Color[width][height];
+            clear(); 
+        }
+        
+        
+        saveState();
 
         System.out.println("CanvasService inicializado: " + width + "x" + height);
     }
@@ -36,20 +49,15 @@ public class CanvasService {
     }
 
     public synchronized boolean setPixel(int x, int y, Color color) {
-        if (!isValidPosition(x, y)) {
-            System.err.println("Posición inválida: (" + x + ", " + y + ")");
-            return false;
+        if (!isValidPosition(x, y)) return false;
+        if (color == null) return false;
+        
+        Color colorActual = canvas[x][y];
+        if (colorActual.equals(color)) {
+            return false; 
         }
-
-        if (color == null) {
-            System.err.println("Color nulo");
-            return false;
-        }
-        // Guardar estado antes del cambio (solo si cambió el color)
-        if (!canvas[x][y].equals(color)) {
-            saveState();
-        }
-
+        
+        saveState();
         canvas[x][y] = color;
         pixelsModificados++;
 
@@ -58,7 +66,7 @@ public class CanvasService {
 
     public synchronized Color getPixel(int x, int y) {
         if (!isValidPosition(x, y)) {
-            return Color.WHITE;
+            return DEFAULT_BG;
         }
         return canvas[x][y];
     }
@@ -68,40 +76,28 @@ public class CanvasService {
     }
 
     public synchronized void clear() {
+        
+        saveState();
+        
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                canvas[x][y] = Color.WHITE;
+                canvas[x][y] = DEFAULT_BG;
             }
         }
         System.out.println("Canvas limpiado");
     }
 
-    public synchronized Color[][] getCanvasCopy() {
-        Color[][] copy = new Color[width][height];
-        for (int x = 0; x < width; x++) {
-            System.arraycopy(canvas[x], 0, copy[x], 0, height);
-        }
-        return copy;
-    }
-
     public synchronized String getCanvasAsString() {
         StringBuilder sb = new StringBuilder();
-
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 Color color = canvas[x][y];
-                String colorHex = String.format("%02x%02x%02x",
-                        color.getRed(), color.getGreen(), color.getBlue());
-
+                String colorHex = String.format("%02x%02x%02x%02x",
+                        color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
                 sb.append(colorHex);
-
-                
-                if (!(x == width - 1 && y == height - 1)) {
-                    sb.append(",");
-                }
+                if (!(x == width - 1 && y == height - 1)) sb.append(",");
             }
         }
-
         return sb.toString();
     }
 
@@ -117,73 +113,53 @@ public class CanvasService {
             return t;
         });
 
-        scheduler.scheduleAtFixedRate(
-            () -> {
-                try {
-                    guardarCanvas();
-                } catch (Exception e) {
-                    System.err.println("Error en auto-guardado: " + e.getMessage());
-                }
-            },
-            intervalSegundos,  
-            intervalSegundos,  
-            TimeUnit.SECONDS   
-        );
-
-        System.out.println("Auto-guardado iniciado cada " + intervalSegundos + " segundos");
+        scheduler.scheduleAtFixedRate(() -> {
+            try { guardarCanvas(); } catch (Exception e) {
+                System.err.println("Error auto-guardado: " + e.getMessage());
+            }
+        }, intervalSegundos, intervalSegundos, TimeUnit.SECONDS);
     }
 
     public String getEstadisticas() {
         return String.format("Canvas: %dx%d | Píxeles modificados: %d",
                 width, height, pixelsModificados);
     }
-    /**
-     * Guarda el estado actual en el historial
-     */
-    private synchronized void saveState() {
+    
+    
+    public void saveState() {
         Color[][] copy = new Color[width][height];
         for (int x = 0; x < width; x++) {
             System.arraycopy(canvas[x], 0, copy[x], 0, height);
         }
-
+        
         undoStack.push(copy);
-
+        
+        
         if (undoStack.size() > MAX_UNDO_STEPS) {
             undoStack.remove(0);
         }
     }
 
-    /**
-     * Deshace el último cambio
-     */
     public synchronized boolean undo() {
-        if (undoStack.isEmpty()) {
-            return false;
-        }
-
-        Color[][] previousState = undoStack.pop();
-
-        for (int x = 0; x < width; x++) {
-            System.arraycopy(previousState[x], 0, canvas[x], 0, height);
-        }
-
+        if (undoStack.isEmpty()) return false;
+        Color[][] prev = undoStack.pop();
+        for(int x=0; x<width; x++) System.arraycopy(prev[x], 0, canvas[x], 0, height);
         return true;
-    }
-
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
     }
 
     public long getPixelsModificados() {
         return pixelsModificados;
     }
 
-    public Color[][] getCanvas() {
-        return canvas;
+    public synchronized Color[][] getCanvasCopy() {
+        Color[][] copy = new Color[width][height];
+        for (int x = 0; x < width; x++) {
+            System.arraycopy(canvas[x], 0, copy[x], 0, height);
+        }
+        return copy;
     }
+
+    public int getWidth() { return width; }
+    public int getHeight() { return height; }
+    public Color[][] getCanvas() { return canvas; }
 }

@@ -3,31 +3,37 @@ package com.equipo.pixelart.client.model;
 import java.awt.Color;
 import java.util.Stack;
 
-
-public class CanvasModel {
+public final class CanvasModel {
 
     private final int width;
     private final int height;
     private Color[][] pixels;
     private Stack<Color[][]> undoStack;
+    
+    
     private static final int MAX_UNDO_STEPS = 50;
 
     private static final Color DEFAULT_COLOR = Color.WHITE;
+    
+    
     private static final Color TRANSPARENT_COLOR = new Color(0, 0, 0, 0);
 
     public CanvasModel(int width, int height) {
         this.width = width;
         this.height = height;
         this.pixels = new Color[width][height];
-
         this.undoStack = new Stack<>();
 
-        // Inicializar el canvas TOTALMENTE TRANSPARENTE
+        
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                pixels[x][y] = TRANSPARENT_COLOR; // Antes era Color.WHITE
+                pixels[x][y] = TRANSPARENT_COLOR; 
             }
         }
+        
+        
+        
+        saveState();
     }
 
     public CanvasModel() {
@@ -35,11 +41,14 @@ public class CanvasModel {
     }
 
     public void clear() {
+        
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                pixels[x][y] = TRANSPARENT_COLOR; // Antes era Color.WHITE
+                pixels[x][y] = TRANSPARENT_COLOR; 
             }
         }
+        
+        saveState();
     }
 
     public void setPixel(int x, int y, Color color) {
@@ -50,7 +59,9 @@ public class CanvasModel {
 
     public Color getPixel(int x, int y) {
         if (isValidPosition(x, y)) {
-            return pixels[x][y];
+            Color c = pixels[x][y];
+            
+            return c == null ? TRANSPARENT_COLOR : c;
         }
         return DEFAULT_COLOR;
     }
@@ -87,11 +98,12 @@ public class CanvasModel {
         newModel.setPixels(this.getPixels());
         return newModel;
     }
+
     /**
      * Guarda el estado actual en el historial
      */
     public void saveState() {
-        // Crear copia del canvas actual
+        
         Color[][] copy = new Color[width][height];
         for (int x = 0; x < width; x++) {
             System.arraycopy(pixels[x], 0, copy[x], 0, height);
@@ -99,7 +111,6 @@ public class CanvasModel {
 
         undoStack.push(copy);
 
-        // Limitar el tamaño del historial
         if (undoStack.size() > MAX_UNDO_STEPS) {
             undoStack.remove(0);
         }
@@ -115,7 +126,7 @@ public class CanvasModel {
 
         Color[][] previousState = undoStack.pop();
 
-        // Restaurar estado anterior
+        
         for (int x = 0; x < width; x++) {
             System.arraycopy(previousState[x], 0, pixels[x], 0, height);
         }
@@ -123,22 +134,11 @@ public class CanvasModel {
         return true;
     }
 
-    /**
-     * Verifica si hay cambios para deshacer
-     */
     public boolean canUndo() {
         return !undoStack.isEmpty();
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public Color getDefaultColor() {
-        return DEFAULT_COLOR;
-    }
+    public int getWidth() { return width; }
+    public int getHeight() { return height; }
+    public Color getDefaultColor() { return DEFAULT_COLOR; }
 }

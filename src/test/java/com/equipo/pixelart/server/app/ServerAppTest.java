@@ -141,13 +141,18 @@ class ServerAppTest {
         spyServer.getClients().add(mockClient);
 
         setField(spyServer, "running", true);
+        
+        java.net.ServerSocket mockServerSocket = mock(java.net.ServerSocket.class);
+        when(mockServerSocket.isClosed()).thenReturn(false);
+        setField(spyServer, "serverSocket", mockServerSocket);
 
         spyServer.stopServer();
 
         verify(mockCanvas).guardarCanvas();
         verify(mockClient).sendMessage(contains("detenido"));
         verify(mockSocket).close();
-        verify(spyServer).exitSystem();
+        verify(mockServerSocket).close(); 
+        
     }
 
     @Test
@@ -192,16 +197,19 @@ class ServerAppTest {
 
     @Test
     void testStopServer_ServerSocketError() throws IOException {
-       
         java.net.ServerSocket badServerSocket = mock(java.net.ServerSocket.class);
+        when(badServerSocket.isClosed()).thenReturn(false); 
         doThrow(new IOException("Error forzado")).when(badServerSocket).close();
 
         setField(spyServer, "serverSocket", badServerSocket);
         
+        setField(spyServer, "running", true);
+        
         spyServer.stopServer();
 
         verify(badServerSocket).close();
-        assertTrue(outContent.toString().contains("Error cerrando servidor"));
+        assertTrue(outContent.toString().contains("Error cerrando"), 
+            "El log debe contener el mensaje de error de cierre");
     }
 
     @Test

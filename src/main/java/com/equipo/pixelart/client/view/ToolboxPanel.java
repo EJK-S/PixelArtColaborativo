@@ -79,7 +79,7 @@ public class ToolboxPanel extends JPanel {
     JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
     panel.setBorder(BorderFactory.createTitledBorder("Herramientas"));
 
-    // AHORA PASAMOS LA RUTA DE LA IMAGEN
+    
     pencilButton = createToolButton("Lápiz", "pencil", "/images/pencil.png");
     eraserButton = createToolButton("Borrador", "eraser", "/images/eraser.png");
     bucketButton = createToolButton("Balde", "bucket", "/images/bucket.png");
@@ -93,19 +93,19 @@ public class ToolboxPanel extends JPanel {
     return panel;
 }
 
-    // Nuevo parámetro iconPath
+    
 private JButton createToolButton(String text, String name, String iconPath) {
     JButton button = new JButton();
     button.setName(name);
 
-    // Intentamos cargar el icono (tamaño 32x32 se ve bien)
+    
     ImageIcon icon = ResourceLoader.loadResizedIcon(iconPath, 32, 32);
 
     if (icon != null) {
         button.setIcon(icon);
-        button.setToolTipText(text); // El texto se vuelve un tooltip
+        button.setToolTipText(text); 
     } else {
-        button.setText(text); // Si no hay imagen, usamos texto de respaldo
+        button.setText(text); 
     }
 
     button.setFocusPainted(false);
@@ -188,25 +188,25 @@ private JButton createToolButton(String text, String name, String iconPath) {
         undoButton = new JButton("Deshacer (Ctrl+Z)");
         undoButton.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        // --- CAMBIO: Usar iconos para Limpiar y Guardar ---
         
-        // Botón Limpiar
+        
+        
         clearButton = new JButton("Limpiar");
         ImageIcon clearIcon = ResourceLoader.loadResizedIcon("/images/clear.png", 20, 20);
         if (clearIcon != null) {
             clearButton.setIcon(clearIcon);
         }
 
-        // Botón Guardar
+        
         saveButton = new JButton("Guardar");
         ImageIcon saveIcon = ResourceLoader.loadResizedIcon("/images/save.png", 20, 20);
         if (saveIcon != null) {
             saveButton.setIcon(saveIcon);
         }
         
-        // Botón Cargar (si no tienes icono, déjalo con texto)
+        
         loadButton = new JButton("Cargar");
-        // --------------------------------------------------
+        
 
         panel.add(undoButton);
         panel.add(clearButton);
@@ -255,7 +255,7 @@ private JButton createToolButton(String text, String name, String iconPath) {
     }
 
     public String showSaveDialog() {
-        // CAMBIO: Usamos el método factoría para poder mockear el JFileChooser
+        
         JFileChooser fileChooser = createFileChooser();
         int result = fileChooser.showSaveDialog(this);
 
@@ -266,7 +266,7 @@ private JButton createToolButton(String text, String name, String iconPath) {
     }
 
     public String showLoadDialog() {
-        // CAMBIO: Usamos el mismo método factoría
+        
         JFileChooser fileChooser = createFileChooser();
         int result = fileChooser.showOpenDialog(this);
 
@@ -276,7 +276,7 @@ private JButton createToolButton(String text, String name, String iconPath) {
         return null;
     }
 
-    // NUEVO MÉTODO PROTECTED: Nos permite inyectar un FileChooser falso en el test
+    
     protected JFileChooser createFileChooser() {
         return new JFileChooser();
     }
@@ -289,7 +289,7 @@ private JButton createToolButton(String text, String name, String iconPath) {
         showMessageDialogInternal(message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    // NUEVO MÉTODO PROTECTED
+    
     protected void showMessageDialogInternal(String message, String title, int type) {
         JOptionPane.showMessageDialog(this, message, title, type);
     }

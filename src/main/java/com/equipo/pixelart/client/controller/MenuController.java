@@ -11,16 +11,16 @@ public class MenuController {
     private final CanvasController canvasController;
     private final CanvasPanel canvasPanel;
     private final ClientApp clientApp;
-    private final ToolboxPanel toolboxPanel;  // ← AGREGAR
+    private final ToolboxPanel toolboxPanel;  
 
     public MenuController(MainFrame mainFrame, CanvasController canvasController,
                           CanvasPanel canvasPanel, ClientApp clientApp,
-                          ToolboxPanel toolboxPanel) {  // ← AGREGAR parámetro
+                          ToolboxPanel toolboxPanel) {  
         this.mainFrame = mainFrame;
         this.canvasController = canvasController;
         this.canvasPanel = canvasPanel;
         this.clientApp = clientApp;
-        this.toolboxPanel = toolboxPanel;  // ← AGREGAR
+        this.toolboxPanel = toolboxPanel;  
     }
 
     public void init() {
@@ -34,10 +34,10 @@ public class MenuController {
 
         mainFrame.getAboutItem().addActionListener(e -> mainFrame.showAboutDialog());
 
-        // Menú: Deshacer (Ctrl+Z)  ← AGREGAR
+        
         mainFrame.getUndoItem().addActionListener(e -> canvasController.undo());
 
-        // Botón: Deshacer  ← AGREGAR
+        
         toolboxPanel.getUndoButton().addActionListener(e -> canvasController.undo());
     }
 }

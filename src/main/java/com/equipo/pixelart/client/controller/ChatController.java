@@ -14,10 +14,10 @@ public class ChatController implements NetworkListener {
     }
 
     public void init() {
-        // 1. Escuchar a la Vista (cuando el usuario envía un mensaje)
+        
         chatPanel.addSendListener(e -> gestionarEnvioMensaje());
 
-        // 2. Escuchar a la Red (cuando llega un mensaje o evento)
+        
         networkController.addNetworkListener(this);
     }
 
@@ -43,7 +43,7 @@ public class ChatController implements NetworkListener {
     public void onChatMessage(String user, String txt) {
         chatPanel.addMessage(user, txt);
         
-        // USO 1: Sonido de notificación estándar para mensajes de texto
+        
         ResourceLoader.playSound("/sounds/message.wav");
     }
 
@@ -57,7 +57,7 @@ public class ChatController implements NetworkListener {
     public void onUserJoined(String u) {
         chatPanel.addSystemMessage(u + " se ha unido");
         
-        // USO 2: El sonido "POP" es genial para entradas y salidas rápidas
+        
         ResourceLoader.playSound("/sounds/chat.wav");
     }
 
@@ -65,7 +65,7 @@ public class ChatController implements NetworkListener {
     public void onUserLeft(String u) {
         chatPanel.addSystemMessage(u + " se ha desconectado");
         
-        // Usamos el mismo POP para salida
+        
         ResourceLoader.playSound("/sounds/disconnect.wav");
     }
 

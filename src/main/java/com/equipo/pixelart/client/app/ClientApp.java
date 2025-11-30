@@ -21,8 +21,8 @@ import com.equipo.pixelart.client.view.MainFrame;
 import com.equipo.pixelart.client.view.ToolboxPanel;
 import com.equipo.pixelart.client.view.UserListPanel;
 
-
-public class ClientApp {
+																																																																																																																																																																																				
+public class ClientApp {	
 
     private MainFrame mainFrame;
 

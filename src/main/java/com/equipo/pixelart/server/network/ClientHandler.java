@@ -38,13 +38,11 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             System.out.println("Nuevo cliente conectado desde: " + socket.getInetAddress());
 
-            
             String message;
             while (running && (message = in.readLine()) != null) {
                 processMessage(message);
@@ -59,7 +57,6 @@ public class ClientHandler implements Runnable {
 
     private void processMessage(String message) {
         String[] parts = message.split("\\|");
-
         if (parts.length == 0) return;
 
         String command = parts[0];
@@ -67,35 +64,16 @@ public class ClientHandler implements Runnable {
         try {
             switch (command) {
                 case "LOGIN" -> handleLogin(parts);
-
                 case "REGISTER" -> handleRegister(parts);
-
-                case "PIXEL" -> {
-                    if (authenticated) handlePixel(parts);
-                }
-
-                case "GET_CANVAS" -> {
-                    if (authenticated) handleGetCanvas();
-                }
-
-                case "CLEAR" -> {
-                    if (authenticated) handleClear();
-                }
-
-                case "CHAT" -> {
-                    if (authenticated) handleChat(parts);
-                }
-
-                case "GET_USERS" -> {
-                    if (authenticated) handleGetUsers();
-                }
-
+                case "PIXEL" -> { if (authenticated) handlePixel(parts); }
+                case "GET_CANVAS" -> { if (authenticated) handleGetCanvas(); }
+                case "CLEAR" -> { if (authenticated) handleClear(); }
+                case "CHAT" -> { if (authenticated) handleChat(parts); }
+                case "GET_USERS" -> { if (authenticated) handleGetUsers(); }
                 case "DISCONNECT" -> running = false;
-
-                case "UNDO" -> {
-                    if (authenticated) handleUndo();
-                }
-
+                case "UNDO" -> { if (authenticated) handleUndo(); }
+                case "CHECKPOINT" -> { if (authenticated) { canvasService.saveState(); }
+            }
                 default -> sendMessage("ERROR|Comando desconocido: " + command);
             }
         } catch (Exception e) {
@@ -104,32 +82,24 @@ public class ClientHandler implements Runnable {
         }
     }
 
-
     private void handleLogin(String[] parts) {
         if (parts.length < 3) {
             sendMessage("AUTH_FAILED|Formato inválido");
             return;
         }
-
         String user = parts[1];
         String pass = parts[2];
-
         if (authService.autenticar(user, pass)) {
             this.username = user;
             this.authenticated = true;
-
             sendMessage("AUTH_SUCCESS|" + user);
-
-            // Notificar a todos que un usuario se unió
             broadcastMessage("USER_JOINED|" + user, this);
-
             System.out.println("Usuario autenticado: " + user);
         } else {
             sendMessage("AUTH_FAILED|Usuario o contraseña incorrectos");
         }
     }
 
- 
     private void handleRegister(String[] parts) {
         if (parts.length < 3) {
             sendMessage("AUTH_FAILED|Formato invalido");
@@ -138,20 +108,26 @@ public class ClientHandler implements Runnable {
 
         String user = parts[1];
         String pass = parts[2];
-
+        
         boolean registered = authService.registrarUsuario(user, pass);
 
         if (registered) {
-            sendMessage("AUTH_SUCCESS|" + user);
-            System.out.println("Usuario registrado exitosamente: " + user);
-
-
+            if (authService.autenticar(user, pass)) {
+                this.username = user;
+                this.authenticated = true;
+                
+                sendMessage("AUTH_SUCCESS|" + user);
+                broadcastMessage("USER_JOINED|" + user, this);
+                
+                System.out.println("Usuario registrado y auto-logueado: " + user);
+            } else {
+                sendMessage("AUTH_FAILED|Error en auto-login");
+            }
         } else {
-            sendMessage("AUTH_FAILED|No se pudo registrar el usuario (posiblemente ya existe)");
+            sendMessage("AUTH_FAILED|No se pudo registrar (el usuario ya existe)");
         }
     }
 
- 
     private void handlePixel(String[] parts) {
         if (parts.length < 4) {
             sendMessage("ERROR|Formato inválido");
@@ -161,10 +137,12 @@ public class ClientHandler implements Runnable {
         try {
             int x = Integer.parseInt(parts[1]);
             int y = Integer.parseInt(parts[2]);
-            Color color = Color.decode("#" + parts[3]);
+            
+            
+            Color color = parseColor(parts[3]);
 
             if (canvasService.setPixel(x, y, color)) {
-                // Broadcast a todos los clientes
+                
                 String updateMsg = "PIXEL_UPDATE|" + x + "|" + y + "|" + parts[3];
                 broadcastMessage(updateMsg, null);
             } else {
@@ -172,6 +150,7 @@ public class ClientHandler implements Runnable {
             }
 
         } catch (NumberFormatException e) {
+            System.err.println("Error pixel: " + e.getMessage());
             sendMessage("ERROR|Error en formato de píxel");
         }
     }
@@ -179,8 +158,8 @@ public class ClientHandler implements Runnable {
     private void handleGetCanvas() {
         int width = canvasService.getWidth();
         int height = canvasService.getHeight();
-        String pixelData = canvasService.getCanvasAsString();
-
+        
+        String pixelData = canvasService.getCanvasAsString(); 
         sendMessage("CANVAS_STATE|" + width + "|" + height + "|" + pixelData);
     }
 
@@ -192,18 +171,28 @@ public class ClientHandler implements Runnable {
 
     private void handleChat(String[] parts) {
         if (parts.length < 2) return;
-
         String message = parts[1];
         String chatMsg = "CHAT_MESSAGE|" + username + "|" + message;
-
         broadcastMessage(chatMsg, null);
     }
 
     private void handleGetUsers() {
         String[] users = authService.obtenerUsuariosConectados();
         String userList = String.join(",", users);
-
         sendMessage("USER_LIST|" + userList);
+    }
+
+    private void handleUndo() {
+        if (canvasService.undo()) {
+            String canvasData = canvasService.getCanvasAsString();
+            int width = canvasService.getWidth();
+            int height = canvasService.getHeight();
+            String msg = "CANVAS_STATE|" + width + "|" + height + "|" + canvasData;
+            
+            
+            broadcastMessage(msg, null); 
+            System.out.println("UNDO aplicado por: " + username);
+        }
     }
 
     public void sendMessage(String message) {
@@ -224,17 +213,14 @@ public class ClientHandler implements Runnable {
 
     private void disconnect() {
         running = false;
-
         if (authenticated && username != null) {
             authService.desconectar(username);
             broadcastMessage("USER_LEFT|" + username, this);
             System.out.println("Usuario desconectado: " + username);
         }
-
         synchronized (allClients) {
             allClients.remove(this);
         }
-
         try {
             if (in != null) in.close();
             if (out != null) out.close();
@@ -242,41 +228,28 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             System.err.println("Error cerrando recursos: " + e.getMessage());
         }
-
-        System.out.println("Cliente desconectado: " + socket.getInetAddress());
     }
-    /**
-     * Maneja el comando UNDO
-     */
-    private void handleUndo() {
-        // El servidor también debe mantener historial
-        if (canvasService.undo()) {
-            // Obtener el estado actual después del undo
-            String canvasData = canvasService.getCanvasAsString();
-            int width = canvasService.getWidth();
-            int height = canvasService.getHeight();
 
-            // Enviar el canvas completo a TODOS los clientes
-            String msg = "CANVAS_STATE|" + width + "|" + height + "|" + canvasData;
+    public String getUsername() { return username; }
+    public boolean isAuthenticated() { return authenticated; }
 
-            for (ClientHandler client : allClients) {
-                if (client.isAuthenticated()) {
-                    client.sendMessage(msg);
-                }
+    
+    private Color parseColor(String hex) {
+        try {
+            if (hex.length() == 8) {
+                
+                int r = Integer.parseInt(hex.substring(0, 2), 16);
+                int g = Integer.parseInt(hex.substring(2, 4), 16);
+                int b = Integer.parseInt(hex.substring(4, 6), 16);
+                int a = Integer.parseInt(hex.substring(6, 8), 16);
+                return new Color(r, g, b, a);
+            } else {
+                return Color.decode("#" + hex);
             }
-
-            System.out.println("UNDO aplicado por: " + username);
+        } catch (NumberFormatException e) {
+            return Color.BLACK; 
         }
     }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public boolean isAuthenticated() {
-        return authenticated;
-    }
-
     public Socket getSocket() {
         return socket;
     }

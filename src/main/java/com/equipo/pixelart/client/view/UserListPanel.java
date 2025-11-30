@@ -41,18 +41,18 @@ public class UserListPanel extends JPanel {
                 new Font("Arial", Font.BOLD, 12)
         ));
 
-        // Crear modelo de tabla con columnas
+        
         String[] columnNames = {"", "Usuario", "Estado"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Serial
             private static final long serialVersionUID = 1L;
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Hacer tabla no editable
+                return false; 
             }
         };
 
-        // Crear tabla
+        
         userTable = new JTable(tableModel);
         userTable.setFont(new Font("Arial", Font.PLAIN, 12));
         userTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -61,25 +61,25 @@ public class UserListPanel extends JPanel {
         userTable.setShowGrid(false);
         userTable.setIntercellSpacing(new Dimension(0, 0));
 
-        // Configurar ancho de columnas
-        userTable.getColumnModel().getColumn(0).setPreferredWidth(30);  // Icono
+        
+        userTable.getColumnModel().getColumn(0).setPreferredWidth(30);  
         userTable.getColumnModel().getColumn(0).setMaxWidth(30);
-        userTable.getColumnModel().getColumn(1).setPreferredWidth(150); // Usuario
-        userTable.getColumnModel().getColumn(2).setPreferredWidth(80);  // Estado
+        userTable.getColumnModel().getColumn(1).setPreferredWidth(150); 
+        userTable.getColumnModel().getColumn(2).setPreferredWidth(80);  
 
-        // Centrar contenido de las columnas
+        
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         userTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         userTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
 
-        // Renderer personalizado para la columna de usuario
+        
         userTable.getColumnModel().getColumn(1).setCellRenderer(new UserCellRenderer());
 
-        // Renderer personalizado para la columna de estado
+        
         userTable.getColumnModel().getColumn(2).setCellRenderer(new StatusCellRenderer());
 
-        // Configurar header
+        
         JTableHeader header = userTable.getTableHeader();
         header.setFont(new Font("Arial", Font.BOLD, 11));
         header.setBackground(new Color(230, 230, 230));
@@ -121,7 +121,7 @@ public class UserListPanel extends JPanel {
     }
 
     public void setUsers(String[] users) {
-        tableModel.setRowCount(0); // Limpiar tabla
+        tableModel.setRowCount(0); 
         for (String user : users) {
             if (user != null && !user.trim().isEmpty()) {
                 tableModel.addRow(new Object[]{"👤", user, "Activo"});
@@ -186,11 +186,11 @@ public class UserListPanel extends JPanel {
         return tableModel;
     }
 
-    // Métodos eliminados - ya no son necesarios con JTable
-    // Si necesitas acceso directo a la tabla, usa getUserTable()
-    // Si necesitas acceso al modelo, usa getTableModel()
+    
+    
+    
 
-    // Renderer personalizado para la columna de usuario
+    
     private static class UserCellRenderer extends DefaultTableCellRenderer {
         @Serial
         private static final long serialVersionUID = 1L;
@@ -218,7 +218,7 @@ public class UserListPanel extends JPanel {
         }
     }
 
-    // Renderer personalizado para la columna de estado
+    
     private static class StatusCellRenderer extends DefaultTableCellRenderer {
         @Serial
         private static final long serialVersionUID = 1L;
@@ -244,11 +244,11 @@ public class UserListPanel extends JPanel {
             } else {
                 backgroundColor = Color.WHITE;
 
-                // Colorear según el estado
+                
                 foregroundColor = switch (status) {
-                    case "Activo" -> new Color(34, 139, 34); // Verde
-                    case "Inactivo" -> new Color(169, 169, 169); // Gris
-                    case "Dibujando" -> new Color(30, 144, 255); // Azul
+                    case "Activo" -> new Color(34, 139, 34); 
+                    case "Inactivo" -> new Color(169, 169, 169); 
+                    case "Dibujando" -> new Color(30, 144, 255); 
                     default -> Color.BLACK;
                 };
             }

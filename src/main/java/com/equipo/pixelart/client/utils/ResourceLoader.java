@@ -4,7 +4,7 @@ import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.io.IOException; // Importante para que funcione dentro del JAR luego
+import java.io.IOException; 
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ import javax.swing.ImageIcon;
 
 public class ResourceLoader {
 
-    // Cache para no recargar la misma imagen múltiples veces
+    
     private static final Map<String, ImageIcon> iconCache = new HashMap<>();
 
     /**
@@ -47,7 +47,7 @@ public class ResourceLoader {
      * Usado por: ToolboxPanel (botones).
      */
     public static ImageIcon loadResizedIcon(String path, int width, int height) {
-        ImageIcon original = loadIcon(path); // Reutilizamos el método de arriba
+        ImageIcon original = loadIcon(path); 
         if (original == null) return null;
 
         Image img = original.getImage();
@@ -60,20 +60,20 @@ public class ResourceLoader {
      * Usado por: CanvasPanel (cuando implementemos los cursores).
      */
     public static Cursor loadCustomCursor(String path, String name) {
-        // Redimensionamos a 32x32 que es el estándar para cursores
+        
         ImageIcon icon = loadResizedIcon(path, 32, 32);
         if (icon == null) return Cursor.getDefaultCursor();
 
         Toolkit toolkit = Toolkit.getDefaultToolkit();
-        // El Point(0, 31) define la punta activa (ajusta según tu imagen)
-        // (0,0) es la esquina superior izquierda.
+        
+        
         return toolkit.createCustomCursor(icon.getImage(), new Point(0, 31), name);
     }
 
     public static void playSound(String path) {
         new Thread(() -> {
             try {
-                // Usamos BufferedInputStream para evitar problemas al leer desde resources
+                
                 URL url = ResourceLoader.class.getResource(path);
                 if (url == null) {
                     System.err.println("Audio no encontrado: " + path);
@@ -84,7 +84,7 @@ public class ResourceLoader {
                 Clip clip = AudioSystem.getClip();
                 clip.open(audioIn);
                 
-                // Liberar memoria cuando termine el sonido
+                
                 clip.addLineListener(event -> {
                     if (event.getType() == LineEvent.Type.STOP) {
                         clip.close();

@@ -38,7 +38,7 @@ class ClientHandlerTest {
 
     @BeforeEach
     public void setUp() throws IOException {
-        // 1. Mocks principales
+        
         mockSocket = mock(Socket.class);
         mockAuthService = mock(AuthService.class);
         mockCanvasService = mock(CanvasService.class);
@@ -91,6 +91,8 @@ class ClientHandlerTest {
     @Test
     void testRegisterExitoso() throws IOException {
         when(mockAuthService.registrarUsuario("Nuevo", "pass")).thenReturn(true);
+
+        when(mockAuthService.autenticar("Nuevo", "pass")).thenReturn(true);
 
         ejecutarHandlerConComandos("REGISTER|Nuevo|pass\nDISCONNECT");
 

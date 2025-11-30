@@ -119,7 +119,7 @@ public class ServerApp {
                 aceptarCliente(serverSocket.accept());
             } catch (IOException e) {
                 if (running) log("Error aceptando cliente: " + e.getMessage());
-                // Opcional: Romper el bucle en el test para que no sea infinito
+                
                 if (e.getMessage().contains("TEST_EXIT")) running = false; 
             }
         }
@@ -188,30 +188,37 @@ public class ServerApp {
     }
 
     public void stopServer() {
+        if (!running) return; 
         log("Deteniendo servidor...");
 
         running = false;
+        
+        
         if (canvasService != null) saveCanvas();
 
-        for (ClientHandler c : clients) {
-            try {
-                c.sendMessage("ERROR|Servidor detenido");
-                c.getSocket().close();
-            } catch (IOException e) {
-                log("Error cerrando cliente: " + e.getMessage());
-            }
-        }
-
+        
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
             }
         } catch (IOException e) {
-            log("Error cerrando servidor: " + e.getMessage());
+            log("Error cerrando socket servidor: " + e.getMessage());
         }
 
+        
+        for (ClientHandler c : clients) {
+            try {
+                c.sendMessage("ERROR|Servidor detenido");
+                
+                c.getSocket().close();
+            } catch (IOException e) {
+                
+            }
+        }
+        
         log("Servidor detenido.");
-        exitSystem();
+        
+        
     }
     
     protected void exitSystem() {
@@ -254,7 +261,4 @@ public class ServerApp {
         Runtime.getRuntime().addShutdownHook(new Thread(server::stopServer));
         server.inicio();
     }
-    
-    
-    
 }

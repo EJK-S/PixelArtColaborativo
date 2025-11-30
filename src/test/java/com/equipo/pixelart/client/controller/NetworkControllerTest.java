@@ -60,7 +60,8 @@ class NetworkControllerTest {
         simularConexionExitosa();
       
         networkController.sendPixelUpdate(10, 20, Color.RED);
-        verify(mockOut).println("PIXEL|10|20|ff0000");
+        
+        verify(mockOut).println("PIXEL|10|20|ff0000ff"); 
     }
 
     @Test

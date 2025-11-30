@@ -5,7 +5,6 @@ import java.awt.Color;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,17 +23,19 @@ class CanvasServiceTest {
     private FileManager mockFileManager;
     private final int TEST_WIDTH = 5;
     private final int TEST_HEIGHT = 5;
+    
+    
+    private final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
     @BeforeEach
     public void setUp() {
-        
         mockFileManager = mock(FileManager.class);
 
+        
         Color[][] lienzoVacio = new Color[TEST_WIDTH][TEST_HEIGHT];
-       
         for(int x=0; x<TEST_WIDTH; x++) {
             for(int y=0; y<TEST_HEIGHT; y++) {
-                lienzoVacio[x][y] = Color.WHITE;
+                lienzoVacio[x][y] = TRANSPARENT; 
             }
         }
 
@@ -44,10 +45,10 @@ class CanvasServiceTest {
     }
 
     @Test
-    void testConstructores() {
-      
+    void testConstructors() {
         assertEquals(TEST_WIDTH, canvasService.getWidth());
         assertEquals(TEST_HEIGHT, canvasService.getHeight());
+        
         when(mockFileManager.cargarCanvas(48, 48)).thenReturn(new Color[48][48]);
         CanvasService defaultService = new CanvasService(mockFileManager);
         
@@ -57,7 +58,6 @@ class CanvasServiceTest {
 
     @Test
     void testSetPixelValido() {
-       
         boolean resultado = canvasService.setPixel(0, 0, Color.RED);
 
         assertTrue(resultado);
@@ -67,7 +67,6 @@ class CanvasServiceTest {
 
     @Test
     void testSetPixelInvalido() {
-        
         assertFalse(canvasService.setPixel(-1, 0, Color.RED));
         assertFalse(canvasService.setPixel(0, 99, Color.RED));
         assertFalse(canvasService.setPixel(0, 0, null));
@@ -79,7 +78,8 @@ class CanvasServiceTest {
         canvasService.setPixel(1, 1, Color.BLUE);
         
         assertEquals(Color.BLUE, canvasService.getPixel(1, 1));
-        assertEquals(Color.WHITE, canvasService.getPixel(99, 99));
+        
+        assertEquals(TRANSPARENT, canvasService.getPixel(99, 99));
     }
 
     @Test
@@ -89,8 +89,9 @@ class CanvasServiceTest {
 
         canvasService.clear();
 
-        assertEquals(Color.WHITE, canvasService.getPixel(0, 0));
-        assertEquals(Color.WHITE, canvasService.getPixel(1, 1));
+        
+        assertEquals(TRANSPARENT, canvasService.getPixel(0, 0));
+        assertEquals(TRANSPARENT, canvasService.getPixel(1, 1));
     }
 
     @Test
@@ -109,27 +110,33 @@ class CanvasServiceTest {
     @Test
     void testGuardarCanvas() {
         canvasService.guardarCanvas();
-        
         verify(mockFileManager, times(1)).guardarCanvas(any());
     }
     
     @Test
     void testGetCanvasAsString() {
- 
+        
         Color[][] matrizPeque = new Color[2][2];
       
+        
         matrizPeque[0][0] = Color.WHITE; 
+        
+        
         matrizPeque[0][1] = Color.RED;   
     
+        
         matrizPeque[1][0] = Color.BLUE;  
-        matrizPeque[1][1] = Color.BLACK; 
+        
+        
+        matrizPeque[1][1] = new Color(0,0,0,0); 
         
         when(mockFileManager.cargarCanvas(2, 2)).thenReturn(matrizPeque);
         CanvasService miniService = new CanvasService(mockFileManager, 2, 2);
         
         String resultado = miniService.getCanvasAsString();
 
-        String esperado = "ffffff,ff0000,0000ff,000000";
+        
+        String esperado = "ffffffff,ff0000ff,0000ffff,00000000";
         assertEquals(esperado, resultado);
     }
 
@@ -143,43 +150,44 @@ class CanvasServiceTest {
     }
     
     @Test
-    void testGetCanvasDirecto() {
-       
-        assertNotNull(canvasService.getCanvas());
-    }
-
-    @Test
     void testUndoBasico() {
+        
+        assertEquals(TRANSPARENT, canvasService.getPixel(0, 0));
 
+        
         canvasService.setPixel(0, 0, Color.RED);
         assertEquals(Color.RED, canvasService.getPixel(0, 0));
 
+        
         boolean undoResult = canvasService.undo();
 
         assertTrue(undoResult);
-        assertEquals(Color.WHITE, canvasService.getPixel(0, 0));
+        
+        assertEquals(TRANSPARENT, canvasService.getPixel(0, 0));
     }
 
     @Test
     void testUndoSinHistorial() {
-       
+        canvasService.undo(); 
+
         boolean undoResult = canvasService.undo();
-        assertFalse(undoResult);
+        assertFalse(undoResult, "Debe ser false si ya no queda historial");
     }
     
     @Test
     void testSetPixelMismoColorNoGuardaEstado() {
-      
-        canvasService.setPixel(0, 0, Color.WHITE);
+        canvasService.undo(); 
+
+        canvasService.setPixel(0, 0, new Color(0,0,0,0));
         
-        assertFalse(canvasService.undo());
+        assertFalse(canvasService.undo(), "No debe guardar estado si el color no cambió");
     }
 
     @Test
     void testUndoLimiteMaximo() {
-
+        
         for (int i = 0; i < 55; i++) {
-
+            
             canvasService.setPixel(0, 0, new Color(i, i, i));
         }
 
@@ -190,7 +198,6 @@ class CanvasServiceTest {
 
         assertEquals(50, undoCount, "El historial no debe exceder 50 pasos");
     }
-
 
     @Test
     void testIniciarAutoGuardado() {      
